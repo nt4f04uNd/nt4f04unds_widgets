@@ -6,7 +6,7 @@ A library for personal use.
 
 The comments are poor, the code is horrible.
 
-I cannot (and don't want to) guarantee you the safety of ass during its usage.
+I cannot (and don't want to) guarantee you the safety of your ass during its usage.
 
 **It's mine.**
 
