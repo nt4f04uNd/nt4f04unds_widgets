@@ -6,7 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'route_transitions.dart';
-import 'package:nt4f04unds_widgets/constants.dart';
+import 'package:nt4f04unds_widgets/src/constants.dart';
 
 /// Creates customizable stack route transition with fade, very similar to Telegram app
 class StackFadeRouteTransition<T extends Widget, RouteT extends dynamic>

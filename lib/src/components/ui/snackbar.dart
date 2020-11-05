@@ -6,7 +6,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:nt4f04unds_widgets/constants.dart';
+import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const Duration kNFSnackBarAnimationDuration = Duration(milliseconds: 270);

@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
-import 'package:nt4f04unds_widgets/constants.dart';
+import 'package:nt4f04unds_widgets/src/constants.dart';
 
 /// Just an [AppBar], but has the properties to specify how it will look in the selection mode.
 /// Also performs a fade switch animation while switching in and out of the selection mode.

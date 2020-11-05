@@ -8,7 +8,7 @@ import 'package:flutter/material.dart'
     hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
 import 'package:flutter/material.dart' as flutter
     show showGeneralDialog, showBottomSheet, showModalBottomSheet;
-import 'package:nt4f04unds_widgets/constants.dart';
+import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const EdgeInsets defaultAlertTitlePadding =
