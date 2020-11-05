@@ -1,9 +1,16 @@
+/*---------------------------------------------------------------------------------------------
+*  Copyright (c) nt4f04und. All rights reserved.
+*  Licensed under the BSD-style license. See LICENSE in the project root for license information.
+*--------------------------------------------------------------------------------------------*/
+
 library nt4f04unds_widgets;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 export 'components/components.dart';
+export 'localization/localization.dart';
+export 'logic/logic.dart';
 export 'utils/utils.dart';
 
 abstract class NFWidgets {

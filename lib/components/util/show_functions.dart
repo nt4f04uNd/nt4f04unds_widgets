@@ -8,34 +8,39 @@ import 'package:flutter/material.dart'
     hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
 import 'package:flutter/material.dart' as flutter
     show showGeneralDialog, showBottomSheet, showModalBottomSheet;
+import 'package:nt4f04unds_widgets/constants.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-const EdgeInsets kDefaultAlertTitlePadding =
+const EdgeInsets defaultAlertTitlePadding =
     EdgeInsets.fromLTRB(26.0, 24.0, 26.0, 1.0);
-const EdgeInsets kDefaultAlertContentPadding =
+const EdgeInsets defaultAlertContentPadding =
     EdgeInsets.fromLTRB(26.0, 0.0, 26.0, 3.0);
 
 /// Class that contains composed 'show' functions, like [showDialog] and others
-class ShowFunctions {
-  ShowFunctions._internal();
-  static final ShowFunctions _instance = ShowFunctions._internal();
-  static ShowFunctions get instance => _instance;
+class NFShowFunctions {
+  /// Empty constructor will allow enheritance.
+  NFShowFunctions();
+  NFShowFunctions._internal();
+  static final NFShowFunctions _instance = NFShowFunctions._internal();
+  static NFShowFunctions get instance => _instance;
 
   //****************** Enhanced Flutter functions *****************************************************
 
   /// Calls [showGeneralDialog] function from Flutter material library to show a message to user (only accept button).
   ///
   /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [Constants.AppSystemUIThemes.modal].
-  static Future<dynamic> showAlert(
+  Future<dynamic> showAlert(
     BuildContext context, {
-    @required Widget title,
+    Widget title,
     Widget content,
-    EdgeInsets titlePadding = kDefaultAlertTitlePadding,
-    EdgeInsets contentPadding = kDefaultAlertContentPadding,
-    @required Widget acceptButton,
+    EdgeInsets titlePadding = defaultAlertTitlePadding,
+    EdgeInsets contentPadding = defaultAlertContentPadding,
+    Widget acceptButton,
     List<Widget> additionalActions,
     SystemUiOverlayStyle ui,
   }) async {
+    title ??= Text(l10n.warning);
+    acceptButton ??= DialogButton.accept(text: l10n.close);
     return showDialog(
       context,
       title: title,
@@ -44,26 +49,27 @@ class ShowFunctions {
       contentPadding: contentPadding,
       acceptButton: acceptButton,
       additionalActions: additionalActions,
+      hideDeclineButton: true,
     );
   }
 
   /// Calls [showGeneralDialog] function from Flutter material library to show a dialog to user (accept and decline buttons).
   ///
-  /// Also handles system UI animations to the custom [ui] and out of it on pop.
-  static Future<dynamic> showDialog(
+  /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [Constants.AppSystemUIThemes.modal].
+  Future<dynamic> showDialog(
     BuildContext context, {
     @required Widget title,
     Widget content,
-    EdgeInsets titlePadding: kDefaultAlertTitlePadding,
-    EdgeInsets contentPadding = kDefaultAlertContentPadding,
-    @required Widget acceptButton,
+    EdgeInsets titlePadding: defaultAlertTitlePadding,
+    EdgeInsets contentPadding = defaultAlertContentPadding,
+    Widget acceptButton,
     Widget declineButton,
+    bool hideDeclineButton = false,
     List<Widget> additionalActions,
     double borderRadius = 8.0,
     SystemUiOverlayStyle ui,
   }) async {
     assert(title != null);
-    assert(acceptButton != null);
 
     var prevUi;
     if (ui != null) {
@@ -73,11 +79,16 @@ class ShowFunctions {
     // Animate ui on open.
     SystemUiControl.animateSystemUiOverlay(to: ui);
 
+    acceptButton ??= DialogButton.accept();
+    if (!hideDeclineButton) {
+      declineButton ??= DialogButton.cancel();
+    }
+
     final closeFuture = flutter.showGeneralDialog(
       barrierColor: Colors.black54,
-      transitionDuration: kNFRouteTransitionDuration,
+      transitionDuration: Constants.routeTransitionDuration,
       barrierDismissible: true,
-      barrierLabel: 'nt4f04unds_widgets_AlertDialog',
+      barrierLabel: 'SMMAlertDialog',
       context: context,
       transitionBuilder: (context, animation, secondaryAnimation, child) {
         final scaleAnimation = Tween(begin: 0.9, end: 1.0).animate(
@@ -139,7 +150,7 @@ class ShowFunctions {
                   Flexible(
                     child: Padding(
                       padding: contentPadding,
-                      child: Scrollbar(
+                      child: NFScrollbar(
                         thickness: 5.0,
                         child: SingleChildScrollView(
                           child: content,
@@ -173,7 +184,7 @@ class ShowFunctions {
                           alignment: MainAxisAlignment.end,
                           children: <Widget>[
                             acceptButton,
-                            if (declineButton != null)
+                            if (!hideDeclineButton)
                               Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: declineButton,
@@ -190,20 +201,18 @@ class ShowFunctions {
         );
       },
     );
-    if (ui != null) {
-      () async {
-        await closeFuture;
-        // Animate ui after sheet been closed.
-        await SystemUiControl.animateSystemUiOverlay(to: prevUi);
-      }();
-    }
+    () async {
+      await closeFuture;
+      // Animate ui after sheet been closed.
+      await SystemUiControl.animateSystemUiOverlay(to: prevUi);
+    }();
     return closeFuture;
   }
 
   /// Calls [showBottomSheet], but also handles system UI animations to the custom [ui] and out of it on pop.
   ///
   /// [ui] Defaults to [Constants.AppSystemUIThemes.bottomSheet].
-  static PersistentBottomSheetController<T> showBottomSheet<T>({
+  PersistentBottomSheetController<T> showBottomSheet<T>({
     @required BuildContext context,
     @required WidgetBuilder builder,
     SystemUiOverlayStyle ui,
@@ -245,7 +254,7 @@ class ShowFunctions {
   /// Calls [showModalBottomSheet], but also handles system UI animations to the custom [ui] and out of it on pop.
   ///
   /// [ui] Defaults to [Constants.AppSystemUIThemes.bottomSheet].
-  static Future<T> showModalBottomSheet<T>({
+  Future<T> showModalBottomSheet<T>({
     @required BuildContext context,
     @required WidgetBuilder builder,
     SystemUiOverlayStyle ui,

@@ -1,0 +1,33 @@
+{
+  "@@last_modified": "2020-11-05T21:56:10.195330",
+  "warning": "Warning",
+  "@warning": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "close": "Close",
+  "@close": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accept": "Accept",
+  "@accept": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "copied": "Copied",
+  "@copied": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "whatDoesItMean": "What does it mean?",
+  "@whatDoesItMean": {
+    "type": "text",
+    "placeholders": {}
+  }
+}

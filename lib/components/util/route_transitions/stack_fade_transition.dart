@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'route_transitions.dart';
+import 'package:nt4f04unds_widgets/constants.dart';
 
 /// Creates customizable stack route transition with fade, very similar to Telegram app
 class StackFadeRouteTransition<T extends Widget, RouteT extends dynamic>
@@ -52,20 +53,47 @@ class StackFadeRouteTransition<T extends Widget, RouteT extends dynamic>
 
   Widget dismissBarrier;
 
-  factory StackFadeRouteTransition.fromBottom({
-    @required T route,
-    RouteT routeType,
-  }) {
-    return StackFadeRouteTransition(
-      route: route,
-      entBegin: const Offset(0.0, 0.16),
-      exitEnd: const Offset(0.0, 0.2),
-    );
-  }
-
   /// Whether route has been dismissed by users swipe.
   /// Needed to determine whether to show a barrier and shadow from the route.
   bool _beenDismissed = false;
+
+  factory StackFadeRouteTransition.fromBottom({
+    @required T route,
+    RouteT routeType,
+    BoolFunction checkEntAnimationEnabled = defBoolFunc,
+    Curve entCurve = Curves.easeOutCubic,
+    Curve entReverseCurve = Curves.easeInCubic,
+    bool entIgnoreEventsForward = false,
+    bool exitIgnoreEventsForward = false,
+    bool exitIgnoreEventsReverse = false,
+    UIFunction checkSystemUi,
+    bool dismissible = false,
+    SlideDirection dismissDirection = SlideDirection.startToEnd,
+    Duration transitionDuration = Constants.routeTransitionDuration,
+    RouteSettings settings,
+    bool opaque = true,
+    bool maintainState = false,
+  }) {
+    return StackFadeRouteTransition(
+      route: route,
+      routeType: routeType,
+      checkEntAnimationEnabled: checkEntAnimationEnabled,
+      entCurve: entCurve,
+      entReverseCurve: entReverseCurve,
+      entIgnoreEventsForward: entIgnoreEventsForward,
+      exitIgnoreEventsForward: exitIgnoreEventsForward,
+      exitIgnoreEventsReverse: exitIgnoreEventsReverse,
+      checkSystemUi: checkSystemUi,
+      entBegin: const Offset(0.0, 0.16),
+      exitEnd: const Offset(0.0, 0.2),
+      dismissible: dismissible,
+      dismissDirection: dismissDirection,
+      transitionDuration: transitionDuration,
+      settings: settings,
+      opaque: opaque,
+      maintainState: maintainState,
+    );
+  }
 
   StackFadeRouteTransition({
     @required this.route,

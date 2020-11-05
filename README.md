@@ -1,14 +1,59 @@
-# nt4f04unds_widgets
+# nt4f04und's widgets
 
-A new Flutter package project.
+### Manifest
 
-## Getting Started
+A library for personal use.
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+The comments are poor, the code is horrible.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+I cannot (and don't want to) guarantee you the safety of ass during its usage.
+
+**It's mine.**
+
+#### [Pub dev package](https://pub.dev/packages/nt4f04unds_widgets)
+
+### Setup
+
+Call the `NFWidgets.init`:
+
+```dart
+final RouteObserver<Route> routeObserver = RouteObserver();
+
+class App extends StatefulWidget {
+  App({Key key}) : super(key: key);
+
+  @override
+  _AppState createState() => _AppState();
+
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+}
+
+class _AppState extends State<App> {
+  @override
+  void initState() {
+    super.initState();
+    
+    NFWidgets.init(
+      routeObserver: routeObserver,
+      defaultSystemUiStyle: Constants.AppSystemUIThemes.defaultStyle,
+      navigatorKey: App.navigatorKey,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Example',
+      color: Colors.black,
+      navigatorKey: App.navigatorKey,
+      theme: Constants.AppTheme.theme,
+      navigatorObservers: [routeObserver],
+      onGenerateInitialRoutes: (routeName) => RouteControl.handleOnGenerateInitialRoutes(routeName, context),
+      onGenerateRoute: (settings) => RouteControl.handleOnGenerateRoutes(settings),
+    );
+  }
+}
+
+```
+

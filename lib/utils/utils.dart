@@ -5,6 +5,7 @@
 
 export 'duration.dart';
 export 'switcher.dart';
+export 'types.dart';
 
 import 'package:flutter/scheduler.dart';
 

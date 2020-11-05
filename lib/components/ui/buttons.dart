@@ -335,7 +335,7 @@ class InfoButton extends StatelessWidget {
       onPressed: info == null
           ? null
           : () {
-              ShowFunctions.showAlert(
+              NFShowFunctions.instance.showAlert(
                 context,
                 title: Text(infoAlertTitle ?? l10n.whatDoesItMean),
                 content: Text(info),
