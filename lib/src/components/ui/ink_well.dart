@@ -25,7 +25,7 @@ class NFInkWell extends StatelessWidget {
       child: child,
       splashColor: splashColor ?? Theme.of(context).splashColor,
       borderRadius: borderRadius,
-      splashFactory: ListTileInkRipple.splashFactory,
+      splashFactory: NFListTileInkRipple.splashFactory,
       onTap: onTap,
     );
   }

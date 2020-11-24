@@ -5,9 +5,9 @@
 
 import 'package:flutter/material.dart';
 
-/// An analogue of the [AnimatedSwitcher], but based on explicit [animation] property
-class AnimationSwitcher extends StatelessWidget {
-  const AnimationSwitcher({
+/// An analogue of the [AnimatedSwitcher], but based on explicit [animation] property.
+class NFAnimationSwitcher extends StatelessWidget {
+  const NFAnimationSwitcher({
     Key key,
     @required this.child1,
     @required this.child2,
@@ -23,6 +23,7 @@ class AnimationSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final opacity = Tween(begin: 1.0, end: 0.0).animate(animation);
     return AnimatedBuilder(
       animation: animation,
       builder: (BuildContext context, Widget child) => Stack(
@@ -31,7 +32,7 @@ class AnimationSwitcher extends StatelessWidget {
             ignoring: animation.status == AnimationStatus.forward ||
                 animation.status == AnimationStatus.completed,
             child: FadeTransition(
-              opacity: Tween(begin: 1.0, end: 0.0).animate(animation),
+              opacity: opacity,
               child: child1,
             ),
           ),

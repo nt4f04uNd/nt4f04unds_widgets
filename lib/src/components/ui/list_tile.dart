@@ -39,7 +39,7 @@ class NFListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(context).copyWith(
-        splashFactory: ListTileInkRipple.splashFactory,
+        splashFactory: NFListTileInkRipple.splashFactory,
         splashColor: splashColor ?? Theme.of(context).splashColor,
       ),
       child: ListTile(

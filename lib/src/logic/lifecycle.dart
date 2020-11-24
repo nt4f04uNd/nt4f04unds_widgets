@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class WidgetBindingHandler extends WidgetsBindingObserver {
-  WidgetBindingHandler({
+class NFWidgetBindingHandler extends WidgetsBindingObserver {
+  NFWidgetBindingHandler({
     this.onInactive,
     this.onPaused,
     this.onDetached,

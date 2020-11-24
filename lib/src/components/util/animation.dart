@@ -11,8 +11,8 @@ import 'package:flutter/scheduler.dart';
 /// Curve [Curves.easeOutCubic]
 ///
 /// Reverse curve [Curves.easeInCubic]
-class DefaultAnimation extends CurvedAnimation {
-  DefaultAnimation({
+class NFDefaultAnimation extends CurvedAnimation {
+  NFDefaultAnimation({
     Curve curve = Curves.easeOutCubic,
     Curve reverseCurve = Curves.easeInCubic,
     @required Animation parent,

@@ -6,12 +6,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-const Duration kNFSnackBarAnimationDuration = Duration(milliseconds: 270);
-const Duration kNFSnackBarDismissMovementDuration = Duration(milliseconds: 170);
-const int kNFSnackBarMaxQueueLength = 15;
+const Duration kNFSnackbarAnimationDuration = Duration(milliseconds: 270);
+const Duration kNFSnackbarDismissMovementDuration = Duration(milliseconds: 170);
+const int _kSnackbarMaxQueueLength = 15;
 
 class NFSnackbarSettings {
   NFSnackbarSettings({
@@ -20,12 +19,12 @@ class NFSnackbarSettings {
     this.duration = const Duration(seconds: 4),
     this.important = false,
   }) : assert(child != null) {
-    if (globalKey == null) this.globalKey = GlobalKey<NFSnackBarWrapperState>();
+    if (globalKey == null) this.globalKey = GlobalKey<NFSnackbarWrapperState>();
   }
 
   /// Main widget to display as a snackbar
   final Widget child;
-  GlobalKey<NFSnackBarWrapperState> globalKey;
+  GlobalKey<NFSnackbarWrapperState> globalKey;
 
   /// How long the snackbar will be shown
   final Duration duration;
@@ -46,7 +45,7 @@ class NFSnackbarSettings {
       builder: (BuildContext context) => Container(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: _NFSnackBarWrapper(settings: this, key: globalKey),
+          child: _NFSnackbarWrapper(settings: this, key: globalKey),
         ),
       ),
     );
@@ -59,11 +58,11 @@ class NFSnackbarSettings {
   }
 }
 
-abstract class SnackBarControl {
+abstract class NFSnackbarControl {
   /// A list to render the snackbars
   static List<NFSnackbarSettings> snackbarsList = [];
 
-  static void showSnackBar(NFSnackbarSettings settings) async {
+  static void showSnackbar(NFSnackbarSettings settings) async {
     assert(settings != null);
 
     if (settings.important && snackbarsList.length > 1) {
@@ -73,37 +72,37 @@ abstract class SnackBarControl {
     }
 
     if (snackbarsList.length == 1) {
-      _showSnackBar();
+      _showSnackbar();
     } else if (settings.important) {
       for (int i = 0; i < snackbarsList.length; i++) {
         if (snackbarsList[i].onScreen) {
-          _dismissSnackBar(index: i);
+          _dismissSnackbar(index: i);
         }
       }
-      _showSnackBar();
+      _showSnackbar();
     }
 
-    if (snackbarsList.length >= kNFSnackBarMaxQueueLength) {
+    if (snackbarsList.length >= _kSnackbarMaxQueueLength) {
       /// Reset when queue runs out of space
       snackbarsList = [
         snackbarsList[0],
-        snackbarsList[kNFSnackBarMaxQueueLength - 2],
-        snackbarsList[kNFSnackBarMaxQueueLength - 1]
+        snackbarsList[_kSnackbarMaxQueueLength - 2],
+        snackbarsList[_kSnackbarMaxQueueLength - 1]
       ];
     }
   }
 
   /// Method to be called after the current snack bar has went out of screen
-  static void _handleSnackBarDismissed() {
-    _dismissSnackBar(index: 0);
+  static void _handleSnackbarDismissed() {
+    _dismissSnackbar(index: 0);
     if (snackbarsList.isNotEmpty) {
-      _showSnackBar();
+      _showSnackbar();
     }
   }
 
   /// Creates next snackbar and shows it to screen
   /// [index] can be used to justify what snackbar to show
-  static void _showSnackBar({int index = 0}) {
+  static void _showSnackbar({int index = 0}) {
     assert(!snackbarsList[index].onScreen);
     snackbarsList[index].createSnackbar();
     try {
@@ -116,7 +115,7 @@ abstract class SnackBarControl {
 
   /// Removes next snackbar from screen without animation
   /// [index] can be used to justify what snackbar to hide
-  static void _dismissSnackBar({int index = 0}) {
+  static void _dismissSnackbar({int index = 0}) {
     snackbarsList[index].removeSnackbar();
     snackbarsList.removeAt(index);
   }
@@ -125,8 +124,8 @@ abstract class SnackBarControl {
 }
 
 /// Custom snackbar to display it in the [Overlay]
-class _NFSnackBarWrapper extends StatefulWidget {
-  _NFSnackBarWrapper({
+class _NFSnackbarWrapper extends StatefulWidget {
+  _NFSnackbarWrapper({
     Key key,
     @required this.settings,
   })  : assert(settings != null),
@@ -135,10 +134,10 @@ class _NFSnackBarWrapper extends StatefulWidget {
   final NFSnackbarSettings settings;
 
   @override
-  NFSnackBarWrapperState createState() => NFSnackBarWrapperState();
+  NFSnackbarWrapperState createState() => NFSnackbarWrapperState();
 }
 
-class NFSnackBarWrapperState extends State<_NFSnackBarWrapper>
+class NFSnackbarWrapperState extends State<_NFSnackbarWrapper>
     with TickerProviderStateMixin {
   Completer<bool> completer;
   AnimationController opacityController;
@@ -153,11 +152,11 @@ class NFSnackBarWrapperState extends State<_NFSnackBarWrapper>
 
     opacityController = AnimationController(
       vsync: this,
-      duration: kNFSnackBarAnimationDuration,
+      duration: kNFSnackbarAnimationDuration,
     );
     slideController = AnimationController(
       vsync: this,
-      duration: kNFSnackBarAnimationDuration,
+      duration: kNFSnackbarAnimationDuration,
     );
     timeoutController = AnimationController(
       vsync: this,
@@ -195,7 +194,7 @@ class NFSnackBarWrapperState extends State<_NFSnackBarWrapper>
 
   /// Will close snackbar with Animation
   ///
-  /// If [notifyControl] is true, the [SnackBarControl._handleSnackBarDismissed] will be called internally after the closure
+  /// If [notifyControl] is true, the [NFSnackbarControl._handleSnackbarDismissed] will be called internally after the closure
   Future<void> close() async {
     completer = Completer();
     slideController.addStatusListener((status) {
@@ -207,7 +206,7 @@ class NFSnackBarWrapperState extends State<_NFSnackBarWrapper>
     opacityController.reverse();
     var res = await completer.future;
     if (res) {
-      SnackBarControl._handleSnackBarDismissed();
+      NFSnackbarControl._handleSnackbarDismissed();
     }
   }
 
@@ -250,14 +249,14 @@ class NFSnackBarWrapperState extends State<_NFSnackBarWrapper>
             child: StatefulBuilder(
               builder: (BuildContext context, setState) => NFDismissible(
                 key: dismissibleKey,
-                movementDuration: kNFSnackBarDismissMovementDuration,
+                movementDuration: kNFSnackbarDismissMovementDuration,
                 onDismissProgress: (_, value) => setState(() {
                   if (value > 0.2) {
                     opacityController.value = (1.0 - value) / 0.8;
                   }
                 }),
                 direction: DismissDirection.down,
-                onDismissed: (_) => SnackBarControl._handleSnackBarDismissed(),
+                onDismissed: (_) => NFSnackbarControl._handleSnackbarDismissed(),
                 child: Padding(
                   padding:
                       const EdgeInsets.only(bottom: 4.0, left: 8.0, right: 8.0),
@@ -282,8 +281,8 @@ class NFSnackBarWrapperState extends State<_NFSnackBarWrapper>
   }
 }
 
-class NFSnackBar extends StatelessWidget {
-  const NFSnackBar({
+class NFSnackbar extends StatelessWidget {
+  const NFSnackbar({
     Key key,
     this.message,
     this.leading,

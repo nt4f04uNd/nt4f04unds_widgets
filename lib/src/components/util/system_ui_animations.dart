@@ -7,15 +7,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-const String kNFSystemUiOverlayAnimationDebugLabel =
-    "SystemUIOverlayAnimationController";
-
 /// Holds [AnimationController] settings.
-class AnimationControllerSettings {
-  const AnimationControllerSettings({
+class NFAnimationControllerSettings {
+  /// The omitted values will be null.
+  const NFAnimationControllerSettings({
     this.value,
     this.duration,
     this.reverseDuration,
@@ -24,14 +21,14 @@ class AnimationControllerSettings {
     this.animationBehavior,
   });
 
-  /// Creates default configuration of the [AnimationController].
-  const AnimationControllerSettings.defaultConfig({
+  /// Creates default configuration of the animation controller.
+  const NFAnimationControllerSettings.defaultConfig({
     this.value = 0.0,
-    this.duration = Constants.routeTransitionDuration,
+    this.duration = kNFRouteTransitionDuration,
     this.reverseDuration,
     this.lowerBound = 0.0,
     this.upperBound = 1.0,
-    this.animationBehavior,
+    this.animationBehavior = AnimationBehavior.normal,
   });
 
   final double value;
@@ -41,11 +38,11 @@ class AnimationControllerSettings {
   final double upperBound;
   final AnimationBehavior animationBehavior;
 
-  /// Creates a copy of this animation settings but with the given fields replaced with
-  /// the new values.
-  AnimationControllerSettings copyWith(AnimationControllerSettings other) {
+  /// Creates a copy of this animation controller settings but with the given fields replaced
+  /// from [other] controller settings.
+  NFAnimationControllerSettings copyWith(NFAnimationControllerSettings other) {
     assert(other != null);
-    return AnimationControllerSettings(
+    return NFAnimationControllerSettings(
       value: other.value ?? this.value,
       duration: other.duration ?? this.duration,
       reverseDuration: other.reverseDuration ?? this.reverseDuration,
@@ -56,23 +53,22 @@ class AnimationControllerSettings {
   }
 }
 
-abstract class SystemUiControl {
+abstract class NFSystemUiControl {
+  static SystemUiOverlayStyle _ui;
   static SystemUiOverlayStyle _from;
-  static SystemUiOverlayStyle _to;
+  static SystemUiOverlayStyle _to = NFWidgets.defaultSystemUiStyle;
   static Curve _curve;
 
   static AnimationController _controller;
-  static PersistentTickerProvider _tickerProvider;
+  static PersistentTickerProvider _tickerProvider = PersistentTickerProvider();
 
   /// Operation to wait before the animation completes
   static Completer _animationCompleter;
   static StreamController<SystemUiOverlayStyle> _streamController =
       StreamController.broadcast();
 
-  static AnimationControllerSettings _controllerSettings =
-      const AnimationControllerSettings.defaultConfig();
-
-  static SystemUiOverlayStyle _ui = const SystemUiOverlayStyle();
+  static NFAnimationControllerSettings _controllerSettings =
+      const NFAnimationControllerSettings.defaultConfig();
 
   /// Represents the actual UI that is now drawn on the screen.
   ///
@@ -82,8 +78,9 @@ abstract class SystemUiControl {
   /// on the app start to update this value.
   static SystemUiOverlayStyle get actualUi => _ui;
 
-  /// This value is ultimately the Ui that the current animation, if it exists, leads to.
-  static SystemUiOverlayStyle get ui => _to ?? actualUi;
+  /// This value is ultimately the Ui that the current animation, if it exists, leads to
+  /// or (led to, if it's ended).
+  static SystemUiOverlayStyle get lastUi => _to ?? actualUi;
 
   /// The stream notifying of the [actualUi] changes.
   static Stream<SystemUiOverlayStyle> get onUiChange =>
@@ -96,8 +93,8 @@ abstract class SystemUiControl {
   ///
   /// Will reset settings to default if no value has been passed.
   static void setControllerSettings(
-      [AnimationControllerSettings settings =
-          const AnimationControllerSettings.defaultConfig()]) async {
+      [NFAnimationControllerSettings settings =
+          const NFAnimationControllerSettings.defaultConfig()]) async {
     _controllerSettings = _controllerSettings.copyWith(settings);
   }
 
@@ -112,22 +109,25 @@ abstract class SystemUiControl {
     SystemChrome.setSystemUIOverlayStyle(ui);
   }
 
-  /// Performs a transition between two UIs, which are represented with [from] and [to].
+  /// Performs a transition from old overlay to new one.
   ///
-  /// The [to] is required, whereas [from] can be omitted, if so, [actualUi] will be used instead.
+  /// The returned future will complete after the animation ends.
   ///
-  /// User [curve] to apply a custom transition curve.
+  /// [from] is Ui to animate from. It can be omitted, if so, then the internal [_lastUi] will be used instead.
   ///
-  /// The passed [settings] will override (with merge) current settings for just this transition.
+  /// [to] is the Ui to animate to. It is required.
   ///
-  /// The returned future completes after the animation ends or cancels.
+  /// [curve] is a custom animation curve
+  ///
+  /// The passed [settings] will override current settings respectively.
   static Future<void> animateSystemUiOverlay({
     SystemUiOverlayStyle from,
     @required SystemUiOverlayStyle to,
     Curve curve = Curves.easeOutCubic,
-    AnimationControllerSettings settings,
+    NFAnimationControllerSettings settings,
   }) {
     assert(to != null);
+    _ui ??= NFWidgets.defaultSystemUiStyle;
     from ??= _ui;
     _from = from;
     _to = to;
@@ -139,7 +139,7 @@ abstract class SystemUiControl {
 
   /// Creates the controller from the provided settings.
   /// The passed settings will override current settings respectively.
-  static void _handleStart(AnimationControllerSettings settings) {
+  static void _handleStart(NFAnimationControllerSettings settings) {
     _animationCompleter = Completer();
     _controller?.dispose();
     _controller = AnimationController(
@@ -147,16 +147,13 @@ abstract class SystemUiControl {
       duration: settings?.duration ?? _controllerSettings.duration,
       reverseDuration:
           settings?.reverseDuration ?? _controllerSettings.reverseDuration,
-      debugLabel: "SystemUIOverlayAnimationController",
+      debugLabel: "NFSystemUIOverlayAnimationController",
       lowerBound: settings?.lowerBound ?? _controllerSettings.lowerBound,
       upperBound: settings?.upperBound ?? _controllerSettings.upperBound,
       animationBehavior:
           settings?.animationBehavior ?? _controllerSettings.animationBehavior,
       vsync: _tickerProvider,
     );
-    if (_tickerProvider.ticker?.isActive == false) {
-      _tickerProvider.ticker.start();
-    }
     _controller.addListener(() {
       final animation =
           SystemUiOverlayStyleTween(begin: _from, end: _to).animate(
@@ -175,9 +172,6 @@ abstract class SystemUiControl {
   }
 
   static void _handleEnd() {
-    if (_tickerProvider.ticker?.isActive == true) {
-      _tickerProvider.ticker.stop();
-    }
     if (_animationCompleter != null &&
         _animationCompleter.isCompleted == false) {
       _animationCompleter.complete();
@@ -186,21 +180,24 @@ abstract class SystemUiControl {
   }
 }
 
-/// A tween for [SystemUiOverlayStyle].
 class SystemUiOverlayStyleTween extends Tween<SystemUiOverlayStyle> {
-  SystemUiOverlayStyleTween(
-      {SystemUiOverlayStyle begin, SystemUiOverlayStyle end})
-      : assert(
-          begin != null || end != null,
-          "Either begin, or end, or both have to be specified",
-        ),
-        super(begin: begin, end: end);
+  /// Creates a SystemUiOverlayStyle tween.
+  ///
+  /// The [begin] and [end] properties may be null. If both are null, then the
+  /// result is always null. If [end] is not null, then its lerping logic is
+  /// used (via [SystemUiOverlayStyle.lerpTo]). Otherwise, [begin]'s lerping logic is used
+  /// (via [SystemUiOverlayStyle.lerpFrom]).
+  SystemUiOverlayStyleTween({
+    SystemUiOverlayStyle begin,
+    SystemUiOverlayStyle end,
+  }) : super(begin: begin, end: end);
 
   /// Returns the value this variable has at the given animation clock value.
   @override
   SystemUiOverlayStyle lerp(double t) {
     final a = begin;
     final b = end;
+    assert(a != null || b != null);
     assert(t != null);
     if (a == null) {
       return b;
@@ -208,8 +205,6 @@ class SystemUiOverlayStyleTween extends Tween<SystemUiOverlayStyle> {
     if (b == null) {
       return a;
     }
-
-    // The 0.95 here, because that's just the optimal value for the system brightness change animation.
     return SystemUiOverlayStyle(
       systemNavigationBarColor:
           Color.lerp(a.systemNavigationBarColor, b.systemNavigationBarColor, t),
@@ -217,14 +212,14 @@ class SystemUiOverlayStyleTween extends Tween<SystemUiOverlayStyle> {
           a.systemNavigationBarDividerColor,
           b.systemNavigationBarDividerColor,
           t),
-      systemNavigationBarIconBrightness: t > 0.95
+      systemNavigationBarIconBrightness: t > 0.5
           ? a.systemNavigationBarIconBrightness
           : b.systemNavigationBarIconBrightness,
       statusBarColor: Color.lerp(a.statusBarColor, b.statusBarColor, t),
       statusBarBrightness:
-          t > 0.95 ? a.statusBarBrightness : b.statusBarBrightness,
+          t > 0.5 ? a.statusBarBrightness : b.statusBarBrightness,
       statusBarIconBrightness:
-          t > 0.95 ? a.statusBarIconBrightness : b.statusBarIconBrightness,
+          t > 0.5 ? a.statusBarIconBrightness : b.statusBarIconBrightness,
     );
   }
 }

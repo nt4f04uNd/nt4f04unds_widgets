@@ -38,8 +38,8 @@ double _getTargetRadius(RenderBox referenceBox, bool containedInkWell,
   return math.max(d1, d2) / 2.0;
 }
 
-class _IconButtonInkRippleFactory extends InteractiveInkFeatureFactory {
-  const _IconButtonInkRippleFactory({this.radius});
+class _NFIconButtonInkRippleFactory extends InteractiveInkFeatureFactory {
+  const _NFIconButtonInkRippleFactory({this.radius});
 
   final double radius;
 
@@ -57,7 +57,7 @@ class _IconButtonInkRippleFactory extends InteractiveInkFeatureFactory {
     double radius,
     VoidCallback onRemoved,
   }) {
-    return IconButtonInkRipple(
+    return NFIconButtonInkRipple(
       controller: controller,
       referenceBox: referenceBox,
       position: position,
@@ -95,7 +95,7 @@ class _IconButtonInkRippleFactory extends InteractiveInkFeatureFactory {
 ///  * [Material], which is the widget on which the ink splash is painted.
 ///  * [InkHighlight], which is an ink feature that emphasizes a part of a
 ///    [Material].
-class IconButtonInkRipple extends InteractiveInkFeature {
+class NFIconButtonInkRipple extends InteractiveInkFeature {
   /// Begin a ripple, centered at [position] relative to [referenceBox].
   ///
   /// The [controller] argument is typically obtained via
@@ -111,7 +111,7 @@ class IconButtonInkRipple extends InteractiveInkFeature {
   /// This is the default.
   ///
   /// When the ripple is removed, [onRemoved] will be called.
-  IconButtonInkRipple({
+  NFIconButtonInkRipple({
     @required MaterialInkController controller,
     @required RenderBox referenceBox,
     @required Offset position,
@@ -196,7 +196,7 @@ class IconButtonInkRipple extends InteractiveInkFeature {
   /// Used to specify this type of ink splash for an [InkWell], [InkResponse]
   /// or material [Theme].
   static InteractiveInkFeatureFactory splashFactory({double radius}) {
-    return _IconButtonInkRippleFactory(radius: radius);
+    return _NFIconButtonInkRippleFactory(radius: radius);
   }
 
   static final Animatable<double> _easeCurveTween =

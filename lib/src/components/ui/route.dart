@@ -9,7 +9,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 const double kNFAppBarPreferredSize = 52.0;
 
 /// Creates [Scaffold] with preferred size [AppBar]
-class PageBase extends StatelessWidget {
+class NFPageBase extends StatelessWidget {
   final Widget child;
 
   /// Text that will be displayed in app bar title
@@ -23,8 +23,9 @@ class PageBase extends StatelessWidget {
 
   /// Overrides default [NFBackButton] widget
   final Widget backButton;
+  final bool resizeToAvoidBottomInset;
 
-  const PageBase({
+  const NFPageBase({
     Key key,
     @required this.child,
     this.name = "",
@@ -33,6 +34,7 @@ class PageBase extends StatelessWidget {
     this.enableElevation = true,
     this.actions = const [],
     this.backButton = const NFBackButton(),
+    this.resizeToAvoidBottomInset,
   })  : assert(child != null),
         super(key: key);
 
@@ -40,6 +42,7 @@ class PageBase extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: PreferredSize(
         preferredSize:
             Size.fromHeight(kNFAppBarPreferredSize), // here the desired height
@@ -78,7 +81,7 @@ class PageBase extends StatelessWidget {
 /// Creates [Scaffold] with preferred size [AppBar]
 ///
 /// Also receives the color animation to change the background color
-class AnimatedPageBase extends AnimatedWidget {
+class NFAnimatedPageBase extends AnimatedWidget {
   final Widget child;
   final Animation<Color> animation;
 
@@ -92,7 +95,7 @@ class AnimatedPageBase extends AnimatedWidget {
   /// Overrides default [NFBackButton] widget
   final Widget backButton;
 
-  const AnimatedPageBase({
+  const NFAnimatedPageBase({
     Key key,
     @required this.child,
     @required this.animation,

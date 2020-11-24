@@ -8,16 +8,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
       
 /// Class that represents a single shared pref.
-/// 
-/// Usage example
+///
+/// Usage example:
 /// ```dart
 /// static final Pref<bool> devModeBool =
 ///     Pref<bool>(key: 'dev_mode', defaultValue: false);
 /// ```
 ///
-/// Even if default value is null, you should specify it explicitly and give a pref variable "Nullable" postfix.
-/// 
-/// In case with previous example, that would be
+/// Even if default value is null, you should specify it explicitly and give a pref variable `Nullable` postfix.
+/// In case with previous example, that would be `devModeBoolNullable`.
 class Pref<T> {
   Pref({
     @required this.key,
@@ -30,50 +29,46 @@ class Pref<T> {
   final String key;
   final T defaultValue;
 
-  /// Set pref value.
-  /// Without [value] will set the pref to its [defaultValue].
-  ///
-  /// @param [value] new pref value to set.
-  ///
-  /// @param [prefs] optional [SharedPreferences] instance.
+  /// Sets pref [value].
+  /// Without any [value] given will set the pref to its [defaultValue].
   Future<bool> set([T value]) async {
     value ??= defaultValue;
     final prefs = await SharedPreferences.getInstance();
 
-    if (isType<T, bool>()) {
+    final type = typeOf<T>();
+    if (type == bool) {
       return prefs.setBool(key, value as bool);
-    } else if (isType<T, int>()) {
+    } else if (type == int) {
       return prefs.setInt(key, value as int);
-    } else if (isType<T, double>()) {
+    } else if (type == double) {
       return prefs.setDouble(key, value as double);
-    } else if (isType<T, String>()) {
+    } else if (type == String) {
       return prefs.setString(key, value as String);
-    } else if (isType<T, List<String>>()) {
+    } else if (type == typeOf<List<String>>()) {
       return prefs.setStringList(key, value as List<String>);
     }
     throw Exception("Pref.get: Wrong type of pref generic: T = $T");
   }
 
-  /// Get pref value.
-  /// If the current value is `null`, will return [defaultValue] call [setPref] to reset the pref to the [defaultValue].
-  ///
-  /// @param prefs optional [SharedPreferences] instance
+  /// Gets pref value.
+  /// If the current value is `null`, will return [defaultValue] and call [setPref] to reset the pref to the [defaultValue].
   Future<T> get() async {
     final prefs = await SharedPreferences.getInstance();
 
+    final type = typeOf<T>();
     T res;
-    if (isType<T, bool>()) {
+    if (type == bool) {
       res = prefs.getBool(key) as T;
-    } else if (isType<T, int>()) {
+    } else if (type == int) {
       res = prefs.getInt(key) as T;
-    } else if (isType<T, double>()) {
+    } else if (type == double) {
       res = prefs.getDouble(key) as T;
-    } else if (isType<T, String>()) {
+    } else if (type == String) {
       res = prefs.getString(key) as T;
-    } else if (isType<T, List<String>>()) {
+    } else if (type == typeOf<List<String>>()) {
       res = prefs.getStringList(key) as T;
     } else {
-      throw Exception("Pref.get: Wrong type of pref generic: T = $T");
+      throw Exception("Pref.get: Wrong type of pref generic: T = $type");
     }
 
     // Reset pref value to default value if defaultValue is not null

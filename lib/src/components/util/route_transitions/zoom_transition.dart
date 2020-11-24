@@ -12,12 +12,9 @@ import 'package:flutter/material.dart';
 /// Creates customizable fade in transition
 ///
 /// By default acts pretty same as [ZoomPageTransitionsBuilder]
-class ZoomRouteTransition<T extends Widget, RouteT extends dynamic>
-    extends RouteTransition<T, RouteT> {
+class ZoomRouteTransition<T extends Widget> extends RouteTransition<T> {
   @override
   final T route;
-  @override
-  final RouteT routeType;
   @override
   BoolFunction checkEntAnimationEnabled;
   @override
@@ -31,11 +28,9 @@ class ZoomRouteTransition<T extends Widget, RouteT extends dynamic>
   @override
   final Curve exitReverseCurve;
   @override
-  final bool entIgnoreEventsForward;
+  final bool entIgnore;
   @override
-  final bool exitIgnoreEventsForward;
-  @override
-  final bool exitIgnoreEventsReverse;
+  final bool exitIgnore;
   @override
   RoutePageBuilder pageBuilder;
   @override
@@ -43,24 +38,24 @@ class ZoomRouteTransition<T extends Widget, RouteT extends dynamic>
 
   ZoomRouteTransition({
     @required this.route,
-    this.routeType,
-    this.checkEntAnimationEnabled = defBoolFunc,
-    this.checkExitAnimationEnabled = defBoolFunc,
+    this.checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    this.checkExitAnimationEnabled = defRouteTransitionBoolFunc,
     this.entCurve = Curves.linearToEaseOut,
     this.entReverseCurve = Curves.easeInToLinear,
     this.exitCurve = Curves.linearToEaseOut,
     this.exitReverseCurve = Curves.easeInToLinear,
-    this.entIgnoreEventsForward = false,
-    this.exitIgnoreEventsForward = false,
-    this.exitIgnoreEventsReverse = false,
+    this.entIgnore = false,
+    this.exitIgnore = false,
     this.checkSystemUi,
     Duration transitionDuration = kNFRouteTransitionDuration,
+    Duration reverseTransitionDuration = kNFRouteTransitionDuration,
     RouteSettings settings,
     bool opaque = true,
     bool maintainState = false,
   }) : super(
           route: route,
           transitionDuration: transitionDuration,
+          reverseTransitionDuration: reverseTransitionDuration,
           settings: settings,
           opaque: opaque,
           maintainState: maintainState,
@@ -72,9 +67,7 @@ class ZoomRouteTransition<T extends Widget, RouteT extends dynamic>
       Widget child,
     ) {
       return _ZoomPageTransition(
-        animation: animation,
-        secondaryAnimation: secondaryAnimation,
-        checkExitAnimationEnabled: checkExitAnimationEnabled,
+        transition: this,
         child: IgnorePointer(
           // Disable any touch events on enter while in transition
           ignoring: ignore,
@@ -96,9 +89,7 @@ class ZoomRouteTransition<T extends Widget, RouteT extends dynamic>
 class _ZoomPageTransition extends StatefulWidget {
   const _ZoomPageTransition({
     Key key,
-    this.animation,
-    this.secondaryAnimation,
-    this.checkExitAnimationEnabled,
+    this.transition,
     this.child,
   }) : super(key: key);
 
@@ -128,9 +119,7 @@ class _ZoomPageTransition extends StatefulWidget {
   static final FlippedTweenSequence _flippedScaleCurveSequence =
       FlippedTweenSequence(fastOutExtraSlowInTweenSequenceItems);
 
-  final Animation<double> animation;
-  final Animation<double> secondaryAnimation;
-  final BoolFunction checkExitAnimationEnabled;
+  final RouteTransition transition;
   final Widget child;
 
   @override
@@ -144,7 +133,8 @@ class _ZoomPageTransitionState extends State<_ZoomPageTransition> {
   @override
   void initState() {
     super.initState();
-    widget.animation.addStatusListener((AnimationStatus animationStatus) {
+    widget.transition.animation
+        .addStatusListener((AnimationStatus animationStatus) {
       _lastAnimationStatus = _currentAnimationStatus;
       _currentAnimationStatus = animationStatus;
     });
@@ -183,38 +173,40 @@ class _ZoomPageTransitionState extends State<_ZoomPageTransition> {
 
   @override
   Widget build(BuildContext context) {
-    final Animation<double> _forwardScrimOpacityAnimation = widget.animation
-        .drive(_ZoomPageTransition._scrimOpacityTween
+    final Animation<double> _forwardScrimOpacityAnimation =
+        widget.transition.animation.drive(_ZoomPageTransition._scrimOpacityTween
             .chain(CurveTween(curve: const Interval(0.2075, 0.4175))));
 
-    final Animation<double> _forwardEndScreenScaleTransition = widget.animation
-        .drive(Tween<double>(begin: 0.85, end: 1.00)
+    final Animation<double> _forwardEndScreenScaleTransition =
+        widget.transition.animation.drive(Tween<double>(begin: 0.85, end: 1.00)
             .chain(_ZoomPageTransition._scaleCurveSequence));
 
-    final Animation<double> _forwardStartScreenScaleTransition =
-        widget.secondaryAnimation.drive(Tween<double>(begin: 1.00, end: 1.05)
+    final Animation<double> _forwardStartScreenScaleTransition = widget
+        .transition.secondaryAnimation
+        .drive(Tween<double>(begin: 1.00, end: 1.05)
             .chain(_ZoomPageTransition._scaleCurveSequence));
 
-    final Animation<double> _forwardEndScreenFadeTransition = widget.animation
-        .drive(Tween<double>(begin: 0.0, end: 1.00)
+    final Animation<double> _forwardEndScreenFadeTransition =
+        widget.transition.animation.drive(Tween<double>(begin: 0.0, end: 1.00)
             .chain(CurveTween(curve: const Interval(0.125, 0.250))));
 
-    final Animation<double> _reverseEndScreenScaleTransition =
-        widget.secondaryAnimation.drive(Tween<double>(begin: 1.00, end: 1.10)
+    final Animation<double> _reverseEndScreenScaleTransition = widget
+        .transition.secondaryAnimation
+        .drive(Tween<double>(begin: 1.00, end: 1.10)
             .chain(_ZoomPageTransition._flippedScaleCurveSequence));
 
     final Animation<double> _reverseStartScreenScaleTransition =
-        widget.animation.drive(Tween<double>(begin: 0.9, end: 1.0)
+        widget.transition.animation.drive(Tween<double>(begin: 0.9, end: 1.0)
             .chain(_ZoomPageTransition._flippedScaleCurveSequence));
 
-    final Animation<double> _reverseStartScreenFadeTransition = widget.animation
-        .drive(Tween<double>(begin: 0.0, end: 1.00)
+    final Animation<double> _reverseStartScreenFadeTransition =
+        widget.transition.animation.drive(Tween<double>(begin: 0.0, end: 1.00)
             .chain(CurveTween(curve: const Interval(1 - 0.2075, 1 - 0.0825))));
 
     return AnimatedBuilder(
-      animation: widget.animation,
+      animation: widget.transition.animation,
       builder: (BuildContext context, Widget child) {
-        if (widget.animation.status == AnimationStatus.forward ||
+        if (widget.transition.animation.status == AnimationStatus.forward ||
             _transitionWasInterrupted) {
           return Container(
             color:
@@ -227,7 +219,8 @@ class _ZoomPageTransitionState extends State<_ZoomPageTransition> {
               ),
             ),
           );
-        } else if (widget.animation.status == AnimationStatus.reverse) {
+        } else if (widget.transition.animation.status ==
+            AnimationStatus.reverse) {
           return ScaleTransition(
             scale: _reverseStartScreenScaleTransition,
             child: FadeTransition(
@@ -239,19 +232,19 @@ class _ZoomPageTransitionState extends State<_ZoomPageTransition> {
         return child;
       },
       child: AnimatedBuilder(
-        animation: widget.secondaryAnimation,
+        animation: widget.transition.secondaryAnimation,
         builder: (BuildContext context, Widget child) {
-          final exitAnimationEnabled = widget.checkExitAnimationEnabled();
-
-          if (exitAnimationEnabled &&
-                  widget.secondaryAnimation.status == AnimationStatus.forward ||
+          if (widget.transition.exitAnimationEnabled &&
+                  widget.transition.secondaryAnimation.status ==
+                      AnimationStatus.forward ||
               _transitionWasInterrupted) {
             return ScaleTransition(
               scale: _forwardStartScreenScaleTransition,
               child: child,
             );
-          } else if (exitAnimationEnabled &&
-              widget.secondaryAnimation.status == AnimationStatus.reverse) {
+          } else if (widget.transition.exitAnimationEnabled &&
+              widget.transition.secondaryAnimation.status ==
+                  AnimationStatus.reverse) {
             return ScaleTransition(
               scale: _reverseEndScreenScaleTransition,
               child: child,

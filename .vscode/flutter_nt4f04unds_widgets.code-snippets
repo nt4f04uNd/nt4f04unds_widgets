@@ -6,11 +6,11 @@
 	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
 	// Placeholders with the same ids are connected.
 
-	"Import package constants": {
-		"prefix": "_iconst",
-		"description": "Import the package constants",
+	"Get localization": {
+		"prefix": "_gl10n",
+		"description": "Get the package localization",
 		"body": [
-			"import 'package:nt4f04unds_widgets/constants.dart';"
+			"final l10n = NFLocalizations.of(context);"
 		],
 	},
 }

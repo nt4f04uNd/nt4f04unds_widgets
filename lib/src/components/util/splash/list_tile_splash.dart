@@ -41,8 +41,8 @@ double _getTargetRadius(RenderBox referenceBox, bool containedInkWell,
   return math.max(d1, d2) / 2.0;
 }
 
-class _ListTileInkRippleFactory extends InteractiveInkFeatureFactory {
-  const _ListTileInkRippleFactory();
+class _NFListTileInkRippleFactory extends InteractiveInkFeatureFactory {
+  const _NFListTileInkRippleFactory();
 
   @override
   InteractiveInkFeature create({
@@ -58,7 +58,7 @@ class _ListTileInkRippleFactory extends InteractiveInkFeatureFactory {
     double radius,
     VoidCallback onRemoved,
   }) {
-    return ListTileInkRipple(
+    return NFListTileInkRipple(
       controller: controller,
       referenceBox: referenceBox,
       position: position,
@@ -96,7 +96,7 @@ class _ListTileInkRippleFactory extends InteractiveInkFeatureFactory {
 ///  * [Material], which is the widget on which the ink splash is painted.
 ///  * [InkHighlight], which is an ink feature that emphasizes a part of a
 ///    [Material].
-class ListTileInkRipple extends InteractiveInkFeature {
+class NFListTileInkRipple extends InteractiveInkFeature {
   /// Begin a ripple, centered at [position] relative to [referenceBox].
   ///
   /// The [controller] argument is typically obtained via
@@ -112,7 +112,7 @@ class ListTileInkRipple extends InteractiveInkFeature {
   /// This is the default.
   ///
   /// When the ripple is removed, [onRemoved] will be called.
-  ListTileInkRipple({
+  NFListTileInkRipple({
     @required MaterialInkController controller,
     @required RenderBox referenceBox,
     @required Offset position,
@@ -199,7 +199,7 @@ class ListTileInkRipple extends InteractiveInkFeature {
   /// Used to specify this type of ink splash for an [InkWell], [InkResponse]
   /// or material [Theme].
   static const InteractiveInkFeatureFactory splashFactory =
-      _ListTileInkRippleFactory();
+      _NFListTileInkRippleFactory();
 
   static final Animatable<double> _easeCurveTween =
       CurveTween(curve: Curves.easeOutCubic);

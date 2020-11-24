@@ -290,7 +290,6 @@ class NFIconButton extends StatelessWidget {
 
     /// Max size of [size] and [iconSize]
     final maxSize = math.max(size, iconSize);
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
 
     return Semantics(
       button: true,
@@ -302,7 +301,7 @@ class NFIconButton extends StatelessWidget {
           width: maxSize,
           height: maxSize,
           child: InkWell(
-            splashFactory: IconButtonInkRipple.splashFactory(radius: size / 2),
+            splashFactory: NFIconButtonInkRipple.splashFactory(radius: size / 2),
             focusNode: focusNode,
             autofocus: autofocus,
             canRequestFocus: onPressed != null,

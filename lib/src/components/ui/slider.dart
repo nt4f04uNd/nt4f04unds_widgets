@@ -4,11 +4,10 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'package:flutter/material.dart';
-import 'package:nt4f04unds_widgets/src/constants.dart';
 
 /// Creates slider with labels of min and max values
-class LabelledSlider extends StatelessWidget {
-  const LabelledSlider({
+class NFLabelledSlider extends StatelessWidget {
+  const NFLabelledSlider({
     Key key,
     @required this.value,
     @required this.onChanged,

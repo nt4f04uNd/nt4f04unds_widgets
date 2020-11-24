@@ -46,9 +46,7 @@ class NFTab extends StatelessWidget {
     this.iconMargin = const EdgeInsets.only(bottom: 10.0),
     this.child,
   })  : assert(text != null || child != null || icon != null),
-        assert(!(text != null &&
-            null !=
-                child)), // TODO(goderbauer): https://github.com/dart-lang/sdk/issues/34180
+        assert(text == null || child == null),
         super(key: key);
 
   /// The text to display as the tab's label.
@@ -1039,7 +1037,7 @@ class _IndicatorPainter extends CustomPainter {
     }
 
     // return Rect.fromLTWH(tabLeft, 0.0, tabRight - tabLeft, tabBarSize.height);
-    // TODO: !!!!!!!!!!!!!!!!!!!
+    // TODO: PR to flutter with adding border radius to decoration, single bar and tabbar paddings.
     return Rect.fromLTWH(
         tabLeft, 0.0 + tabBarSize.height - 4, tabRight - tabLeft, 4);
   }

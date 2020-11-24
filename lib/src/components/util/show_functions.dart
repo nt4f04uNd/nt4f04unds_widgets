@@ -29,7 +29,7 @@ class NFShowFunctions {
   /// Calls [showGeneralDialog] function from Flutter material library to show a message to user (only accept button).
   ///
   /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [Constants.AppSystemUIThemes.modal].
-  Future<dynamic> showAlert(
+  Future<T> showAlert<T>(
     BuildContext context, {
     Widget title,
     Widget content,
@@ -39,9 +39,10 @@ class NFShowFunctions {
     List<Widget> additionalActions,
     SystemUiOverlayStyle ui,
   }) async {
+    final l10n = NFLocalizations.of(context);
     title ??= Text(l10n.warning);
-    acceptButton ??= DialogButton.accept(text: l10n.close);
-    return showDialog(
+    acceptButton ??= NFDialogButton.accept(text: l10n.close);
+    return showDialog<T>(
       context,
       title: title,
       content: content,
@@ -56,7 +57,7 @@ class NFShowFunctions {
   /// Calls [showGeneralDialog] function from Flutter material library to show a dialog to user (accept and decline buttons).
   ///
   /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [Constants.AppSystemUIThemes.modal].
-  Future<dynamic> showDialog(
+  Future<T> showDialog<T>(
     BuildContext context, {
     @required Widget title,
     Widget content,
@@ -71,24 +72,22 @@ class NFShowFunctions {
   }) async {
     assert(title != null);
 
-    var prevUi;
-    if (ui != null) {
-      prevUi = SystemUiControl.ui;
-    }
+    ui ??= NFWidgets.defaultModalSystemUiStyle;
+    final lastUi = NFSystemUiControl.lastUi;
 
     // Animate ui on open.
-    SystemUiControl.animateSystemUiOverlay(to: ui);
+    NFSystemUiControl.animateSystemUiOverlay(to: ui);
 
-    acceptButton ??= DialogButton.accept();
+    acceptButton ??= NFDialogButton.accept();
     if (!hideDeclineButton) {
-      declineButton ??= DialogButton.cancel();
+      declineButton ??= NFDialogButton.cancel();
     }
 
-    final closeFuture = flutter.showGeneralDialog(
+    return flutter.showGeneralDialog<T>(
       barrierColor: Colors.black54,
       transitionDuration: Constants.routeTransitionDuration,
       barrierDismissible: true,
-      barrierLabel: 'SMMAlertDialog',
+      barrierLabel: 'NFAlertDialog',
       context: context,
       transitionBuilder: (context, animation, secondaryAnimation, child) {
         final scaleAnimation = Tween(begin: 0.9, end: 1.0).animate(
@@ -114,99 +113,103 @@ class NFShowFunctions {
         );
       },
       pageBuilder: (context, animation, secondaryAnimation) {
-        return SafeArea(
-          child: AlertDialog(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            contentPadding: EdgeInsets.zero,
-            titlePadding: EdgeInsets.zero,
-            contentTextStyle: Theme.of(context).textTheme.subtitle1.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15.0,
+        return RouteAwareWidget(
+          onPopNext: () {
+            // Animate ui when the route on top pops.
+            NFSystemUiControl.animateSystemUiOverlay(to: ui);
+          },
+          onPop: () {
+            // Animate ui after sheet been closed.
+            NFSystemUiControl.animateSystemUiOverlay(to: lastUi);
+          },
+          child: SafeArea(
+            child: AlertDialog(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              contentPadding: EdgeInsets.zero,
+              titlePadding: EdgeInsets.zero,
+              contentTextStyle: Theme.of(context).textTheme.subtitle1.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15.0,
+                  ),
+              titleTextStyle: Theme.of(context).textTheme.headline5.copyWith(
+                  fontWeight: FontWeight.w700, fontSize: 20.0, height: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(borderRadius),
                 ),
-            titleTextStyle: Theme.of(context).textTheme.headline5.copyWith(
-                fontWeight: FontWeight.w700, fontSize: 20.0, height: 1.5),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(borderRadius),
               ),
-            ),
-            title: Container(
-              padding: titlePadding,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(borderRadius),
-                  topRight: Radius.circular(borderRadius),
+              title: Container(
+                padding: titlePadding,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(borderRadius),
+                    topRight: Radius.circular(borderRadius),
+                  ),
                 ),
+                child: title,
               ),
-              child: title,
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                //  widget(child: content),
-                if (content != null)
-                  Flexible(
-                    child: Padding(
-                      padding: contentPadding,
-                      child: NFScrollbar(
-                        thickness: 5.0,
-                        child: SingleChildScrollView(
-                          child: content,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  //  widget(child: content),
+                  if (content != null)
+                    Flexible(
+                      child: Padding(
+                        padding: contentPadding,
+                        child: NFScrollbar(
+                          thickness: 5.0,
+                          child: SingleChildScrollView(
+                            child: content,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                Material(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(borderRadius),
-                    bottomRight: Radius.circular(borderRadius),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 14.0, right: 14.0, bottom: 10.0),
-                    child: Row(
-                      mainAxisAlignment: additionalActions == null
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        if (additionalActions != null)
+                  Material(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(borderRadius),
+                      bottomRight: Radius.circular(borderRadius),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 14.0, right: 14.0, bottom: 10.0),
+                      child: Row(
+                        mainAxisAlignment: additionalActions == null
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          if (additionalActions != null)
+                            ButtonBar(
+                              buttonPadding: EdgeInsets.zero,
+                              alignment: MainAxisAlignment.start,
+                              children: additionalActions,
+                            ),
                           ButtonBar(
                             buttonPadding: EdgeInsets.zero,
-                            alignment: MainAxisAlignment.start,
-                            children: additionalActions,
+                            mainAxisSize: MainAxisSize.min,
+                            alignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              acceptButton,
+                              if (!hideDeclineButton)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: declineButton,
+                                )
+                            ],
                           ),
-                        ButtonBar(
-                          buttonPadding: EdgeInsets.zero,
-                          mainAxisSize: MainAxisSize.min,
-                          alignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            acceptButton,
-                            if (!hideDeclineButton)
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: declineButton,
-                              )
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
       },
     );
-    () async {
-      await closeFuture;
-      // Animate ui after sheet been closed.
-      await SystemUiControl.animateSystemUiOverlay(to: prevUi);
-    }();
-    return closeFuture;
   }
 
   /// Calls [showBottomSheet], but also handles system UI animations to the custom [ui] and out of it on pop.
@@ -221,18 +224,20 @@ class NFShowFunctions {
     ShapeBorder shape,
     Clip clipBehavior,
   }) {
-    var prevUi;
-    if (ui != null) {
-      prevUi = SystemUiControl.ui;
-    }
+    ui ??= NFWidgets.defaultBottomSheetSystemUiStyle;
+    final lastUi = NFSystemUiControl.lastUi;
     // Animate ui on open.
-    SystemUiControl.animateSystemUiOverlay(to: ui);
-    final controller = flutter.showBottomSheet<T>(
+    NFSystemUiControl.animateSystemUiOverlay(to: ui);
+    return flutter.showBottomSheet<T>(
       context: context,
       builder: (context) => RouteAwareWidget(
         onPopNext: () {
           // Animate ui when the route on top pops.
-          SystemUiControl.animateSystemUiOverlay(to: ui);
+          NFSystemUiControl.animateSystemUiOverlay(to: ui);
+        },
+        onPop: () {
+          // Animate ui after sheet been closed.
+          NFSystemUiControl.animateSystemUiOverlay(to: lastUi);
         },
         child: builder(context),
       ),
@@ -241,14 +246,6 @@ class NFShowFunctions {
       shape: shape,
       clipBehavior: clipBehavior,
     );
-    if (ui != null) {
-      () async {
-        await controller.closed;
-        // Animate ui after sheet been closed.
-        SystemUiControl.animateSystemUiOverlay(to: prevUi);
-      }();
-    }
-    return controller;
   }
 
   /// Calls [showModalBottomSheet], but also handles system UI animations to the custom [ui] and out of it on pop.
@@ -269,18 +266,20 @@ class NFShowFunctions {
     bool enableDrag = true,
     RouteSettings routeSettings,
   }) {
-    var prevUi;
-    if (ui != null) {
-      prevUi = SystemUiControl.ui;
-    }
+    ui ??= NFWidgets.defaultBottomSheetSystemUiStyle;
+    final lastUi = NFSystemUiControl.lastUi;
     // Animate ui on open.
-    SystemUiControl.animateSystemUiOverlay(to: ui);
-    final closeFuture = flutter.showModalBottomSheet<T>(
+    NFSystemUiControl.animateSystemUiOverlay(to: ui);
+    return flutter.showModalBottomSheet<T>(
       context: context,
       builder: (context) => RouteAwareWidget(
         onPopNext: () {
           // Animate ui when the route on top pops.
-          SystemUiControl.animateSystemUiOverlay(to: ui);
+          NFSystemUiControl.animateSystemUiOverlay(to: ui);
+        },
+        onPop: () {
+          // Animate ui after sheet been closed.
+          NFSystemUiControl.animateSystemUiOverlay(to: lastUi);
         },
         child: builder(context),
       ),
@@ -295,13 +294,5 @@ class NFShowFunctions {
       enableDrag: enableDrag,
       routeSettings: routeSettings,
     );
-    if (ui != null) {
-      () async {
-        await closeFuture;
-        // Animate ui after sheet been closed.
-        SystemUiControl.animateSystemUiOverlay(to: prevUi);
-      }();
-    }
-    return closeFuture;
   }
 }

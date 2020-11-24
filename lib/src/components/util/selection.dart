@@ -12,24 +12,24 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const Duration kNFSelectionDuration = Duration(milliseconds: 500);
 
-typedef StatusListener(SelectionStatus status);
-enum SelectionStatus {
+typedef void NFSelectionStatusListener(NFSelectionStatus status);
+enum NFSelectionStatus {
   inSelection,
   selecting,
   unselecting,
   notInSelection,
 }
 
-/// A mixin that implements the addStatusListener/removeStatusListener protocol
-/// and notifies all the registered listeners when notifyStatusListeners is
+/// A mixin that implements the [addStatusListener]/[removeStatusListener] protocol
+/// and notifies all the registered listeners when [notifyStatusListeners] is
 /// called.
 ///
 /// This mixin requires that the mixing class provide methods [didRegisterListener]
 /// and [didUnregisterListener]. Implementations of these methods can be obtained
 /// by mixing in another mixin from this library, such as [AnimationLazyListenerMixin].
-mixin SelectionStatusListenersMixin {
-  final ObserverList<StatusListener> _statusListeners =
-      ObserverList<StatusListener>();
+mixin NFSelectionStatusListenersMixin {
+  final ObserverList<NFSelectionStatusListener> _statusListeners =
+      ObserverList<NFSelectionStatusListener>();
 
   /// Called immediately before a status listener is added via [addStatusListener].
   ///
@@ -46,7 +46,7 @@ mixin SelectionStatusListenersMixin {
   /// Calls listener every time the status of the selection changes.
   ///
   /// Listeners can be removed with [removeStatusListener].
-  void addStatusListener(StatusListener listener) {
+  void addStatusListener(NFSelectionStatusListener listener) {
     didRegisterListener();
     _statusListeners.add(listener);
   }
@@ -54,7 +54,7 @@ mixin SelectionStatusListenersMixin {
   /// Stops calling the listener every time the status of the selection changes.
   ///
   /// Listeners can be added with [addStatusListener].
-  void removeStatusListener(StatusListener listener) {
+  void removeStatusListener(NFSelectionStatusListener listener) {
     final bool removed = _statusListeners.remove(listener);
     if (removed) {
       didUnregisterListener();
@@ -65,10 +65,10 @@ mixin SelectionStatusListenersMixin {
   ///
   /// If listeners are added or removed during this function, the modifications
   /// will not change which listeners are called during this iteration.
-  void notifyStatusListeners(SelectionStatus status) {
-    final List<StatusListener> localListeners =
-        List<StatusListener>.from(_statusListeners);
-    for (final StatusListener listener in localListeners) {
+  void notifyStatusListeners(NFSelectionStatus status) {
+    final List<NFSelectionStatusListener> localListeners =
+        List<NFSelectionStatusListener>.from(_statusListeners);
+    for (final NFSelectionStatusListener listener in localListeners) {
       if (_statusListeners.contains(listener)) listener(status);
     }
   }
@@ -83,33 +83,33 @@ mixin SelectionStatusListenersMixin {
 /// Status listeners will notify about in selection state change.
 ///
 /// Listeners will notify about add/remove selection events.
-class SelectionController<T>
+class NFSelectionController<T>
     with
         AnimationLocalListenersMixin,
         AnimationEagerListenerMixin,
-        SelectionStatusListenersMixin {
-  SelectionController({
+        NFSelectionStatusListenersMixin {
+  NFSelectionController({
     @required this.selectionSet,
     @required this.animationController,
     @required this.switcher,
   }) {
     animationController?.addStatusListener((status) {
-      SelectionStatus localStatus;
+      NFSelectionStatus localStatus;
 
       switch (status) {
         case AnimationStatus.forward:
           _wasEverSelected = true;
-          localStatus = SelectionStatus.selecting;
+          localStatus = NFSelectionStatus.selecting;
           break;
         case AnimationStatus.completed:
-          localStatus = SelectionStatus.inSelection;
+          localStatus = NFSelectionStatus.inSelection;
           break;
         case AnimationStatus.reverse:
-          localStatus = SelectionStatus.unselecting;
+          localStatus = NFSelectionStatus.unselecting;
           break;
         case AnimationStatus.dismissed:
           selectionSet.clear();
-          localStatus = SelectionStatus.notInSelection;
+          localStatus = NFSelectionStatus.notInSelection;
           break;
       }
 
@@ -120,25 +120,25 @@ class SelectionController<T>
   final AnimationController animationController;
   final IntSwitcher switcher;
   final Set<T> selectionSet;
-  SelectionStatus _status = SelectionStatus.notInSelection;
+  NFSelectionStatus _status = NFSelectionStatus.notInSelection;
   bool _wasEverSelected = false;
   int _prevSetLength = 0;
 
   /// Current selection status
-  SelectionStatus get status => _status;
+  NFSelectionStatus get status => _status;
 
   /// Returns true if controller was never in the [inSelection] state
   bool get wasEverSelected => _wasEverSelected;
 
-  /// Whether controller is in [SelectionStatus.inSelection] or [SelectionStatus.selecting]
+  /// Whether controller is in [NFSelectionStatus.inSelection] or [NFSelectionStatus.selecting]
   bool get inSelection =>
-      _status == SelectionStatus.inSelection ||
-      _status == SelectionStatus.selecting;
+      _status == NFSelectionStatus.inSelection ||
+      _status == NFSelectionStatus.selecting;
 
-  /// Whether controller is in [SelectionStatus.notInSelection] or [SelectionStatus.unselecting]
+  /// Whether controller is in [NFSelectionStatus.notInSelection] or [NFSelectionStatus.unselecting]
   bool get notInSelection =>
-      _status == SelectionStatus.notInSelection ||
-      _status == SelectionStatus.unselecting;
+      _status == NFSelectionStatus.notInSelection ||
+      _status == NFSelectionStatus.unselecting;
 
   /// Returns true when current selection set length is greater or equal than the previous.
   ///

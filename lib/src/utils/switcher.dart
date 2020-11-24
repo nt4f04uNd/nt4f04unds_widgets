@@ -4,15 +4,15 @@
 *--------------------------------------------------------------------------------------------*/
 
 /// A switcher interface
-abstract class Switcher<T> {
-  Switcher(T value) : _value = value;
+abstract class NFSwitcher<T> {
+  NFSwitcher(T value) : _value = value;
   T _value;
   T get value => _value;
   void change();
 }
 
 // Switches sequentially until 999, then goes back to 0
-class IntSwitcher extends Switcher<int> {
+class IntSwitcher extends NFSwitcher<int> {
   IntSwitcher([int value = 0]) : super(value);
 
   /// Iteratively changes [value].
@@ -23,4 +23,3 @@ class IntSwitcher extends Switcher<int> {
       _value = 0;
   }
 }
-

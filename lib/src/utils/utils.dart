@@ -10,6 +10,6 @@ export 'types.dart';
 import 'package:flutter/scheduler.dart';
 
 /// Function to slow down duration by [timeDilation]
-Duration applyDilation(Duration duration) {
+Duration dilate(Duration duration) {
   return duration * timeDilation;
 }

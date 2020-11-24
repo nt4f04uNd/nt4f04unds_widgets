@@ -12,7 +12,7 @@ import 'package:nt4f04unds_widgets/src/constants.dart';
 class SelectionAppBar extends AppBar {
   SelectionAppBar({
     Key key,
-    @required SelectionController selectionController,
+    @required NFSelectionController selectionController,
     @required Widget title,
 
     /// Title to show in selection
@@ -50,8 +50,8 @@ class SelectionAppBar extends AppBar {
           key: key,
           leading: Builder(
             builder: (BuildContext context) {
-              return AnimatedMenuCloseButton(
-                guideAnimation: selectionController.animationController,
+              return NFAnimatedMenuCloseButton(
+                animation: selectionController.animationController,
                 onCloseClick: selectionController.close,
                 onMenuClick: () {
                   Scaffold.of(context).openDrawer();
@@ -59,7 +59,7 @@ class SelectionAppBar extends AppBar {
               );
             },
           ),
-          title: AnimationSwitcher(
+          title: NFAnimationSwitcher(
             animation: CurvedAnimation(
               curve: curve,
               reverseCurve: reverseCurve,
@@ -71,7 +71,7 @@ class SelectionAppBar extends AppBar {
           actions: <Widget>[
             Padding(
               padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-              child: AnimationSwitcher(
+              child: NFAnimationSwitcher(
                 animation: CurvedAnimation(
                   curve: curve,
                   reverseCurve: reverseCurve,
@@ -102,22 +102,22 @@ class SelectionAppBar extends AppBar {
         );
 }
 
-class AnimatedMenuCloseButton extends StatefulWidget {
-  AnimatedMenuCloseButton({
+class NFAnimatedMenuCloseButton extends StatefulWidget {
+  NFAnimatedMenuCloseButton({
     Key key,
-    @required this.guideAnimation,
+    @required this.animation,
     this.iconSize,
     this.size,
     this.iconColor,
     this.onMenuClick,
     this.onCloseClick,
-  })  : assert(guideAnimation != null),
+  })  : assert(animation != null),
         super(key: key);
 
   /// Animation controller that this button will listen to and animate together.
   ///
   /// This can't be used to control the exact animation of the buttun, though.
-  final Animation guideAnimation;
+  final Animation animation;
   final double iconSize;
   final double size;
   final Color iconColor;
@@ -128,10 +128,11 @@ class AnimatedMenuCloseButton extends StatefulWidget {
   /// Handle click when close icon is shown
   final Function onCloseClick;
 
-  AnimatedMenuCloseButtonState createState() => AnimatedMenuCloseButtonState();
+  NFAnimatedMenuCloseButtonState createState() =>
+      NFAnimatedMenuCloseButtonState();
 }
 
-class AnimatedMenuCloseButtonState extends State<AnimatedMenuCloseButton>
+class NFAnimatedMenuCloseButtonState extends State<NFAnimatedMenuCloseButton>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation<double> animation;
@@ -142,12 +143,12 @@ class AnimatedMenuCloseButtonState extends State<AnimatedMenuCloseButton>
     controller =
         AnimationController(vsync: this, duration: kNFSelectionDuration);
     animation = Tween(begin: 0.0, end: 1.0).animate(
-      DefaultAnimation(parent: controller),
+      NFDefaultAnimation(parent: controller),
     );
 
-    widget.guideAnimation.addStatusListener(_handleGuideStatusChange);
+    widget.animation.addStatusListener(_handleGuideStatusChange);
 
-    final guideStatus = widget.guideAnimation.status;
+    final guideStatus = widget.animation.status;
     if (guideStatus == AnimationStatus.forward ||
         guideStatus == AnimationStatus.reverse) {
       controller.forward();
@@ -159,6 +160,7 @@ class AnimatedMenuCloseButtonState extends State<AnimatedMenuCloseButton>
 
   @override
   void dispose() {
+    widget.animation.removeStatusListener(_handleGuideStatusChange);
     controller.dispose();
     super.dispose();
   }
@@ -173,20 +175,19 @@ class AnimatedMenuCloseButtonState extends State<AnimatedMenuCloseButton>
 
   @override
   Widget build(BuildContext context) {
-    final showClose = widget.guideAnimation.isCompleted ||
-        widget.guideAnimation.status == AnimationStatus.forward;
+    final showClose = widget.animation.isCompleted ||
+        widget.animation.status == AnimationStatus.forward;
+    final theme = Theme.of(context);
     return AnimatedBuilder(
       animation: controller,
       builder: (BuildContext context, Widget child) => NFIconButton(
         size: widget.size ?? Constants.iconButtonSize,
         iconSize: widget.iconSize ?? Constants.iconSize,
-        color: Theme.of(context).colorScheme.onSurface,
+        color: theme.colorScheme.onSurface,
         onPressed: showClose ? widget.onCloseClick : widget.onMenuClick,
         icon: AnimatedIcon(
           icon: showClose ? AnimatedIcons.menu_close : AnimatedIcons.close_menu,
           color: widget.iconColor,
-          // FIXME: this
-          //  ?? Constants.AppTheme.playPauseIcon.auto(context),
           progress: animation,
         ),
       ),

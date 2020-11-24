@@ -5,9 +5,10 @@
 
 import 'package:flutter/material.dart';
 
-/// A widget that shows a widget and when it changes, based on given conditions,
-/// it will perform top-to-down stack/fade animation (usually, when, e.g. new number is greater than the prev),
-/// or same down-to-bot animation
+/// A widget that will perform 'top-to-down' stack/fade animation
+/// based on some given [valueIncreased] condition
+/// (e.g., when, new number is greater than the prev),
+/// or same 'down-to-bot' animation
 ///
 /// Perfect for showing number counters.
 class CountSwitcher extends StatelessWidget {

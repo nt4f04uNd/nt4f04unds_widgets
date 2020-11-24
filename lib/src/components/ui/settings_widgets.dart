@@ -5,9 +5,9 @@
 
 import 'package:flutter/material.dart';
 
-/// Creates a setting item with [title], [description] and [content] sections
-class SettingItem extends StatelessWidget {
-  const SettingItem({
+/// Creates a setting item with [title], [description] and [content] sections.
+class NFSettingItem extends StatelessWidget {
+  const NFSettingItem({
     Key key,
     @required this.title,
     this.description,
@@ -73,8 +73,8 @@ class SettingItem extends StatelessWidget {
 /// Can be used to make "save" buttons, for example.
 ///
 /// The [child] is untouchable in the animation.
-class ChangedSwitcher extends StatefulWidget {
-  ChangedSwitcher({
+class NFChangedSwitcher extends StatefulWidget {
+  NFChangedSwitcher({
     Key key,
     this.changed,
     this.child,
@@ -88,10 +88,10 @@ class ChangedSwitcher extends StatefulWidget {
   final Widget child;
 
   @override
-  _ChangedSwitcherState createState() => _ChangedSwitcherState();
+  _NFChangedSwitcherState createState() => _NFChangedSwitcherState();
 }
 
-class _ChangedSwitcherState extends State<ChangedSwitcher> {
+class _NFChangedSwitcherState extends State<NFChangedSwitcher> {
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(

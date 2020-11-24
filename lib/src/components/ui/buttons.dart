@@ -9,8 +9,8 @@ import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// Creates [Raised] with border radius, by default colored into main app color
-class PrimaryRaisedButton extends StatelessWidget {
-  const PrimaryRaisedButton({
+class NFPrimaryRaisedButton extends StatelessWidget {
+  const NFPrimaryRaisedButton({
     Key key,
     @required this.text,
     @required this.onPressed,
@@ -42,7 +42,7 @@ class PrimaryRaisedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(context).copyWith(
-        splashFactory: ListTileInkRipple.splashFactory,
+        splashFactory: NFListTileInkRipple.splashFactory,
       ),
       child: RaisedButton(
         key: key,
@@ -83,19 +83,19 @@ class PrimaryRaisedButton extends StatelessWidget {
 
 enum _DialogRaisedButtonFlavours { accept, cancel }
 
-/// Possible appearance variants for [DialogButton].
-enum DialogButtonVariant { raised, flat }
+/// Possible appearance variants for [NFDialogButton].
+enum NFDialogButtonVariant { raised, flat }
 
-const kDefaultDialogButtonVariant = DialogButtonVariant.flat;
+const kDefaultNFDialogButtonVariant = NFDialogButtonVariant.flat;
 
 /// Creates button to use in dialogs.
-class DialogButton extends StatelessWidget {
-  const DialogButton({
+class NFDialogButton extends StatelessWidget {
+  const NFDialogButton({
     Key key,
     this.text,
     this.textStyle,
     this.color,
-    this.variant = kDefaultDialogButtonVariant,
+    this.variant = kDefaultNFDialogButtonVariant,
     this.padding = const EdgeInsets.symmetric(horizontal: 15.0),
     this.borderRadius = 15.0,
     this.onPressed,
@@ -104,13 +104,13 @@ class DialogButton extends StatelessWidget {
 
   /// Applies a specific flavour to button to restyle it later.
   /// Primarily needed to get localizations, because they require build context.
-  DialogButton._createFlavour({
+  NFDialogButton._createFlavour({
     @required _DialogRaisedButtonFlavours flavour,
     Key key,
     this.text,
     this.textStyle,
     this.color,
-    this.variant = kDefaultDialogButtonVariant,
+    this.variant = kDefaultNFDialogButtonVariant,
     this.padding = const EdgeInsets.symmetric(horizontal: 15.0),
     this.borderRadius = 15.0,
     this.onPressed,
@@ -123,7 +123,7 @@ class DialogButton extends StatelessWidget {
   final Color color;
 
   /// Control the appearance of the button.
-  final DialogButtonVariant variant;
+  final NFDialogButtonVariant variant;
   final EdgeInsets padding;
   final double borderRadius;
 
@@ -136,12 +136,12 @@ class DialogButton extends StatelessWidget {
   /// Constructs an accept button.
   ///
   /// `true` will be always passed to [Navigator.maybePop()] call.
-  factory DialogButton.accept({
+  factory NFDialogButton.accept({
     String text,
     Function onPressed,
-    DialogButtonVariant variant = kDefaultDialogButtonVariant,
+    NFDialogButtonVariant variant = kDefaultNFDialogButtonVariant,
   }) {
-    return DialogButton._createFlavour(
+    return NFDialogButton._createFlavour(
       text: text,
       variant: variant,
       flavour: _DialogRaisedButtonFlavours.accept,
@@ -157,12 +157,12 @@ class DialogButton extends StatelessWidget {
   /// Constructs a cancel button.
   ///
   /// `false` will be always passed to [Navigator.maybePop()] call.
-  factory DialogButton.cancel({
+  factory NFDialogButton.cancel({
     String text,
     Function onPressed,
-    DialogButtonVariant variant = kDefaultDialogButtonVariant,
+    NFDialogButtonVariant variant = kDefaultNFDialogButtonVariant,
   }) {
-    return DialogButton._createFlavour(
+    return NFDialogButton._createFlavour(
       text: text,
       variant: variant,
       flavour: _DialogRaisedButtonFlavours.cancel,
@@ -179,6 +179,7 @@ class DialogButton extends StatelessWidget {
 
   /// Returns localized button text based on the button flavour.
   String _getDefaultButtonText(BuildContext context) {
+    final l10n = NFLocalizations.of(context);
     switch (_flavour) {
       case _DialogRaisedButtonFlavours.accept:
         return l10n.accept;
@@ -199,7 +200,7 @@ class DialogButton extends StatelessWidget {
 
   Widget _buildButton(BuildContext context) {
     switch (variant) {
-      case DialogButtonVariant.raised:
+      case NFDialogButtonVariant.raised:
         return RaisedButton(
           splashColor: Colors.black.withOpacity(0.18),
           child: Text(
@@ -214,7 +215,7 @@ class DialogButton extends StatelessWidget {
           ),
           onPressed: () => _handleOnPressed(context),
         );
-      case DialogButtonVariant.flat:
+      case NFDialogButtonVariant.flat:
         return FlatButton(
           splashColor: Theme.of(context).splashColor,
           child: Text(
@@ -237,7 +238,7 @@ class DialogButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(context).copyWith(
-        splashFactory: ListTileInkRipple.splashFactory,
+        splashFactory: NFListTileInkRipple.splashFactory,
       ),
       child: _buildButton(context),
     );
@@ -273,8 +274,8 @@ class NFBackButton extends StatelessWidget {
   }
 }
 
-class CopyButton extends StatelessWidget {
-  const CopyButton({
+class NFCopyButton extends StatelessWidget {
+  const NFCopyButton({
     Key key,
     this.size = 44.0,
     @required this.text,
@@ -285,6 +286,7 @@ class CopyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = NFLocalizations.of(context);
     return NFIconButton(
       icon: const Icon(Icons.content_copy_rounded),
       size: size,
@@ -294,9 +296,9 @@ class CopyButton extends StatelessWidget {
               Clipboard.setData(
                 ClipboardData(text: text),
               );
-              SnackBarControl.showSnackBar(
+              NFSnackbarControl.showSnackbar(
                 NFSnackbarSettings(
-                  child: NFSnackBar(
+                  child: NFSnackbar(
                     message: l10n.copied,
                     messagePadding: const EdgeInsets.only(left: 8.0),
                     leading: Icon(
@@ -313,8 +315,8 @@ class CopyButton extends StatelessWidget {
 
 /// An information button.
 /// On click creates an alert with information
-class InfoButton extends StatelessWidget {
-  const InfoButton({
+class NFInfoButton extends StatelessWidget {
+  const NFInfoButton({
     Key key,
     this.size = 44.0,
     @required this.info,
@@ -329,6 +331,7 @@ class InfoButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = NFLocalizations.of(context);
     return NFIconButton(
       icon: const Icon(Icons.info_outline_rounded),
       size: size,

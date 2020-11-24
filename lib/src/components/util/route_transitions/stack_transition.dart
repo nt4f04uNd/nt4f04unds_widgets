@@ -9,12 +9,9 @@ import 'route_transitions.dart';
 /// Creates customizable stack route transition (basically, one route slides over another)
 ///
 /// Slides from right to left by default
-class StackRouteTransition<T extends Widget, RouteT extends dynamic>
-    extends RouteTransition<T, RouteT> {
+class StackRouteTransition<T extends Widget> extends RouteTransition<T> {
   @override
   final T route;
-  @override
-  final RouteT routeType;
   @override
   BoolFunction checkEntAnimationEnabled;
   @override
@@ -28,11 +25,9 @@ class StackRouteTransition<T extends Widget, RouteT extends dynamic>
   @override
   final Curve exitReverseCurve;
   @override
-  final bool entIgnoreEventsForward;
+  final bool entIgnore;
   @override
-  final bool exitIgnoreEventsForward;
-  @override
-  final bool exitIgnoreEventsReverse;
+  final bool exitIgnore;
   @override
   UIFunction checkSystemUi;
 
@@ -58,28 +53,28 @@ class StackRouteTransition<T extends Widget, RouteT extends dynamic>
 
   StackRouteTransition({
     @required this.route,
-    this.routeType,
-    this.checkEntAnimationEnabled = defBoolFunc,
-    this.checkExitAnimationEnabled = defBoolFunc,
+    this.checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    this.checkExitAnimationEnabled = defRouteTransitionBoolFunc,
     this.entCurve = Curves.linearToEaseOut,
     this.entReverseCurve = Curves.easeInToLinear,
     this.exitCurve = Curves.linearToEaseOut,
     this.exitReverseCurve = Curves.easeInToLinear,
-    this.entIgnoreEventsForward = false,
-    this.exitIgnoreEventsForward = false,
-    this.exitIgnoreEventsReverse = false,
+    this.entIgnore = false,
+    this.exitIgnore = false,
     this.checkSystemUi,
     this.entBegin = const Offset(1.0, 0.0),
     this.entEnd = Offset.zero,
     this.exitBegin = Offset.zero,
     this.exitEnd = const Offset(-0.2, 0.0),
     Duration transitionDuration = kNFRouteTransitionDuration,
+    Duration reverseTransitionDuration = kNFRouteTransitionDuration,
     RouteSettings settings,
     bool opaque = true,
     bool maintainState = false,
   }) : super(
           route: route,
           transitionDuration: transitionDuration,
+          reverseTransitionDuration: reverseTransitionDuration,
           settings: settings,
           opaque: opaque,
           maintainState: maintainState,

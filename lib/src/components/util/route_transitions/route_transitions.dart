@@ -17,20 +17,25 @@ import 'package:flutter/services.dart';
 
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-// TODO: [NR] add transitionDuration parameter for the ui animation (and for secondary animation too)
+
+// todo: [NR] add transitionDuration parameter for the ui animation (and for secondary animation too)
+// and allow ui animation customization on whole
+// todo: rewrite either allow both, instead of animating the ui with `animateSystemUiOverlay`, bind it to the route animations instead
 
 const Duration kNFRouteTransitionDuration = const Duration(milliseconds: 240);
 
 /// Type for function that returns boolean
+/// 
+/// todo: to seprate file
 typedef bool BoolFunction();
 
-/// Needed to define constant [defBoolFunc]
-bool _trueFunc() {
-  return true;
-}
+/// Needed to define constant [defRouteTransitionBoolFunc]
+/// 
+/// todo: to seprate file
+bool trueFunc() => true;
 
 /// Used as default bool function in [RouteTransition]
-const BoolFunction defBoolFunc = _trueFunc;
+const BoolFunction defRouteTransitionBoolFunc = trueFunc;
 
 /// Type for function that returns [SystemUiOverlayStyle]
 typedef SystemUiOverlayStyle UIFunction();
@@ -47,12 +52,8 @@ final Tween<double> exitRevDimTween = Tween<double>(begin: 1.0, end: 0.93);
 final Tween<double> constTween = Tween<double>(begin: 1.0, end: 1.0);
 
 /// Abstract class to create various route transitions
-abstract class RouteTransition<T extends Widget, RouteT extends dynamic>
-    extends PageRouteBuilder<T> {
+abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   final T route;
-
-  /// Needed to identify the route
-  final RouteT routeType;
 
   /// Function that checks whether to play enter animation or not
   ///
@@ -84,20 +85,19 @@ abstract class RouteTransition<T extends Widget, RouteT extends dynamic>
   /// Defaults to [Curves.easeInToLinear]
   final Curve exitReverseCurve;
 
-  /// Whether to ignore touch events while enter forward animation
+  /// Whether to ignore touch events while enter forward animation.
   ///
-  /// Defaults to false
-  final bool entIgnoreEventsForward;
-
-  /// Whether to ignore touch events while exit forward animation
+  /// The reverse one is ignored by me, becuse it doesn't register taps, only drags and this behaviour is pointless.
   ///
-  /// Defaults to false
-  final bool exitIgnoreEventsForward;
+  /// Defaults to `false`
+  final bool entIgnore;
 
   /// Whether to ignore touch events while exit reverse animation
   ///
-  /// Defaults to false
-  final bool exitIgnoreEventsReverse;
+  /// The forward one is ignored by the framework and it's not possible to change that.
+  ///
+  /// Defaults to `false`
+  final bool exitIgnore;
 
   /// Function to get system Ui to be set when navigating to route
   ///
@@ -129,18 +129,18 @@ abstract class RouteTransition<T extends Widget, RouteT extends dynamic>
 
   RouteTransition({
     @required this.route,
-    this.routeType,
-    this.checkEntAnimationEnabled = defBoolFunc,
-    this.checkExitAnimationEnabled = defBoolFunc,
+
+    this.checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    this.checkExitAnimationEnabled = defRouteTransitionBoolFunc,
     this.entCurve = Curves.linearToEaseOut,
     this.entReverseCurve = Curves.easeInToLinear,
     this.exitCurve = Curves.linearToEaseOut,
     this.exitReverseCurve = Curves.easeInToLinear,
-    this.entIgnoreEventsForward = false,
-    this.exitIgnoreEventsForward = false,
-    this.exitIgnoreEventsReverse = false,
+    this.entIgnore = false,
+    this.exitIgnore = false,
     this.checkSystemUi,
     Duration transitionDuration = kNFRouteTransitionDuration,
+    Duration reverseTransitionDuration = kNFRouteTransitionDuration,
     RouteSettings settings,
     bool opaque = true,
     bool maintainState = false,
@@ -149,6 +149,7 @@ abstract class RouteTransition<T extends Widget, RouteT extends dynamic>
             opaque: opaque,
             maintainState: maintainState,
             transitionDuration: transitionDuration,
+            reverseTransitionDuration: reverseTransitionDuration,
             pageBuilder: (
               BuildContext context,
               Animation<double> animation,
@@ -163,15 +164,14 @@ abstract class RouteTransition<T extends Widget, RouteT extends dynamic>
     ) {
       handleChecks(animation, secondaryAnimation);
       return RouteAwareWidget(
-        routeObserver: NFWidgets.routeObserver,
         onPopNext: () async {
           if (!uiAnimating) {
             uiAnimating = true;
-            await SystemUiControl.animateSystemUiOverlay(
+            await NFSystemUiControl.animateSystemUiOverlay(
               to: checkSystemUi(),
               curve: entReverseCurve,
               settings:
-                  AnimationControllerSettings(duration: transitionDuration),
+                  NFAnimationControllerSettings(duration: transitionDuration),
             );
             uiAnimating = false;
           }
@@ -181,7 +181,7 @@ abstract class RouteTransition<T extends Widget, RouteT extends dynamic>
     };
   }
 
-  /// MUST be called in page builder
+  /// Must be called in page builder.
   void handleChecks(
       Animation<double> animation, Animation<double> secondaryAnimation) {
     handleSystemUiCheck(animation, secondaryAnimation);
@@ -199,12 +199,13 @@ abstract class RouteTransition<T extends Widget, RouteT extends dynamic>
     animation.addStatusListener((status) async {
       if (!uiAnimating && status == AnimationStatus.forward) {
         uiAnimating = true;
-        await SystemUiControl.animateSystemUiOverlay(
+        await NFSystemUiControl.animateSystemUiOverlay(
           to: checkSystemUi(),
           curve: entCurve,
-          settings:
-              // TODO: why * 2?
-              AnimationControllerSettings(duration: transitionDuration * 2),
+          settings: NFAnimationControllerSettings(
+            // TODO: why * 2?
+            duration: transitionDuration * 2,
+          ),
         );
         uiAnimating = false;
       }
@@ -222,18 +223,16 @@ abstract class RouteTransition<T extends Widget, RouteT extends dynamic>
     });
   }
 
-  /// Checks if route taps must be ignored
+  /// Checks if route taps must be ignored.
   void handleIgnoranceCheck(
       Animation<double> animation, Animation<double> secondaryAnimation) {
     animation.addStatusListener((status) {
-      ignore = entIgnoreEventsForward && status == AnimationStatus.forward ||
+      ignore = entIgnore && status == AnimationStatus.forward ||
           status == AnimationStatus.reverse;
     });
 
     secondaryAnimation.addStatusListener((status) {
-      secondaryIgnore =
-          exitIgnoreEventsForward && status == AnimationStatus.forward ||
-              exitIgnoreEventsReverse && status == AnimationStatus.reverse;
+      secondaryIgnore = exitIgnore && status == AnimationStatus.reverse;
     });
   }
 }

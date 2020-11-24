@@ -8,31 +8,26 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/src/constants.dart';
-import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 import 'gen/messages_all.dart';
 
-/// Gets [AppLocalizations].
-AppLocalizations get l10n =>
-    AppLocalizations.of(NFWidgets.navigatorKey.currentContext);
+class NFLocalizations {
+  static const LocalizationsDelegate<NFLocalizations> delegate =
+      _NFLocalizationsDelegate();
 
-class AppLocalizations {
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
-
-  static Future<AppLocalizations> load(Locale locale) {
+  static Future<NFLocalizations> load(Locale locale) {
     final String name =
         locale.countryCode.isEmpty ? locale.languageCode : locale.toString();
     final localeName = Intl.canonicalizedLocale(name);
 
     return initializeMessages(localeName).then((bool _) {
       Intl.defaultLocale = localeName;
-      return AppLocalizations();
+      return NFLocalizations();
     });
   }
 
-  static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  static NFLocalizations of(BuildContext context) {
+    return Localizations.of<NFLocalizations>(context, NFLocalizations);
   }
 
   String get warning {
@@ -78,9 +73,8 @@ class AppLocalizations {
   }
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
-  const _AppLocalizationsDelegate();
+class _NFLocalizationsDelegate extends LocalizationsDelegate<NFLocalizations> {
+  const _NFLocalizationsDelegate();
 
   @override
   bool isSupported(Locale locale) {
@@ -88,12 +82,12 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  Future<AppLocalizations> load(Locale locale) {
-    return AppLocalizations.load(locale);
+  Future<NFLocalizations> load(Locale locale) {
+    return NFLocalizations.load(locale);
   }
 
   @override
-  bool shouldReload(_AppLocalizationsDelegate old) {
+  bool shouldReload(_NFLocalizationsDelegate old) {
     return false;
   }
 }

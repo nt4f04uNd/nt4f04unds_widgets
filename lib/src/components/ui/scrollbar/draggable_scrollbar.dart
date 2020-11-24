@@ -13,179 +13,306 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:math' as math;
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
+import 'dart:math' as math;
 
-/// Build the Scroll Thumb and label using the current configuration
-typedef Widget ScrollThumbBuilder(
-    Color backgroundColor,
-    Animation<double> thumbAnimation,
-    double height,
-    double width,
-    bool shouldAppear);
+const _kMinExtentToShowScrollBar = 600.0;
 
-/// Build a Text widget using the current scroll offset.
+/// Build the bar and label using the current configuration.
+typedef Widget BarBuilder(
+  Color barColor,
+  Animation<double> animation,
+  double height,
+  double width,
+  bool shouldAppear,
+);
+
+/// Signature to build a label widget.
 ///
-/// The [progress] is the position ration of the scroll bar.
-typedef Widget LabelContentBuilder(double progress);
+/// The [progress] is the value from `0.0` to `1.0` denoting the current bar position relative to
+/// the offset that bar can have.
+///
+/// The [barPadHeight] is the height of the whole bar. It's not the same as max bar offset, as max
+/// bar offset also repects the margins and the bar height.
+///
+/// Used by [NFDraggableScrollbar.labelBuilder];
+typedef Widget LabelBuilder(
+    BuildContext context, double progress, double barPadHeight);
 
-/// A widget that will display a BoxScrollView with a ScrollThumb that can be dragged
-/// for quick navigation of the BoxScrollView.
+/// Signature to build a label animation.
+///
+/// Used by [NFDraggableScrollbar.labelTransitionBuilder];
+typedef Widget LabelTransitionBuilder(
+    BuildContext context, Animation<double> animation, Widget child);
+
+/// Signature for drag callbacks.
+///
+/// The [progress] is the value from `0.0` to `1.0` denoting the current bar position relative to
+/// the offset that bar can have.
+///
+/// The [barPadHeight] is the height of the whole bar. It's not the same as max bar offset, as max
+/// bar offset also repects the margins and the bar height.
+///
+/// Used by
+///  * [NFDraggableScrollbar.onDragStart]
+///  * [NFDraggableScrollbar.onDragUpdate]
+///  * [NFDraggableScrollbar.onDragEnd]
+///  * [NFDraggableScrollbar.onScrollNotification]
+typedef void DraggableScrollBarCallback(double progress, double barPadHeight);
+
+///
+/// A widget that will display a child with a ScrollBar that can be dragged.
+///
+/// Note that for the internal extent to be updated, the widget has to receive
+/// a [ScrollNotification] from its child. On the first render it is always 0,
+/// so if you want to set an initial index of some ListView, consider doing so
+/// through it's controller, so that the scrollbar could listen to its notification
+/// and update appropiately.
+///
+/// todo: horizontal support
 class NFDraggableScrollbar extends StatefulWidget {
-  /// The view that will be scrolled with the scroll thumb
+  /// The view that the scroll bar will receieve scroll notifications from.
   final Widget child;
 
-  /// A function that builds a thumb using the current configuration
-  final ScrollThumbBuilder scrollThumbBuilder;
+  /// The height of the scroll bar.
+  final double barHeight;
 
-  /// The height of the scroll thumb
-  final double heightScrollThumb;
+  /// The width of the scroll bar.
+  final double barWidth;
 
-  /// The width of the scroll thumb
-  final double widthScrollThumb;
+  /// Margin for bar from top.
+  final double barTopMargin;
 
-  /// Margin for thumb from top
-  final double marginBottom;
+  /// Margin for bar from bottom.
+  final double barBottomMargin;
 
-  /// Margin for thumb from bottom
-  final double marginTop;
+  /// The background color of the label and bar.
+  final Color barColor;
 
-  /// The background color of the label and thumb
-  final Color backgroundColor;
+  /// The amount of padding that should surround the bar.
+  final EdgeInsetsGeometry barPadding;
 
-  /// The amount of padding that should surround the thumb
-  final EdgeInsetsGeometry padding;
+  /// Determines how quickly the scrollbar will animate in and out.
+  final Duration barAnimationDuration;
 
-  /// Determines how quickly the scrollbar will animate in and out
-  final Duration scrollbarAnimationDuration;
+  /// How long should the bar be visible before fading out.
+  final Duration barDuration;
 
-  /// How long should the thumb be visible before fading out
-  final Duration scrollbarTimeToFade;
+  /// The widget as a touchable pad behind the bar.
+  ///
+  /// If none specified, than default transparent container of
+  /// width of the bar will be used.
+  final Widget barPad;
 
-  /// Build a Widget from the current offset in the BoxScrollView
-  final LabelContentBuilder labelContentBuilder;
+  /// A function that builds a bar using the current configuration.
+  final BarBuilder barBuilder;
 
-  /// The ScrollController for the BoxScrollView
-  final ScrollController controller;
+  /// Builds a label widget.
+  ///
+  /// The first parameter [progress] is the value from `0.0` to `1.0` denoting the current bar position relative to
+  /// the seconds one offset that bar can have.
+  ///
+  /// The [barPadHeight] is the height of the whole bar. It's not the same as max bar offset, as max
+  /// bar offset also repects the margins and the bar height.
+  final LabelBuilder labelBuilder;
 
-  /// Determines scrollThumb displaying. If you draw own ScrollThumb and it is true you just don't need to use animation parameters in [scrollThumbBuilder]
-  final bool alwaysVisibleScrollThumb;
+  /// Builds a label animation.
+  ///
+  /// By default, it's a simple [FadeTransition].
+  final LabelTransitionBuilder labelTransitionBuilder;
+
+  /// Called when user start draging the bar or tap-downs the bar pad.
+  ///
+  /// The first parameter [progress] is the value from `0.0` to `1.0` denoting the current bar position relative to
+  /// the seconds one offset that bar can have.
+  ///
+  /// The [barPadHeight] is the height of the whole bar. It's not the same as max bar offset, as max
+  /// bar offset also repects the margins and the bar height.
+  final DraggableScrollBarCallback onDragStart;
+
+  /// Called when user drags the bar.
+  ///
+  /// The first parameter [progress] is the value from `0.0` to `1.0` denoting the current bar position relative to
+  /// the seconds one offset that bar can have.
+  ///
+  /// The [barPadHeight] is the height of the whole bar. It's not the same as max bar offset, as max
+  /// bar offset also repects the margins and the bar height.
+  final DraggableScrollBarCallback onDragUpdate;
+
+  /// Called when user ends draging the bar or tap-ups the bar pad.
+  ///
+  /// The first parameter [progress] is the value from `0.0` to `1.0` denoting the current bar position relative to
+  /// the seconds one offset that bar can have.
+  ///
+  /// The [barPadHeight] is the height of the whole bar. It's not the same as max bar offset, as max
+  /// bar offset also repects the margins and the bar height.
+  final DraggableScrollBarCallback onDragEnd;
+
+  /// Called when the scroll notification is received and the position of the bar is updated.
+  ///
+  /// The first parameter [progress] is the value from `0.0` to `1.0` denoting the current bar position relative to
+  /// the seconds one offset that bar can have.
+  ///
+  /// The [barPadHeight] is the height of the whole bar. It's not the same as max bar offset, as max
+  /// bar offset also repects the margins and the bar height.
+  final DraggableScrollBarCallback onScrollNotification;
+
+  /// The scroll bar will be visible when true.
+  ///
+  /// Overrides the default internal [shoudlAppear].
+  ///
+  /// By default, the scroll bar will be show if extent is bigger that [minExtentToAppear].
+  final bool shouldAppear;
+
+  /// Minimum viewport extent for the scroll bar to be shown.
+  ///
+  /// Defaults to `600.00`.
+  final double minExtentToAppear;
 
   NFDraggableScrollbar({
     Key key,
-    this.alwaysVisibleScrollThumb = false,
-    @required this.heightScrollThumb,
-    @required this.backgroundColor,
-    @required this.scrollThumbBuilder,
+    @required this.barHeight,
+    @required this.barColor,
+    @required this.barBuilder,
     @required this.child,
-    @required this.controller,
-    this.widthScrollThumb,
-    this.marginBottom = 0.0,
-    this.marginTop = 0.0,
-    this.padding,
-    this.scrollbarAnimationDuration = kScrollbarFadeDuration,
-    this.scrollbarTimeToFade = kScrollbarTimeToFade,
-    this.labelContentBuilder,
-  })  : assert(controller != null),
-        assert(scrollThumbBuilder != null),
+    this.barPad,
+    this.barWidth,
+    this.barTopMargin = 0.0,
+    this.barBottomMargin = 0.0,
+    this.barPadding,
+    this.barAnimationDuration = kScrollbarFadeDuration,
+    this.barDuration = kScrollbarTimeToFade,
+    this.labelBuilder,
+    this.labelTransitionBuilder = _defaultLabelTransitionBuilder,
+    this.onDragStart,
+    this.onDragUpdate,
+    this.onDragEnd,
+    this.onScrollNotification,
+    this.shouldAppear,
+    this.minExtentToAppear = _kMinExtentToShowScrollBar,
+  })  : assert(barHeight != null),
+        assert(barColor != null),
+        assert(barBuilder != null),
         super(key: key);
 
   NFDraggableScrollbar.rrect({
     Key key,
-    Key scrollThumbKey,
-    this.alwaysVisibleScrollThumb = false,
+    Key barKey,
     @required this.child,
-    @required this.controller,
-    this.heightScrollThumb = 48.0,
-    this.widthScrollThumb = 16.0,
-    this.marginBottom = 0.0,
-    this.marginTop = 0.0,
-    this.backgroundColor = Colors.white,
-    this.padding,
-    this.scrollbarAnimationDuration = kScrollbarFadeDuration,
-    this.scrollbarTimeToFade = kScrollbarTimeToFade,
-    this.labelContentBuilder,
+    this.barPad,
+    this.barHeight = 48.0,
+    this.barWidth = 16.0,
+    this.barTopMargin = 0.0,
+    this.barBottomMargin = 0.0,
+    this.barColor = Colors.white,
+    this.barPadding,
+    this.barAnimationDuration = kScrollbarFadeDuration,
+    this.barDuration = kScrollbarTimeToFade,
+    this.labelBuilder,
+    this.labelTransitionBuilder = _defaultLabelTransitionBuilder,
+    this.onDragStart,
+    this.onDragUpdate,
+    this.onDragEnd,
+    this.onScrollNotification,
+    this.shouldAppear,
+    this.minExtentToAppear = _kMinExtentToShowScrollBar,
     BorderRadiusGeometry borderRadius =
         const BorderRadius.all(Radius.circular(0.0)),
-  })  : scrollThumbBuilder = _thumbRRectBuilder(
-            scrollThumbKey, alwaysVisibleScrollThumb, borderRadius),
+  })  : barBuilder = _barRRectBuilder(barKey, shouldAppear, borderRadius),
         super(key: key);
 
   NFDraggableScrollbar.arrows({
     Key key,
-    Key scrollThumbKey,
-    this.alwaysVisibleScrollThumb = false,
+    Key barKey,
     @required this.child,
-    @required this.controller,
-    this.heightScrollThumb = 48.0,
-    this.widthScrollThumb = 20.0,
-    this.marginBottom = 0.0,
-    this.marginTop = 0.0,
-    this.backgroundColor = Colors.white,
-    this.padding,
-    this.scrollbarAnimationDuration = kScrollbarFadeDuration,
-    this.scrollbarTimeToFade = kScrollbarTimeToFade,
-    this.labelContentBuilder,
-  })  : scrollThumbBuilder =
-            _thumbArrowBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
+    this.barPad,
+    this.barHeight = 48.0,
+    this.barWidth = 20.0,
+    this.barTopMargin = 0.0,
+    this.barBottomMargin = 0.0,
+    this.barColor = Colors.white,
+    this.barPadding,
+    this.barAnimationDuration = kScrollbarFadeDuration,
+    this.barDuration = kScrollbarTimeToFade,
+    this.labelBuilder,
+    this.labelTransitionBuilder = _defaultLabelTransitionBuilder,
+    this.onDragStart,
+    this.onDragUpdate,
+    this.onDragEnd,
+    this.onScrollNotification,
+    this.shouldAppear,
+    this.minExtentToAppear = _kMinExtentToShowScrollBar,
+  })  : barBuilder = _barArrowBuilder(barKey, shouldAppear),
         super(key: key);
 
   NFDraggableScrollbar.semicircle({
     Key key,
-    Key scrollThumbKey,
-    this.alwaysVisibleScrollThumb = false,
+    Key barKey,
     @required this.child,
-    @required this.controller,
-    this.heightScrollThumb = 48.0,
-    this.widthScrollThumb,
-    this.marginBottom = 0.0,
-    this.marginTop = 0.0,
-    this.backgroundColor = Colors.white,
-    this.padding,
-    this.scrollbarAnimationDuration = kScrollbarFadeDuration,
-    this.scrollbarTimeToFade = kScrollbarTimeToFade,
-    this.labelContentBuilder,
-  })  : scrollThumbBuilder =
-            _thumbSemicircleBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
+    this.barPad,
+    this.barHeight = 48.0,
+    this.barWidth,
+    this.barTopMargin = 0.0,
+    this.barBottomMargin = 0.0,
+    this.barColor = Colors.white,
+    this.barPadding,
+    this.barAnimationDuration = kScrollbarFadeDuration,
+    this.barDuration = kScrollbarTimeToFade,
+    this.labelBuilder,
+    this.labelTransitionBuilder = _defaultLabelTransitionBuilder,
+    this.onDragStart,
+    this.onDragUpdate,
+    this.onDragEnd,
+    this.onScrollNotification,
+    this.shouldAppear,
+    this.minExtentToAppear = _kMinExtentToShowScrollBar,
+  })  : barBuilder = _barSemicircleBuilder(barKey, shouldAppear),
         super(key: key);
 
   @override
-  _NFDraggableScrollbarState createState() => _NFDraggableScrollbarState();
+  NFDraggableScrollbarState createState() => NFDraggableScrollbarState();
 
-  static buildScrollThumbAnimation({
-    @required Widget scrollThumb,
-    @required Animation<double> thumbAnimation,
-    @required bool alwaysVisibleScrollThumb,
+  static buildScrollBarAnimation({
+    @required Widget bar,
+    @required Animation<double> barAnimation,
+    @required bool shouldAppear,
   }) {
-    if (alwaysVisibleScrollThumb) {
-      return scrollThumb;
+    if (shouldAppear) {
+      return bar;
     }
     return FadeTransition(
-      opacity: thumbAnimation,
-      child: scrollThumb,
+      opacity: barAnimation,
+      child: bar,
     );
   }
 
-  static ScrollThumbBuilder _thumbSemicircleBuilder(
-      Key scrollThumbKey, bool alwaysVisibleScrollThumb) {
+  static Widget _defaultLabelTransitionBuilder(
+      BuildContext context, Animation<double> animation, Widget child) {
+    return FadeTransition(
+      opacity: NFDefaultAnimation(parent: animation),
+      child: child,
+    );
+  }
+
+  static BarBuilder _barSemicircleBuilder(Key barKey, bool shouldAppear) {
     return (
-      Color backgroundColor,
-      Animation<double> thumbAnimation,
+      Color barColor,
+      Animation<double> barAnimation,
       double height,
       double width,
       bool shouldAppear, {
-      Widget labelContent,
+      Widget label,
       BoxConstraints labelConstraints,
     }) {
-      final scrollThumb = CustomPaint(
-        key: scrollThumbKey,
+      final bar = CustomPaint(
+        key: barKey,
         foregroundPainter: ArrowCustomPainter(Colors.grey),
         child: Material(
           elevation: 4.0,
           child: Container(
             constraints: BoxConstraints.tight(Size(width, height * 0.6)),
           ),
-          color: backgroundColor,
+          color: barColor,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(height),
             bottomLeft: Radius.circular(height),
@@ -195,31 +322,30 @@ class NFDraggableScrollbar extends StatefulWidget {
         ),
       );
 
-      return buildScrollThumbAnimation(
-        scrollThumb: scrollThumb,
-        thumbAnimation: thumbAnimation,
-        alwaysVisibleScrollThumb: shouldAppear && alwaysVisibleScrollThumb,
+      return buildScrollBarAnimation(
+        bar: bar,
+        barAnimation: barAnimation,
+        shouldAppear: shouldAppear,
       );
     };
   }
 
-  static ScrollThumbBuilder _thumbArrowBuilder(
-      Key scrollThumbKey, bool alwaysVisibleScrollThumb) {
+  static BarBuilder _barArrowBuilder(Key barKey, bool shouldAppear) {
     return (
-      Color backgroundColor,
-      Animation<double> thumbAnimation,
+      Color barColor,
+      Animation<double> animation,
       double height,
       double width,
       bool shouldAppear, {
-      Widget labelContent,
+      Widget label,
       BoxConstraints labelConstraints,
     }) {
-      final scrollThumb = ClipPath(
+      final bar = ClipPath(
         child: Container(
           height: height,
           width: width,
           decoration: BoxDecoration(
-            color: backgroundColor,
+            color: barColor,
             borderRadius: BorderRadius.all(
               Radius.circular(12.0),
             ),
@@ -228,151 +354,121 @@ class NFDraggableScrollbar extends StatefulWidget {
         clipper: ArrowClipper(),
       );
 
-      return buildScrollThumbAnimation(
-        scrollThumb: scrollThumb,
-        thumbAnimation: thumbAnimation,
-        alwaysVisibleScrollThumb: shouldAppear && alwaysVisibleScrollThumb,
+      return buildScrollBarAnimation(
+        bar: bar,
+        barAnimation: animation,
+        shouldAppear: shouldAppear,
       );
     };
   }
 
-  static ScrollThumbBuilder _thumbRRectBuilder(Key scrollThumbKey,
-      bool alwaysVisibleScrollThumb, BorderRadiusGeometry borderRadius) {
+  static BarBuilder _barRRectBuilder(
+      Key barKey, bool shouldAppear, BorderRadiusGeometry borderRadius) {
     return (
-      Color backgroundColor,
-      Animation<double> thumbAnimation,
+      Color barColor,
+      Animation<double> animation,
       double height,
       double width,
       bool shouldAppear, {
-      Widget labelContent,
+      Widget label,
       BoxConstraints labelConstraints,
     }) {
-      final scrollThumb = Material(
-          key: scrollThumbKey,
+      final bar = Material(
+          key: barKey,
           elevation: 4.0,
           child: Container(
             constraints: BoxConstraints.tight(
               Size(width, height),
             ),
           ),
-          color: backgroundColor,
+          color: barColor,
           borderRadius: borderRadius);
 
-      return buildScrollThumbAnimation(
-        scrollThumb: scrollThumb,
-        thumbAnimation: thumbAnimation,
-        alwaysVisibleScrollThumb: shouldAppear && alwaysVisibleScrollThumb,
+      return buildScrollBarAnimation(
+        bar: bar,
+        barAnimation: animation,
+        shouldAppear: shouldAppear,
       );
     };
   }
 }
 
-class ScrollLabel extends StatelessWidget {
-  final Animation<double> animation;
-  final Color backgroundColor;
-  final Widget child;
-
-  final BoxConstraints constraints;
-  static const BoxConstraints _defaultConstraints =
-      BoxConstraints.tightFor(width: 72.0, height: 28.0);
-
-  const ScrollLabel({
-    Key key,
-    @required this.child,
-    @required this.animation,
-    @required this.backgroundColor,
-    this.constraints = _defaultConstraints,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: animation,
-      child: Container(
-        margin: const EdgeInsets.only(right: 6.0),
-        child: Material(
-          elevation: 20.0,
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.all(Radius.circular(11.0)),
-          child: Container(
-            constraints: constraints ?? _defaultConstraints,
-            padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-            alignment: Alignment.centerLeft,
-            child: child,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NFDraggableScrollbarState extends State<NFDraggableScrollbar>
+class NFDraggableScrollbarState extends State<NFDraggableScrollbar>
     with TickerProviderStateMixin {
-  double _barOffset;
-  double _viewOffset;
-  bool _isDragInProcess;
+  bool dragged = false;
 
-  AnimationController _thumbAnimationController;
-  Animation<double> _thumbAnimation;
-  AnimationController _labelAnimationController;
-  Animation<double> _labelAnimation;
-  Timer _fadeoutThumbTimer;
+  AnimationController barController;
+  AnimationController labelController;
+  Timer _fadeoutBarTimer;
   Timer _fadeoutLabelTimer;
 
-  double get barMaxScrollExtent =>
-      context.size.height - widget.heightScrollThumb - widget.marginBottom;
+  double _barOffset = 0.0;
+  double _barPadHeight = 0.0;
+  double _barMaxOffset = 0.0;
+  double get barProgress =>
+      _barMaxOffset == 0.0 ? 0.0 : _barOffset / _barMaxOffset;
 
-  double get barMinScrollExtent => 0.0 + widget.marginTop;
+  /// The actual max extent.
+  ///
+  /// For example in [ScrollablePositionedList] after it [jumpTo] item
+  /// the min scroll extent equals the negative extent before the new position after jump
+  /// and the max scroll extent equals the positive extent after it.
+  ///
+  /// So I justfiy the value of max extent to be in range from `0.0` to `maxScrollExtent - minScrollExtent`.
+  double _viewMaxOffset = 0.0;
+  double _viewOffset = 0.0;
 
-  double get viewMaxScrollExtent => widget.controller.position.maxScrollExtent;
-
-  /// Whether the scrollbar should appear on the screen
-  bool get shouldAppear =>
-      widget.controller.hasClients &&
-      widget.controller.position.maxScrollExtent > 300.0;
+  /// Whether the scrollbar should appear on the screen.
+  bool get shouldAppear => widget.shouldAppear != null
+      ? widget.shouldAppear
+      : _viewMaxOffset > widget.minExtentToAppear;
 
   @override
   void initState() {
     super.initState();
-    _barOffset = barMinScrollExtent;
-    _viewOffset = 0.0;
-    _isDragInProcess = false;
 
-    _thumbAnimationController = AnimationController(
+    barController = AnimationController(
       vsync: this,
-      duration: widget.scrollbarAnimationDuration,
+      duration: widget.barAnimationDuration,
     );
-    _labelAnimationController = AnimationController(
+    labelController = AnimationController(
       vsync: this,
-      duration: widget.scrollbarAnimationDuration,
+      duration: widget.barAnimationDuration,
     );
-
-    _thumbAnimation = DefaultAnimation(parent: _thumbAnimationController);
-    _labelAnimation = DefaultAnimation(parent: _labelAnimationController);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      /// Call setState to make shouldAppear getter available
-      setState(() {});
+      /// Call setState to make shouldAppear getter available, as
+      /// at the first render [_viewMaxOffset] is `0.0`
+      if (mounted) setState(() {});
     });
   }
 
   @override
   void dispose() {
-    _thumbAnimationController.dispose();
-    _fadeoutThumbTimer?.cancel();
+    barController.dispose();
+    labelController.dispose();
+    _fadeoutBarTimer?.cancel();
     _fadeoutLabelTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget labelContent;
-    if (widget.labelContentBuilder != null) {
-      labelContent = widget.labelContentBuilder(
-        _viewOffset + _barOffset + widget.heightScrollThumb / 2,
-      );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // Update the max offset after each build.
+      _barPadHeight = context.size.height;
+      _barMaxOffset = _barPadHeight -
+          widget.barHeight -
+          widget.barTopMargin -
+          widget.barBottomMargin;
+    });
+
+    Widget label;
+    if (widget.labelBuilder != null) {
+      label = widget.labelBuilder(context, barProgress, _barPadHeight);
     }
 
+    final barAnimation = NFDefaultAnimation(parent: barController);
     return !shouldAppear
         ? widget.child
         : LayoutBuilder(
@@ -387,45 +483,62 @@ class _NFDraggableScrollbarState extends State<NFDraggableScrollbar>
                   RepaintBoundary(
                     child: Stack(
                       children: [
-                        if (labelContent != null)
-                          Center(
-                            // Label
-                            child: FadeTransition(
-                              opacity: _labelAnimation,
-                              child: labelContent,
-                            ),
+                        // Label
+                        if (label != null)
+                          widget.labelTransitionBuilder(
+                            context,
+                            labelController,
+                            label,
                           ),
+                        // Bar pad
                         Positioned(
-                          // Background pad
                           right: 0.0,
                           top: 0.0,
                           child: GestureDetector(
-                            onTapDown: _onScrollbarBackgroundTapDown,
-                            onVerticalDragStart:
-                                _onScrollbarBackgroundVerticalDragStart,
+                            onTapDown: _onBarPadTapDown,
+                            onTapUp: (_) => _onEnd(),
+                            onVerticalDragStart: _onBarPadVerticalDragStart,
                             onVerticalDragUpdate: _onVerticalDragUpdate,
-                            onVerticalDragEnd: _onVerticalDragEnd,
-                            child: Container(
-                              color: Colors.transparent,
-                              width: widget.widthScrollThumb,
-                              height: MediaQuery.of(context).size.height,
-                            ),
+                            onVerticalDragEnd: (_) => _onEnd(),
+                            child: widget.barPad ??
+                                Container(
+                                  color: Colors.transparent,
+                                  width: widget.barWidth,
+                                  height: MediaQuery.of(context).size.height,
+                                ),
                           ),
                         ),
+                        // Bar itself
                         GestureDetector(
-                          // Thumb itself
                           onVerticalDragStart: _onVerticalDragStart,
                           onVerticalDragUpdate: _onVerticalDragUpdate,
-                          onVerticalDragEnd: _onVerticalDragEnd,
+                          onVerticalDragEnd: (_) => _onEnd(),
                           child: Container(
                             alignment: Alignment.topRight,
-                            margin: EdgeInsets.only(top: _barOffset),
-                            padding: widget.padding,
-                            child: widget.scrollThumbBuilder(
-                              widget.backgroundColor,
-                              _thumbAnimation,
-                              widget.heightScrollThumb,
-                              widget.widthScrollThumb,
+                            margin: EdgeInsets.only(
+                              top: math.max(
+                                  0.0, widget.barTopMargin + _barOffset),
+                              bottom: widget.barBottomMargin,
+                            ),
+                            padding: widget.barPadding,
+                            child: widget.barBuilder(
+                              widget.barColor,
+                              barAnimation,
+
+                              /// Force sending proper height to the builder function.
+                              ///
+                              /// This will take place in case of bouncing scroll physics.
+                              /// In fact the `- math.max(0.0, _barOffset - _barMaxOffset)`
+                              /// is not needed to display proper bar, because it's treated automaticlly,
+                              /// as it reaches the bottom edge of the screen.
+                              ///
+                              /// Thought I do this for sake of if someone decides to use these values
+                              /// for some computations.
+                              widget.barHeight +
+                                  math.min(0.0, _barOffset) -
+                                  math.max(0.0, _barOffset - _barMaxOffset),
+
+                              widget.barWidth,
                               shouldAppear,
                             ),
                           ),
@@ -439,145 +552,127 @@ class _NFDraggableScrollbarState extends State<NFDraggableScrollbar>
           });
   }
 
-  //scroll bar has received notification that it's view was scrolled
-  //so it should also changes his position
-  //but only if it isn't dragged
+  // Scroll bar has received notification that it's view was scrolled
+  // So it should also changes his position
+  // But only if it isn't dragged
   bool _handleScrollNotification(ScrollNotification notification) {
-    if (_isDragInProcess ||
-        notification.metrics.maxScrollExtent <
-            notification.metrics.minScrollExtent) {
+    _viewMaxOffset = notification.metrics.maxScrollExtent -
+        notification.metrics.minScrollExtent;
+    assert(_viewMaxOffset >= 0.0);
+    if (dragged) {
       return false;
     }
-
     setState(() {
       if (notification is ScrollUpdateNotification) {
-        _viewOffset += notification.scrollDelta;
-        if (_viewOffset < widget.controller.position.minScrollExtent) {
-          _viewOffset = widget.controller.position.minScrollExtent;
-        }
-        if (_viewOffset > viewMaxScrollExtent) {
-          _viewOffset = viewMaxScrollExtent;
-        }
-
-        _barOffset = _viewOffset *
-                (barMaxScrollExtent - barMinScrollExtent) /
-                viewMaxScrollExtent +
-            barMinScrollExtent;
+        _viewOffset =
+            notification.metrics.pixels - notification.metrics.minScrollExtent;
+        _barOffset = _viewOffset / _viewMaxOffset * _barMaxOffset;
       }
 
       if (notification is ScrollUpdateNotification ||
           notification is OverscrollNotification) {
-        if (shouldAppear &&
-            _thumbAnimationController.status != AnimationStatus.forward) {
-          _thumbAnimationController.forward();
+        if (shouldAppear && barController.status != AnimationStatus.forward) {
+          barController.forward();
         }
 
-        _fadeoutThumbTimer?.cancel();
-
-        _fadeoutThumbTimer =
-            Timer(applyDilation(widget.scrollbarTimeToFade), () {
-          _thumbAnimationController.reverse();
-          _fadeoutThumbTimer = null;
+        _fadeoutBarTimer?.cancel();
+        _fadeoutBarTimer = Timer(dilate(widget.barDuration), () {
+          barController.reverse();
+          _fadeoutBarTimer = null;
         });
       }
     });
+
+    if (widget.onScrollNotification != null) {
+      widget.onScrollNotification(barProgress, _barPadHeight);
+    }
 
     return false;
   }
 
   /// Handles tap down specifically on the background of the scrollbar area.
-  void _onScrollbarBackgroundTapDown(TapDownDetails details) {
+  void _onBarPadTapDown(TapDownDetails details) {
     setState(() {
-      _isDragInProcess = true;
-      _thumbAnimationController.forward();
-      _labelAnimationController.forward();
-
-      _fadeoutThumbTimer?.cancel();
+      dragged = true;
+      barController.forward();
+      labelController.forward();
+      _fadeoutBarTimer?.cancel();
       _fadeoutLabelTimer?.cancel();
-
       _barOffset = math.max(
         0.0,
-        details.localPosition.dy - widget.heightScrollThumb / 2,
+        details.localPosition.dy - widget.barHeight / 2,
       );
     });
-    _updateView();
+    if (widget.onDragStart != null) {
+      widget.onDragStart(barProgress, _barPadHeight);
+    }
   }
 
   /// Handles drag start specifically on the background of the scrollbar area.
-  void _onScrollbarBackgroundVerticalDragStart(DragStartDetails details) {
+  void _onBarPadVerticalDragStart(DragStartDetails details) {
     setState(() {
-      _isDragInProcess = true;
-      _thumbAnimationController.forward();
-      _labelAnimationController.forward();
-
-      _fadeoutThumbTimer?.cancel();
+      dragged = true;
+      barController.forward();
+      labelController.forward();
+      _fadeoutBarTimer?.cancel();
       _fadeoutLabelTimer?.cancel();
-
       _barOffset = math.max(
         0.0,
-        details.localPosition.dy - widget.heightScrollThumb / 2,
+        details.localPosition.dy - widget.barHeight / 2,
       );
     });
-    _updateView();
+    if (widget.onDragStart != null) {
+      widget.onDragStart(barProgress, _barPadHeight);
+    }
   }
 
   void _onVerticalDragStart(DragStartDetails details) {
+    if (widget.onDragStart != null) {
+      widget.onDragStart(barProgress, _barPadHeight);
+    }
     setState(() {
-      _isDragInProcess = true;
-      _thumbAnimationController.forward();
-      _labelAnimationController.forward();
-
-      _fadeoutThumbTimer?.cancel();
+      dragged = true;
+      barController.forward();
+      labelController.forward();
+      _fadeoutBarTimer?.cancel();
       _fadeoutLabelTimer?.cancel();
     });
-    _updateView();
-  }
-
-  void _updateView() {
-    _viewOffset = (_barOffset - barMinScrollExtent) *
-        (viewMaxScrollExtent +
-            barMinScrollExtent * viewMaxScrollExtent / barMaxScrollExtent) /
-        barMaxScrollExtent;
-
-    widget.controller.jumpTo(_viewOffset);
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
+    if (barController.status != AnimationStatus.forward) {
+      barController.forward();
+      labelController.forward();
+    }
     setState(() {
-      if (_thumbAnimationController.status != AnimationStatus.forward) {
-        _thumbAnimationController.forward();
-        _labelAnimationController.forward();
-      }
-      if (_isDragInProcess) {
+      if (dragged) {
         _barOffset += details.delta.dy;
-
-        if (_barOffset < barMinScrollExtent) {
-          _barOffset = barMinScrollExtent;
-        }
-        if (_barOffset > barMaxScrollExtent) {
-          _barOffset = barMaxScrollExtent;
-        }
-
-        _updateView();
+        if (_barOffset < 0.0) _barOffset = 0.0;
+        if (_barOffset > _barMaxOffset) _barOffset = _barMaxOffset;
       }
     });
+    if (widget.onDragUpdate != null) {
+      widget.onDragUpdate(barProgress, _barPadHeight);
+    }
   }
 
-  Future<void> _onVerticalDragEnd(DragEndDetails details) async {
-    _isDragInProcess = false;
+  void _onEnd() {
+    if (widget.onDragEnd != null) {
+      widget.onDragEnd(barProgress, _barPadHeight);
+    }
+    dragged = false;
 
-    _fadeoutThumbTimer = Timer(applyDilation(widget.scrollbarTimeToFade), () {
-      _thumbAnimationController.reverse();
-      _fadeoutThumbTimer =
-          Timer(applyDilation(widget.scrollbarAnimationDuration), () {
+    _fadeoutBarTimer = Timer(dilate(widget.barDuration), () {
+      barController.reverse();
+      _fadeoutBarTimer = Timer(dilate(widget.barAnimationDuration), () {
         setState(() {});
-        _fadeoutThumbTimer = null;
+        _fadeoutBarTimer = null;
       });
     });
 
-    _fadeoutLabelTimer = Timer(applyDilation(kScrollbarLabelTimeToFade), () {
-      _labelAnimationController.reverse();
-      _fadeoutLabelTimer = Timer(applyDilation(kScrollbarLabelTimeToFade), () {
+    _fadeoutLabelTimer = Timer(dilate(kScrollbarLabelTimeToFade), () {
+      labelController.reverse();
+      _fadeoutLabelTimer = Timer(dilate(kScrollbarLabelTimeToFade), () {
         setState(() {});
         _fadeoutLabelTimer = null;
       });
@@ -621,7 +716,7 @@ class ArrowCustomPainter extends CustomPainter {
   }
 }
 
-///This cut 2 lines in arrow shape.
+/// This cut 2 lines in arrow shape.
 class ArrowClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -659,4 +754,53 @@ class ArrowClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class NFScrollLabel extends StatelessWidget {
+  const NFScrollLabel({
+    Key key,
+    @required this.text,
+    this.size,
+    this.color,
+    this.fontColor,
+  }) : super(key: key);
+
+  final String text;
+
+  /// The size of the label container.
+  /// The font size is calculated automatically based on that.
+  /// Also respects [MediaQueryData.textScaleFactor].
+  final double size;
+  final Color color;
+  final Color fontColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    final fontSize = size / 2.1875;
+    final theme = Theme.of(context);
+    return Center(
+      child: Container(
+        width: size * textScaleFactor,
+        height: size * textScaleFactor,
+        margin: const EdgeInsets.only(bottom: 100.0),
+        decoration: BoxDecoration(
+          color: color ?? theme.colorScheme.primary,
+          borderRadius: BorderRadius.all(
+            Radius.circular(size),
+          ),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: fontColor ?? theme.colorScheme.onPrimary,
+              fontSize: fontSize,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

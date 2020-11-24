@@ -6,10 +6,13 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
+import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const double _kMinFlingVelocity = 700.0;
 const double _kMinFlingVelocityDelta = 400.0;
@@ -19,28 +22,6 @@ const double _kExpandThreshold = 0.4;
 /// The fling velocity to back to some state,
 /// for example when user releases the finger in some intermediate state
 const double _kBackToStateVelocity = 1.0;
-
-/// Signature used by [Slidable] to indicate that it has been expanded/shrunken in
-/// the given `direction`.
-///
-/// Used by [Slidable.onDragStart].
-typedef _SlideStartCallback = void Function(SlideDirection direction);
-
-/// Used by [Slidable.onDragUpdate]
-typedef _SlideUpdateCallback = void Function(
-  SlideDirection direction,
-  DragUpdateDetails details,
-);
-
-/// The result indicates whether the slidable will return into initial state (if its `false`)
-/// or will be slid (if its `true`)
-///
-/// Used by [Slidable.onDragEnd]
-typedef _SlideEndCallback = void Function(
-    SlideDirection direction, bool result);
-
-/// Used by [Slidable.onSlideChange]
-typedef _SlideChangeCallback = void Function(double value);
 
 /// The direction in which a [Slidable] can be slid.
 enum SlideDirection {
@@ -59,13 +40,100 @@ enum SlideDirection {
   downFromTop,
 }
 
-/// A widget that can be slid by dragging in the indicated [direction].
+/// Used by [DragEventListenersMixin.addDragEventListener].
+typedef void DragEventListener(SlidableDragEvent status);
+
+/// Signature for when the controller value changes.
 ///
-/// Dragging or flinging this widget in the [ExpandDirection] causes the child
-/// to slide out of view.
+/// Used by [Slidable.onSlideChange].
+typedef void SlideChangeCallback(double value);
+
+/// Signature for when the slidable drag begins.
 ///
-/// The widget calls the [onSlideComplete] callback either after its expansion
-/// and the [onSlideDismissed] after shrinking.
+/// Used by [Slidable.onDragStart].
+typedef void SlideStartCallback(SlideDirection direction);
+
+/// Signature for when the slidable drag updates.
+///
+/// Used by [Slidable.onDragUpdate].
+typedef void SlideUpdateCallback(
+  SlideDirection direction,
+  DragUpdateDetails details,
+);
+
+/// Signature for when the slidable drag updates.
+///
+/// The [result] indicates whether the slidable will return to start offset (if its `false`)
+/// or will be slid out to the end offset (if its `true`).
+///
+/// Used by [Slidable.onDragEnd]
+typedef SlideEndCallback = void Function(SlideDirection direction, bool result);
+
+/// Base class for slide drag events.
+abstract class SlidableDragEvent extends Equatable {
+  const SlidableDragEvent({@required this.direction});
+  final SlideDirection direction;
+
+  @override
+  get props => [direction];
+}
+
+/// Emitted when user starts dragging the slidable.
+class SlidableDragStart extends SlidableDragEvent {
+  const SlidableDragStart({@required this.direction});
+  @override
+  final SlideDirection direction;
+
+  @override
+  get props => [direction];
+}
+
+/// Emitted on updates of drag on the slidable.
+class SlidableDragUpdate extends SlidableDragEvent {
+  SlidableDragUpdate({
+    @required this.direction,
+    @required this.details,
+  }) : assert(details != null);
+
+  @override
+  final SlideDirection direction;
+  final DragUpdateDetails details;
+
+  @override
+  get props => [direction, details];
+}
+
+/// Emitted when user end dragging the slidable.
+///
+/// The [result] indicates whether the slidable will return to start offset (if its `false`)
+/// or will be slid out to the end offset (if its `true`).
+class SlidableDragEnd extends SlidableDragEvent {
+  SlidableDragEnd({
+    @required this.direction,
+    @required this.result,
+  }) : assert(result != null);
+
+  @override
+  final SlideDirection direction;
+  final bool result;
+
+  @override
+  get props => [direction, result];
+}
+
+/// todo: move flexible drag directions, allow pan probably
+/// todo: snap points api
+/// todo: rewrite events to display the actual drag direction (and other events too),
+/// and document the events and their signatures about what slide direction means in them.
+/// now they work wrong, always displaying the direction was provided to the slidable itself,
+/// rather than the actual one
+///
+/// A widget that allows to slide it's content in the indictaed [direction].
+///
+/// See also:
+///  * [SlideDirection], the direction in which a slidable can be slid.
+///  * [SlidableController], a controller to use with slidable
+///  * [SlidableControllerProvider], inherited widget to provide the [SlidableController]
 class Slidable extends StatefulWidget {
   /// Creates a widget that can be expanded.
   const Slidable({
@@ -78,17 +146,22 @@ class Slidable extends StatefulWidget {
     this.onDragUpdate,
     this.onDragEnd,
     this.onSlideChange,
-    this.canReverseForward = true,
-    this.canReverseReverse = true,
+    this.shouldGiveUpGesture,
+    this.barrierIgnoringStrategy = const IgnoringStrategy(
+      dismissed: true,
+      reverse: true,
+    ),
+    this.catchIgnoringStrategy = const MovingIgnoringStrategy(),
+    this.hitTestBehaviorStrategy = const HitTestBehaviorStrategy(),
+    this.notIgnoringHitTestBehaviorStrategy =
+        const HitTestBehaviorStrategy.opaque(),
+    this.onBarrierTap,
     this.direction = SlideDirection.upFromBottom,
     this.slideThresholds = const <SlideDirection, double>{},
     this.duration = const Duration(milliseconds: 200),
     this.barrier,
-    this.ignoreBarrierForward = false,
-    this.ignoreBarrierReverse = false,
     this.invertBarrierProgress = false,
     this.dragStartBehavior = DragStartBehavior.start,
-    this.springDescription,
   })  : assert(dragStartBehavior != null),
         super(key: key);
 
@@ -98,25 +171,51 @@ class Slidable extends StatefulWidget {
   final Widget child;
 
   /// The animation controller to use instead of the default one.
-  final AnimationController controller;
+  final SlidableController controller;
 
   /// Called when user starts dragging the slidable.
-  final _SlideStartCallback onDragStart;
+  final SlideStartCallback onDragStart;
 
   /// Called on updates of drag on the slidable.
-  final _SlideUpdateCallback onDragUpdate;
+  final SlideUpdateCallback onDragUpdate;
 
   /// Called when user end dragging the slidable.
-  final _SlideEndCallback onDragEnd;
+  final SlideEndCallback onDragEnd;
 
   /// Fires whenever value of the [controller] changes.
-  final _SlideChangeCallback onSlideChange;
+  final SlideChangeCallback onSlideChange;
 
-  /// Whether user can "catch" the slidable in forward move animation and reverse it back.
-  final bool canReverseForward;
+  /// Called on each pointer move event (even before the drag was accepted).
+  ///
+  /// Return `false` to give up the gesture.
+  final ShouldGiveUpCallback shouldGiveUpGesture;
 
-  /// Whether user can "catch" the slidable in reverse move animation and reverse it back.
-  final bool canReverseReverse;
+  /// When to ignore the barrier.
+  ///
+  /// Ignores dismissed and reverse states by default.
+  final IgnoringStrategy barrierIgnoringStrategy;
+
+  /// Describes the ability to "catch" currently moving slidable.
+  /// If some of the statuses, let's say, [AnimatingIgnoringStrategy.forward] is disabled,
+  /// then you won't be able to stop the slidable while it's animating forward.
+  final MovingIgnoringStrategy catchIgnoringStrategy;
+
+  /// What [HitTestBehavior] to apply to the gesture detector (based on the current controller status)
+  /// in default case. In other cases [notIgnoringHitTestBehaviorStrategy] is applied.
+  ///
+  /// By default applies [HitTestBehavior.deferToChild], as most of the time we don't want our
+  /// slidable gesture detector to block the events from other gesture detectors, when the animation
+  /// associated with it is dismissed.
+  final HitTestBehaviorStrategy hitTestBehaviorStrategy;
+
+  /// What [HitTestBehavior] to apply to the gesture detector (based on the current controller status)
+  /// when the slidable is being dragged, or when the [barrierIgnoringStrategy] evaluates to be `false`,
+  /// which means that the barrier should be touchable.
+  ///
+  /// By default applies [HitTestBehavior.opaque].
+  final HitTestBehaviorStrategy notIgnoringHitTestBehaviorStrategy;
+
+  final Function onBarrierTap;
 
   /// The direction in which the widget can be slid.
   final SlideDirection direction;
@@ -175,12 +274,6 @@ class Slidable extends StatefulWidget {
   /// If this condition is true, this behaviour will be changed diverse.
   final bool invertBarrierProgress;
 
-  /// Whether user can "catch" the slidable in forward move animation with touching the barrier.
-  final bool ignoreBarrierForward;
-
-  /// Whether user can "catch" the slidable in reverse move animation with touching the barrier.
-  final bool ignoreBarrierReverse;
-
   /// Determines the way that drag start behavior is handled.
   ///
   /// If set to [DragStartBehavior.start], the drag gesture used to slide a
@@ -198,45 +291,50 @@ class Slidable extends StatefulWidget {
   ///  * [DragGestureRecognizer.dragStartBehavior], which gives an example for the different behaviors.
   final DragStartBehavior dragStartBehavior;
 
-  /// Spring description for the fling animation.
-  final SpringDescription springDescription;
-
   @override
-  _SlidableState createState() => _SlidableState();
+  SlidableState createState() => SlidableState();
 }
 
 enum _FlingGestureKind { none, forward, reverse }
 
-class _SlidableState extends State<Slidable>
+class SlidableState extends State<Slidable>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
     _controller = (widget.controller ??
-        AnimationController(duration: widget.duration, vsync: this));
+        SlidableController(duration: widget.duration, vsync: this));
+    // _controller._bindSlidable(this);
     if (widget.onSlideChange != null) {
-      _controller.addListener(() {
-        widget.onSlideChange(_controller.value);
-      });
+      _controller.addListener(_handleControllerChange);
     }
     _updateAnimation();
   }
 
-  double _textScaleFactor;
-  AnimationController _controller;
-  Animation<Offset> _animation;
-
-  double _dragExtent = 0.0;
-  bool _dragUnderway = false;
-
-  @override
-  bool get wantKeepAlive => _controller?.isAnimating == true;
+  void _handleControllerChange() {
+    widget.onSlideChange(_controller.value);
+  }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
+    if (widget.onSlideChange != null) {
+      _controller.removeListener(_handleControllerChange);
+    }
+    // _controller._unbindSlidable(this);
     super.dispose();
   }
+
+  double _textScaleFactor;
+  SlidableController _controller;
+  Animation<Offset> _animation;
+
+  double _dragExtent = 0.0;
+
+  @override
+  bool get wantKeepAlive => _controller?.isAnimating == true;
 
   bool get _directionIsXAxis {
     return widget.direction == SlideDirection.endToStart ||
@@ -266,38 +364,58 @@ class _SlidableState extends State<Slidable>
 
   SlideDirection get _slideDirection => _extentToDirection(_dragExtent);
 
-  bool get _isActive {
-    return _dragUnderway || _controller.isAnimating;
-  }
-
   double get _overallDragAxisExtent {
     final Size size = context.size;
     return _directionIsXAxis ? size.width : size.height;
   }
 
   void _handleDragStart(DragStartDetails details) {
-    _dragUnderway = true;
-    final double sign =
-        _controller.status == AnimationStatus.dismissed ? 1.0 : -1.0;
+    _controller._dragged = true;
+    double sign = 1.0;
+    if (_controller.status != AnimationStatus.dismissed) {
+      if (widget.direction == SlideDirection.upFromBottom ||
+          widget.direction == SlideDirection.endToStart) {
+        sign = -1.0;
+      }
+      // wrong behaviour tests
+      // 0.5 0.0 upFromBottom
+      // -0.5 0.0 upFromBottom
+      // -0.5 0.0 endToStart
+      // 0.0 0.5 endToStart
+      // 0.0 0.5 upFromBottom
+      // 0.0 -0.5 upFromBottom
+      // 0.0 -0.5 endToStart
+    }
     _dragExtent = _controller.value * _overallDragAxisExtent * sign;
     if (_controller.status == AnimationStatus.forward &&
-        widget.canReverseForward) {
-      _controller.stop();
-    } else if (_controller.status == AnimationStatus.reverse &&
-        widget.canReverseReverse) {
+            !widget.catchIgnoringStrategy.forward ||
+        _controller.status == AnimationStatus.reverse &&
+            !widget.catchIgnoringStrategy.reverse) {
       _controller.stop();
     }
-    if (widget.onDragStart != null) widget.onDragStart(_slideDirection);
+    if (widget.onDragStart != null) {
+      // todo: rewrite this to display the actual drag direction (and other events too)
+      widget.onDragStart(_slideDirection);
+    }
+    _controller.notifyDragEventListeners(
+      SlidableDragStart(direction: _slideDirection),
+    );
     setState(() {
       _updateAnimation();
     });
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    if (!_isActive || _controller.isAnimating) return;
+    if (!_controller.isActive || _controller.isAnimating) return;
     if (widget.onDragUpdate != null) {
       widget.onDragUpdate(_slideDirection, details);
     }
+    _controller.notifyDragEventListeners(
+      SlidableDragUpdate(
+        direction: _slideDirection,
+        details: details,
+      ),
+    );
 
     final double delta = details.primaryDelta;
     final double oldDragExtent = _dragExtent;
@@ -387,9 +505,9 @@ class _SlidableState extends State<Slidable>
   }
 
   Future<void> _handleDragEnd(DragEndDetails details) async {
-    if (!_isActive || _controller.isAnimating) return;
+    if (!_controller.isActive || _controller.isAnimating) return;
 
-    _dragUnderway = false;
+    _controller._dragged = false;
     final double flingVelocity = _directionIsXAxis
         ? details.velocity.pixelsPerSecond.dx
         : details.velocity.pixelsPerSecond.dy;
@@ -402,7 +520,6 @@ class _SlidableState extends State<Slidable>
             1.0) {
           _controller.fling(
             velocity: -_kBackToStateVelocity,
-            springDescription: widget.springDescription,
           );
           slideResult = false;
           break;
@@ -410,7 +527,6 @@ class _SlidableState extends State<Slidable>
         _dragExtent = flingVelocity.sign;
         _controller.fling(
           velocity: flingVelocity.abs() * _kFlingVelocityScale,
-          springDescription: widget.springDescription,
         );
         slideResult = true;
         break;
@@ -420,7 +536,6 @@ class _SlidableState extends State<Slidable>
         _dragExtent = flingVelocity.sign;
         _controller.fling(
           velocity: -flingVelocity.abs() * _kFlingVelocityScale,
-          springDescription: widget.springDescription,
         );
         slideResult = false;
         break;
@@ -431,29 +546,29 @@ class _SlidableState extends State<Slidable>
               (widget.slideThresholds[_slideDirection] ?? _kExpandThreshold)) {
             _controller.fling(
               velocity: _kBackToStateVelocity,
-              springDescription: widget.springDescription,
             );
             slideResult = true;
           } else {
             _controller.fling(
               velocity: -_kBackToStateVelocity,
-              springDescription: widget.springDescription,
             );
             slideResult = false;
           }
         }
         break;
     }
-    if (widget.onDragEnd != null && slideResult != null)
-      widget.onDragEnd(_slideDirection, slideResult);
+    if (slideResult != null) {
+      if (widget.onDragEnd != null) {
+        widget.onDragEnd(_slideDirection, slideResult);
+      }
+      _controller.notifyDragEventListeners(
+        SlidableDragEnd(
+          direction: _slideDirection,
+          result: slideResult,
+        ),
+      );
+    }
   }
-
-  bool get _ignoringBarrier =>
-      _controller.isDismissed ||
-      _controller.status == AnimationStatus.forward &&
-          (widget.ignoreBarrierForward || !widget.canReverseForward) ||
-      _controller.status == AnimationStatus.reverse &&
-          (widget.ignoreBarrierReverse || !widget.canReverseReverse);
 
   @override
   Widget build(BuildContext context) {
@@ -463,6 +578,7 @@ class _SlidableState extends State<Slidable>
 
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
     if (_textScaleFactor != textScaleFactor) {
+      // Update the position on text scale scale change.
       _textScaleFactor = textScaleFactor;
       _updateAnimation();
     }
@@ -472,36 +588,236 @@ class _SlidableState extends State<Slidable>
       child: widget.child,
     );
 
-    // We are not resizing but we may be being dragging in widget.direction.
-    return GestureDetector(
-      onHorizontalDragStart: _directionIsXAxis ? _handleDragStart : null,
-      onHorizontalDragUpdate: _directionIsXAxis ? _handleDragUpdate : null,
-      onHorizontalDragEnd: _directionIsXAxis ? _handleDragEnd : null,
-      onVerticalDragStart: _directionIsXAxis ? null : _handleDragStart,
-      onVerticalDragUpdate: _directionIsXAxis ? null : _handleDragUpdate,
-      onVerticalDragEnd: _directionIsXAxis ? null : _handleDragEnd,
-      behavior: HitTestBehavior.deferToChild,
-      dragStartBehavior: widget.dragStartBehavior,
-      child: widget.barrier == null
-          ? content
-          : Stack(
-              children: [
-                AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) {
-                      return IgnorePointer(
-                        ignoring: _ignoringBarrier,
-                        child: FadeTransition(
-                          opacity: widget.invertBarrierProgress
-                              ? ReverseAnimation(_controller)
-                              : _controller,
-                          child: widget.barrier,
-                        ),
-                      );
-                    }),
-                content,
-              ],
-            ),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        HitTestBehavior hitTestBehavior;
+        final status = _controller.status;
+
+        final ignoring = widget.barrierIgnoringStrategy.evaluate(status);
+        if (_controller._dragged || !ignoring) {
+          hitTestBehavior =
+              widget.notIgnoringHitTestBehaviorStrategy.ask(status);
+        } else {
+          hitTestBehavior = widget.hitTestBehaviorStrategy.ask(status);
+        }
+
+        // We are not resizing but we may be being dragging in widget.direction.
+        return RawGestureDetector(
+          behavior: hitTestBehavior,
+          gestures: <Type, GestureRecognizerFactory>{
+            if (_directionIsXAxis)
+              NFHorizontalDragGestureRecognizer:
+                  GestureRecognizerFactoryWithHandlers<
+                      NFHorizontalDragGestureRecognizer>(
+                () => NFHorizontalDragGestureRecognizer(),
+                (NFHorizontalDragGestureRecognizer instance) => instance
+                  ..onStart = _handleDragStart
+                  ..onUpdate = _handleDragUpdate
+                  ..onEnd = _handleDragEnd
+                  ..dragStartBehavior = widget.dragStartBehavior
+                  ..shouldGiveUp = widget.shouldGiveUpGesture,
+              ),
+            if (!_directionIsXAxis)
+              NFVerticalDragGestureRecognizer:
+                  GestureRecognizerFactoryWithHandlers<
+                      NFVerticalDragGestureRecognizer>(
+                () => NFVerticalDragGestureRecognizer(),
+                (NFVerticalDragGestureRecognizer instance) => instance
+                  ..onStart = _handleDragStart
+                  ..onUpdate = _handleDragUpdate
+                  ..onEnd = _handleDragEnd
+                  ..dragStartBehavior = widget.dragStartBehavior
+                  ..shouldGiveUp = widget.shouldGiveUpGesture,
+              ),
+          },
+          child: widget.barrier == null
+              ? content
+              : () {
+                  final children = [
+                    IgnorePointer(
+                      ignoring: ignoring,
+                      child: FadeTransition(
+                        opacity: widget.invertBarrierProgress
+                            ? ReverseAnimation(_controller)
+                            : _controller,
+                        child: widget.onBarrierTap != null &&
+                                status == AnimationStatus.dismissed
+                            ? widget.barrier
+                            : GestureDetector(
+                                onTap: widget.onBarrierTap,
+                                behavior: HitTestBehavior.opaque,
+                                child: widget.barrier,
+                              ),
+                      ),
+                    ),
+                    content,
+                  ];
+                  return hitTestBehavior == HitTestBehavior.translucent
+                      ? StackWithAllChildrenReceiveEvents(children: children)
+                      : Stack(children: children);
+                }(),
+        );
+      },
     );
+  }
+}
+
+/// A controller to use with [Slidable], it extends an [AnimationController].
+///
+/// Provides an ability to listen to the drag events via [addDragEventListener]/[removeDragEventListener].
+///
+/// I also provided it with 3 methods to propagate/simulate drag events:
+///
+/// * [notifySlidablesDragStart]
+/// * [notifySlidablesDragUpdate]
+/// * [notifySlidablesDragEnd]
+///
+/// See also:
+///  * [Slidable], a widget that allows you to slide it's content
+///  * [SlidableControllerProvider], inherited widget to provide the controller
+class SlidableController extends AnimationController
+    with DragEventListenersMixin {
+  SlidableController({
+    this.springDescription,
+    double value = 0.0,
+    Duration duration = kNFRouteTransitionDuration,
+    Duration reverseDuration,
+    String debugLabel,
+    double lowerBound = 0.0,
+    double upperBound = 1.0,
+    AnimationBehavior animationBehavior = AnimationBehavior.normal,
+    @required TickerProvider vsync,
+  }) : super(
+          value: value,
+          duration: duration,
+          reverseDuration: reverseDuration,
+          debugLabel: debugLabel,
+          lowerBound: lowerBound,
+          upperBound: upperBound,
+          animationBehavior: animationBehavior,
+          vsync: vsync,
+        );
+
+  /// The default spring description to use within the [fling].
+  final SpringDescription springDescription;
+
+  /// Indicates that the slidable is being dragged or it is animating.
+  bool get isActive => _dragged || isAnimating;
+  bool get opened =>
+      _dragged || isCompleted || !_dragged && status == AnimationStatus.forward;
+  bool get closed =>
+      isDismissed || !_dragged && status == AnimationStatus.reverse;
+
+  bool _dragged = false;
+  bool get dragged => _dragged;
+  
+  @override
+  TickerFuture fling({
+    double velocity = 1.0,
+    SpringDescription springDescription,
+    AnimationBehavior animationBehavior,
+  }) {
+    springDescription ??= this.springDescription;
+    return super.fling(
+      velocity: velocity,
+      springDescription: springDescription,
+      animationBehavior: animationBehavior,
+    );
+  }
+
+  /// Calls [fling] with default velocity to end in the [opened] state.
+  void open({SpringDescription springDescription}) {
+    fling(
+      springDescription: springDescription ?? this.springDescription,
+    );
+  }
+
+  /// Calls [fling] with default velocity to end in the [closed] state.
+  void close({SpringDescription springDescription}) {
+    fling(
+      velocity: -1.0,
+      springDescription: springDescription ?? this.springDescription,
+    );
+  }
+}
+
+/// [SlidableControllerProvider], inherited widget to provide the [SlidableController].
+class SlidableControllerProvider<T> extends InheritedWidget {
+  const SlidableControllerProvider({
+    Key key,
+    @required this.child,
+    @required this.controller,
+  })  : assert(child != null),
+        assert(controller != null),
+        super(key: key, child: child);
+
+  final Widget child;
+  final SlidableController controller;
+
+  static SlidableControllerProvider<T> of<T>(BuildContext context) {
+    return context
+        .getElementForInheritedWidgetOfExactType<
+            SlidableControllerProvider<T>>()
+        .widget;
+  }
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
+    return false;
+  }
+}
+
+/// A mixin that implements the [addStatusListener]/[removeStatusListener] protocol
+/// and notifies all the registered listeners when [notifyStatusListeners] is
+/// called.
+///
+/// This mixin requires that the mixing class provide methods [didRegisterListener]
+/// and [didUnregisterListener]. Implementations of these methods can be obtained
+/// by mixing in another mixin from this library, such as [AnimationLazyListenerMixin].
+mixin DragEventListenersMixin {
+  final ObserverList<DragEventListener> _dragEventListeners =
+      ObserverList<DragEventListener>();
+
+  /// Called immediately before a drag event listener is added via [addStatusListener].
+  ///
+  /// At the time this method is called the registered listener is not yet
+  /// notified by [notifyDragEventListeners].
+  void didRegisterListener();
+
+  /// Called immediately after a drag event listener is removed via [removeDragEventListener].
+  ///
+  /// At the time this method is called the removed listener is no longer
+  /// notified by [notifyDragEventListeners].
+  void didUnregisterListener();
+
+  /// Calls listener every time the status of the drag changes.
+  ///
+  /// Listeners can be removed with [removeDragEventListener].
+  void addDragEventListener(DragEventListener listener) {
+    didRegisterListener();
+    _dragEventListeners.add(listener);
+  }
+
+  /// Stops calling the listener every time the status of the drag changes.
+  ///
+  /// Listeners can be added with [addDragEventListener].
+  void removeDragEventListener(DragEventListener listener) {
+    final bool removed = _dragEventListeners.remove(listener);
+    if (removed) {
+      didUnregisterListener();
+    }
+  }
+
+  /// Calls all the drag event listeners.
+  ///
+  /// If listeners are added or removed during this function, the modifications
+  /// will not change which listeners are called during this iteration.
+  void notifyDragEventListeners(SlidableDragEvent event) {
+    final List<DragEventListener> localListeners =
+        List<DragEventListener>.from(_dragEventListeners);
+    for (final DragEventListener listener in localListeners) {
+      if (_dragEventListeners.contains(listener)) listener(event);
+    }
   }
 }

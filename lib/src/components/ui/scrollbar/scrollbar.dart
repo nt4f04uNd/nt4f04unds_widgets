@@ -12,8 +12,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-const double kNFScrollBarHeight = 40.0;
-
+const double kNFScrollbarHeight = 40.0;
 const double kScrollbarThickness = 6.0;
 const Duration kScrollbarFadeDuration = Duration(milliseconds: 500);
 const Duration kScrollbarTimeToFade = Duration(milliseconds: 1000);
@@ -41,7 +40,7 @@ class NFScrollbar extends StatefulWidget {
     this.mainAxisMargin = 3.0,
     this.crossAxisMargin = 0.0,
     this.radius = const Radius.circular(8.0),
-    this.minLength = kNFScrollBarHeight,
+    this.minLength = kNFScrollbarHeight,
     this.minOverscrollLength,
   }) : super(key: key);
 
