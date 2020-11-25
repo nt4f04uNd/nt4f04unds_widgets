@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+*  Copyright (c) nt4f04und. All rights reserved.
+*  Licensed under the BSD-style license. See LICENSE in the project root for license information.
+*--------------------------------------------------------------------------------------------*/
+
 export 'components/components.dart';
 export 'localization/localization.dart';
 export 'logic/logic.dart';
@@ -7,6 +12,8 @@ export 'constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'components/components.dart';
+
 abstract class NFWidgets {
   /// Prevents class inheritance.
   NFWidgets._();
@@ -15,6 +22,9 @@ abstract class NFWidgets {
   static SystemUiOverlayStyle _defaultBottomSheetSystemUiStyle;
 
   /// Pass the parameters for the package to work properly.
+  ///
+  /// You can actually pass null to [defaultModalSystemUiStyle] and
+  /// [defaultBottomSheetSystemUiStyle].
   static void init({
     @required GlobalKey<NavigatorState> navigatorKey,
     @required RouteObserver<Route> routeObserver,
@@ -31,6 +41,7 @@ abstract class NFWidgets {
     NFWidgets.defaultSystemUiStyle = defaultSystemUiStyle;
     NFWidgets.defaultModalSystemUiStyle = defaultModalSystemUiStyle;
     NFWidgets.defaultBottomSheetSystemUiStyle = defaultBottomSheetSystemUiStyle;
+    updateScreenSize();
   }
 
   /// A key of you root navigator.

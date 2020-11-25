@@ -11,6 +11,7 @@ export 'animation_strategy.dart';
 export 'animation.dart';
 export 'dismissible.dart';
 export 'gestures.dart';
+export 'screen.dart';
 export 'scroll_physics.dart';
 export 'selection.dart';
 export 'show_functions.dart';
