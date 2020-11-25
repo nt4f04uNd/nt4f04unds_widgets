@@ -36,8 +36,10 @@ class _AppState extends State<App> {
     
     NFWidgets.init(
       routeObserver: routeObserver,
-      defaultSystemUiStyle: Constants.AppSystemUIThemes.defaultStyle,
       navigatorKey: App.navigatorKey,
+      defaultSystemUiStyle: Constants.AppSystemUIThemes.defaultStyle,
+      defaultModalSystemUiStyle: null,
+      defaultBottomSheetSystemUiStyle: null,
     );
   }
 
@@ -48,6 +50,12 @@ class _AppState extends State<App> {
       color: Colors.black,
       navigatorKey: App.navigatorKey,
       theme: Constants.AppTheme.theme,
+      supportedLocales: Constants.Config.supportedLocales
+          .map<Locale>((e) => Locale(e, e.toUpperCase())),
+      localizationsDelegates: const [
+        NFLocalizations.delegate,
+        // ... other locales
+      ],
       navigatorObservers: [routeObserver],
       onGenerateInitialRoutes: (routeName) => RouteControl.handleOnGenerateInitialRoutes(routeName, context),
       onGenerateRoute: (settings) => RouteControl.handleOnGenerateRoutes(settings),
