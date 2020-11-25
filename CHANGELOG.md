@@ -1,8 +1,18 @@
-## [1.0.1] - November 09, 2020
+## [1.0.2] - november 25, 2020
 
-* Restructured
-* Generated docs
+* updated namings
+* rewritten scrollbar
+* added animation strategies
+* rewritten slidable
+* screen size api
+* some fixes
+* other stuff
+
+## [1.0.1] - november 09, 2020
+
+* restructured
+* generated docs
  
-## [1.0.0] - November 09, 2020
+## [1.0.0] - november 09, 2020
 
-* Initial release
+* initial release

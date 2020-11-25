@@ -86,7 +86,7 @@ enum _DialogRaisedButtonFlavours { accept, cancel }
 /// Possible appearance variants for [NFDialogButton].
 enum NFDialogButtonVariant { raised, flat }
 
-const kDefaultNFDialogButtonVariant = NFDialogButtonVariant.flat;
+const kNFDialogButtonVariant = NFDialogButtonVariant.flat;
 
 /// Creates button to use in dialogs.
 class NFDialogButton extends StatelessWidget {
@@ -95,7 +95,7 @@ class NFDialogButton extends StatelessWidget {
     this.text,
     this.textStyle,
     this.color,
-    this.variant = kDefaultNFDialogButtonVariant,
+    this.variant = kNFDialogButtonVariant,
     this.padding = const EdgeInsets.symmetric(horizontal: 15.0),
     this.borderRadius = 15.0,
     this.onPressed,
@@ -110,7 +110,7 @@ class NFDialogButton extends StatelessWidget {
     this.text,
     this.textStyle,
     this.color,
-    this.variant = kDefaultNFDialogButtonVariant,
+    this.variant = kNFDialogButtonVariant,
     this.padding = const EdgeInsets.symmetric(horizontal: 15.0),
     this.borderRadius = 15.0,
     this.onPressed,
@@ -139,7 +139,7 @@ class NFDialogButton extends StatelessWidget {
   factory NFDialogButton.accept({
     String text,
     Function onPressed,
-    NFDialogButtonVariant variant = kDefaultNFDialogButtonVariant,
+    NFDialogButtonVariant variant = kNFDialogButtonVariant,
   }) {
     return NFDialogButton._createFlavour(
       text: text,
@@ -160,7 +160,7 @@ class NFDialogButton extends StatelessWidget {
   factory NFDialogButton.cancel({
     String text,
     Function onPressed,
-    NFDialogButtonVariant variant = kDefaultNFDialogButtonVariant,
+    NFDialogButtonVariant variant = kNFDialogButtonVariant,
   }) {
     return NFDialogButton._createFlavour(
       text: text,
