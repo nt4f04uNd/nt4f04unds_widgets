@@ -67,7 +67,7 @@ class NFScrollbar extends StatefulWidget {
 }
 
 class _NFScrollbarState extends State<NFScrollbar>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   ScrollbarPainter _scrollbarPainter;
   TextDirection _textDirection;
   Color _themeColor;

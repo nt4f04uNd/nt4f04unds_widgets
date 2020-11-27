@@ -99,9 +99,9 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   /// Defaults to `false`
   final bool exitIgnore;
 
-  /// Function to get system Ui to be set when navigating to route
+  /// Function to get system Ui to be set when navigating to route.
   ///
-  /// Defaults to [Constants.AppSstemUIThemes.allScreens.auto(context)]
+  /// Defaults to function that returns [NFWidgets.defaultSystemUiStyle].
   UIFunction checkSystemUi;
 
   @override

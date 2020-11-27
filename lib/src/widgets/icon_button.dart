@@ -132,8 +132,8 @@ class NFIconButton extends StatelessWidget {
   const NFIconButton({
     Key key,
     @required this.icon,
-    this.size = Constants.iconButtonSize,
-    this.iconSize = Constants.iconSize,
+    this.size = NFConstants.iconButtonSize,
+    this.iconSize = NFConstants.iconSize,
     this.color,
     this.focusColor,
     this.hoverColor,

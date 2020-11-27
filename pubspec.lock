@@ -23,7 +23,7 @@ packages:
     source: hosted
     version: "1.6.0"
   async:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: async
       url: "https://pub.dartlang.org"
@@ -145,7 +145,7 @@ packages:
     source: hosted
     version: "0.14.0+4"
   intl:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: intl
       url: "https://pub.dartlang.org"
@@ -154,9 +154,11 @@ packages:
   intl_translation:
     dependency: "direct dev"
     description:
-      name: intl_translation
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "198ba30710a7aeba94813389dac47c9092d11e6c"
+      url: "https://github.com/nt4f04uNd/intl_translation"
+    source: git
     version: "0.17.10+1"
   js:
     dependency: transitive

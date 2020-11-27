@@ -6,6 +6,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+/// Function to slow down duration by [timeDilation]
+Duration dilate(Duration duration) {
+  return duration * timeDilation;
+}
+
 /// Creates a usual for me curved animation which is:
 ///
 /// Curve [Curves.easeOutCubic]

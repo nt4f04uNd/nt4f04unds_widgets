@@ -3,16 +3,15 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-export 'components/components.dart';
+export 'core/core.dart';
+export 'widgets/widgets.dart';
 export 'localization/localization.dart';
-export 'logic/logic.dart';
-export 'utils/utils.dart';
 export 'constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'components/components.dart';
+import 'core/core.dart';
 
 abstract class NFWidgets {
   /// Prevents class inheritance.
@@ -32,10 +31,6 @@ abstract class NFWidgets {
     @required SystemUiOverlayStyle defaultModalSystemUiStyle,
     @required SystemUiOverlayStyle defaultBottomSheetSystemUiStyle,
   }) {
-    assert(routeObserver != null);
-    assert(navigatorKey != null);
-    assert(defaultSystemUiStyle != null);
-
     NFWidgets.routeObserver = routeObserver;
     NFWidgets.navigatorKey = navigatorKey;
     NFWidgets.defaultSystemUiStyle = defaultSystemUiStyle;

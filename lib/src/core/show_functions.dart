@@ -8,7 +8,6 @@ import 'package:flutter/material.dart'
     hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
 import 'package:flutter/material.dart' as flutter
     show showGeneralDialog, showBottomSheet, showModalBottomSheet;
-import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const EdgeInsets defaultAlertTitlePadding =
@@ -28,7 +27,7 @@ class NFShowFunctions {
 
   /// Calls [showGeneralDialog] function from Flutter material library to show a message to user (only accept button).
   ///
-  /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [Constants.AppSystemUIThemes.modal].
+  /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [NFWidgets.defaultModalSystemUiStyle].
   Future<T> showAlert<T>(
     BuildContext context, {
     Widget title,
@@ -56,7 +55,7 @@ class NFShowFunctions {
 
   /// Calls [showGeneralDialog] function from Flutter material library to show a dialog to user (accept and decline buttons).
   ///
-  /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [Constants.AppSystemUIThemes.modal].
+  /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [NFWidgets.defaultModalSystemUiStyle].
   Future<T> showDialog<T>(
     BuildContext context, {
     @required Widget title,
@@ -85,7 +84,7 @@ class NFShowFunctions {
 
     return flutter.showGeneralDialog<T>(
       barrierColor: Colors.black54,
-      transitionDuration: Constants.routeTransitionDuration,
+      transitionDuration: NFConstants.routeTransitionDuration,
       barrierDismissible: true,
       barrierLabel: 'NFAlertDialog',
       context: context,
@@ -214,7 +213,7 @@ class NFShowFunctions {
 
   /// Calls [showBottomSheet], but also handles system UI animations to the custom [ui] and out of it on pop.
   ///
-  /// [ui] Defaults to [Constants.AppSystemUIThemes.bottomSheet].
+  /// [ui] Defaults to [NFWidgets.defaultBottomSheetSystemUiStyle].
   PersistentBottomSheetController<T> showBottomSheet<T>({
     @required BuildContext context,
     @required WidgetBuilder builder,
@@ -250,7 +249,7 @@ class NFShowFunctions {
 
   /// Calls [showModalBottomSheet], but also handles system UI animations to the custom [ui] and out of it on pop.
   ///
-  /// [ui] Defaults to [Constants.AppSystemUIThemes.bottomSheet].
+  /// [ui] Defaults to [FWidgets.defaultBottomSheetSystemUiStyle].
   Future<T> showModalBottomSheet<T>({
     @required BuildContext context,
     @required WidgetBuilder builder,

@@ -250,8 +250,8 @@ class NFBackButton extends StatelessWidget {
   const NFBackButton({
     Key key,
     this.icon,
-    this.size = Constants.iconButtonSize,
-    this.iconSize = Constants.iconSize,
+    this.size = NFConstants.iconButtonSize,
+    this.iconSize = NFConstants.iconSize,
     this.onPressed,
   }) : super(key: key);
 
@@ -344,6 +344,91 @@ class NFInfoButton extends StatelessWidget {
                 content: Text(info),
               );
             },
+    );
+  }
+}
+
+/// A default icon button, but that can be toggled on and off with [enabled],
+/// and it's color will change with animation.
+/// Also, if [onPressed] was not specified, the disabled color will be applied.
+class NFAnimatedIconButton extends StatefulWidget {
+  NFAnimatedIconButton({
+    Key key,
+    @required this.icon,
+    @required this.onPressed,
+    this.iconSize = NFConstants.iconSize,
+    this.size = NFConstants.iconButtonSize,
+    this.enabled = true,
+    this.duration = NFConstants.colorAnimationDuration,
+    this.color,
+    this.disabledColor,
+  }) : super(key: key);
+  final Widget icon;
+  /// Button will have a disabled color if none was specified.
+  final Function onPressed;
+  final double iconSize;
+  final double size;
+  /// Can be used to set a disabled color for button, when `false`.
+  /// This won't prevent taps on button, it's more like a state indicator of something.
+  /// By default it is `true`.
+  final bool enabled;
+  final Duration duration;
+  /// If none specified, theme icon color is used.
+  final Color color;
+  /// If none specified, theme disabled color is used.
+  final Color disabledColor;
+  @override
+  NFAnimatedIconButtonState createState() => NFAnimatedIconButtonState();
+}
+
+class NFAnimatedIconButtonState extends State<NFAnimatedIconButton>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+    );
+    if (widget.enabled && widget.onPressed != null) {
+      controller.value = 1.0;
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.enabled && widget.onPressed != null) {
+      if (controller.status == AnimationStatus.dismissed ||
+          controller.status == AnimationStatus.reverse) {
+        controller.forward();
+      }
+    } else {
+      if (controller.status == AnimationStatus.completed ||
+          controller.status == AnimationStatus.forward) {
+        controller.reverse();
+      }
+    }
+    final colorAnimation = ColorTween(
+      begin: widget.disabledColor ?? Theme.of(context).disabledColor,
+      end: widget.color ?? Theme.of(context).iconTheme.color,
+    ).animate(NFDefaultAnimation(parent: controller));
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (BuildContext context, Widget child) => NFIconButton(
+        icon: widget.icon,
+        iconSize: widget.iconSize,
+        size: widget.size,
+        color: colorAnimation.value,
+        // Passing empty closure to prevent dimming that's done by default.
+        onPressed: widget.onPressed ?? () {},
+      ),
     );
   }
 }

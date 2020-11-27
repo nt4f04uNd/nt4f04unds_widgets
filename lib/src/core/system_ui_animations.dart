@@ -120,6 +120,9 @@ abstract class NFSystemUiControl {
   /// [curve] is a custom animation curve
   ///
   /// The passed [settings] will override current settings respectively.
+  /// 
+  /// NOTE Don't `await` for this method in `main` this will lead to
+  /// that your application never starts
   static Future<void> animateSystemUiOverlay({
     SystemUiOverlayStyle from,
     @required SystemUiOverlayStyle to,
@@ -172,8 +175,7 @@ abstract class NFSystemUiControl {
   }
 
   static void _handleEnd() {
-    if (_animationCompleter != null &&
-        _animationCompleter.isCompleted == false) {
+    if (_animationCompleter != null && !_animationCompleter.isCompleted) {
       _animationCompleter.complete();
       _animationCompleter = null;
     }

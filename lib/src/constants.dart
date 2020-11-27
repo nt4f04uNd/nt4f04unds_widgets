@@ -3,7 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-class Constants {
+class NFConstants {
   /// Default route transition duration used across the package.
   static const routeTransitionDuration = const Duration(milliseconds: 300);
 
