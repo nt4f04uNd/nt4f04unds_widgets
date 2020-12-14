@@ -6,9 +6,9 @@
 /// Module for essential (visible) to user widgets.
 
 export 'scrollbar/scrollbar.dart';
-export 'animation_switcher.dart';
+export 'animation/animation.dart';
 export 'buttons.dart';
-export 'count_switcher.dart';
+export 'animation/count_switcher.dart';
 export 'icon_button.dart';
 export 'ink_well.dart';
 export 'list_tile.dart';
@@ -20,3 +20,4 @@ export 'settings_widgets.dart';
 export 'slider.dart';
 export 'snackbar.dart';
 export 'tabs.dart';
+export 'text.dart';

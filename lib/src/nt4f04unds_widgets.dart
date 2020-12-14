@@ -19,6 +19,7 @@ abstract class NFWidgets {
 
   static SystemUiOverlayStyle _defaultModalSystemUiStyle;
   static SystemUiOverlayStyle _defaultBottomSheetSystemUiStyle;
+  static NFWidgetsBindingObserver _observer;
 
   /// Pass the parameters for the package to work properly.
   ///
@@ -37,6 +38,20 @@ abstract class NFWidgets {
     NFWidgets.defaultModalSystemUiStyle = defaultModalSystemUiStyle;
     NFWidgets.defaultBottomSheetSystemUiStyle = defaultBottomSheetSystemUiStyle;
     updateScreenSize();
+    if (_observer == null) {
+      _observer = NFWidgetsBindingObserver(onChangeMetrics: () {
+        updateScreenSize();
+      });
+      WidgetsBinding.instance.addObserver(_observer);
+    }
+  }
+
+  /// Removes the [WidgetsBinding] observer.
+  static void dispose() {
+    if (_observer != null) {
+      WidgetsBinding.instance.removeObserver(_observer);
+      _observer = null;
+    }
   }
 
   /// A key of you root navigator.

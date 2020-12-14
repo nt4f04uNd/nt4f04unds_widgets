@@ -14,7 +14,11 @@ dependencies:
   marquee: ^1.6.1
   equatable: ^1.2.5
   auto_size_text: ^2.1.0
+  url_launcher: ^5.7.10
   shared_preferences: ^0.5.12+4
+  multiple_localization:
+    git:
+      url: https://github.com/nt4f04uNd/flutter_multiple_localization
   flutter:
     sdk: flutter
 

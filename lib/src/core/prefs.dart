@@ -47,7 +47,7 @@ class Pref<T> {
     } else if (type == typeOf<List<String>>()) {
       return prefs.setStringList(key, value as List<String>);
     }
-    throw Exception("Pref.get: Wrong type of pref generic: T = $T");
+    throw Exception("Pref.get: Wrong type of pref generic: T = $type");
   }
 
   /// Gets pref value.

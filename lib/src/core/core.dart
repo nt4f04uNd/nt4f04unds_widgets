@@ -7,11 +7,11 @@
 
 export 'route_transitions/route_transitions.dart';
 export 'splash/splash.dart';
+export 'gestures/gestures.dart';
 export 'animation_strategy.dart';
 export 'animation.dart';
 export 'dismissible.dart';
 export 'duration.dart';
-export 'gestures.dart';
 export 'lifecycle.dart';
 export 'prefs.dart';
 export 'screen.dart';

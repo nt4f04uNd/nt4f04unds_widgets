@@ -7,6 +7,7 @@ import 'dart:async';
 
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:multiple_localization/multiple_localization.dart';
 import 'package:nt4f04unds_widgets/src/constants.dart';
 
 import 'gen/messages_all.dart';
@@ -16,14 +17,12 @@ class NFLocalizations {
       _NFLocalizationsDelegate();
 
   static Future<NFLocalizations> load(Locale locale) {
-    final String name =
-        locale.countryCode.isEmpty ? locale.languageCode : locale.toString();
-    final localeName = Intl.canonicalizedLocale(name);
-
-    return initializeMessages(localeName).then((bool _) {
-      Intl.defaultLocale = localeName;
-      return NFLocalizations();
-    });
+    return MultipleLocalizations.load(
+        initializeMessages,
+        locale,
+        (locale) => NFLocalizations(),
+        setDefaultLocale: true,
+      );
   }
 
   static NFLocalizations of(BuildContext context) {

@@ -6,62 +6,15 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
-
-/// All content inside this widget will only take one touch event.
-class SingleTouchRecognizerWidget extends StatelessWidget {
-  final Widget child;
-  SingleTouchRecognizerWidget({this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return RawGestureDetector(
-      gestures: <Type, GestureRecognizerFactory>{
-        _SingleTouchRecognizer:
-            GestureRecognizerFactoryWithHandlers<_SingleTouchRecognizer>(
-          () => _SingleTouchRecognizer(),
-          (_SingleTouchRecognizer instance) {},
-        ),
-      },
-      child: child,
-    );
-  }
-}
-
-class _SingleTouchRecognizer extends OneSequenceGestureRecognizer {
-  int _p = 0;
-  @override
-  void addAllowedPointer(PointerDownEvent event) {
-    //first register the current pointer so that related events will be handled by this recognizer
-    startTrackingPointer(event.pointer);
-    //ignore event if another event is already in progress
-    if (_p == 0) {
-      resolve(GestureDisposition.rejected);
-      _p = event.pointer;
-    } else {
-      resolve(GestureDisposition.accepted);
-    }
-  }
-
-  @override
-  String get debugDescription => "single pointer";
-
-  @override
-  void didStopTrackingLastPointer(int pointer) {}
-
-  @override
-  void handleEvent(PointerEvent event) {
-    if (!event.down && event.pointer == _p) {
-      _p = 0;
-    }
-  }
-}
-
 // TODO: migrate this to null safety (copited this on flutter master 43e1d1596e)
 // TODO: add shouldAlwaysWin function (or smth like that) to make the drag recognizer
-// optionally eagly win in arena
+// optionally eagly win in arena (like i did for NFTapGestureRecognizer)
+
+import 'dart:ui';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 
 enum _DragState {
   ready,
@@ -300,6 +253,7 @@ abstract class NFDragGestureRecognizer
 
   @override
   bool isPointerAllowed(PointerEvent event) {
+    TapGestureRecognizer();
     if (_initialButtons == null) {
       switch (event.buttons) {
         case kPrimaryButton:

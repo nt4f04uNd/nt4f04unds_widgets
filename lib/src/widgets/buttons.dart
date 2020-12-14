@@ -350,7 +350,10 @@ class NFInfoButton extends StatelessWidget {
 
 /// A default icon button, but that can be toggled on and off with [enabled],
 /// and it's color will change with animation.
-/// Also, if [onPressed] was not specified, the disabled color will be applied.
+///
+/// When [enabled] is `false`, [unselectedColor] will be applied.
+///
+/// Also, if [onPressed] was not specified, the [disabledColor] will be applied.
 class NFAnimatedIconButton extends StatefulWidget {
   NFAnimatedIconButton({
     Key key,
@@ -361,21 +364,29 @@ class NFAnimatedIconButton extends StatefulWidget {
     this.enabled = true,
     this.duration = NFConstants.colorAnimationDuration,
     this.color,
+    this.unselectedColor,
     this.disabledColor,
   }) : super(key: key);
   final Widget icon;
+
   /// Button will have a disabled color if none was specified.
   final Function onPressed;
   final double iconSize;
   final double size;
+
   /// Can be used to set a disabled color for button, when `false`.
   /// This won't prevent taps on button, it's more like a state indicator of something.
   /// By default it is `true`.
   final bool enabled;
   final Duration duration;
+
   /// If none specified, theme icon color is used.
   final Color color;
-  /// If none specified, theme disabled color is used.
+
+  /// If none specified, [ThemeData.unselectedWidgetColor] color is used.
+  final Color unselectedColor;
+
+  /// If none specified, [ThemeData.disabledColor] color is used.
   final Color disabledColor;
   @override
   NFAnimatedIconButtonState createState() => NFAnimatedIconButtonState();
@@ -416,7 +427,7 @@ class NFAnimatedIconButtonState extends State<NFAnimatedIconButton>
       }
     }
     final colorAnimation = ColorTween(
-      begin: widget.disabledColor ?? Theme.of(context).disabledColor,
+      begin: widget.unselectedColor ?? Theme.of(context).unselectedWidgetColor,
       end: widget.color ?? Theme.of(context).iconTheme.color,
     ).animate(NFDefaultAnimation(parent: controller));
     return AnimatedBuilder(
@@ -427,7 +438,8 @@ class NFAnimatedIconButtonState extends State<NFAnimatedIconButton>
         size: widget.size,
         color: colorAnimation.value,
         // Passing empty closure to prevent dimming that's done by default.
-        onPressed: widget.onPressed ?? () {},
+        onPressed: widget.onPressed,
+        disabledColor: widget.disabledColor,
       ),
     );
   }

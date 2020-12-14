@@ -577,7 +577,7 @@ class SlidableState extends State<Slidable>
     assert(!_directionIsXAxis || debugCheckHasDirectionality(context));
 
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
-    if (_textScaleFactor != textScaleFactor) {
+    if (_textScaleFactor != textScaleFactor) { // todo: rewrite this with [NFWidgetsBindingObserver]
       // Update the position on text scale scale change.
       _textScaleFactor = textScaleFactor;
       _updateAnimation();
