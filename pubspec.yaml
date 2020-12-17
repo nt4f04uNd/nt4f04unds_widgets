@@ -7,7 +7,7 @@ issue_tracker: https://github.com/nt4f04uNd/nt4f04unds_widgets/issues
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.17.0"
+  # Targeting flutter commit 183f0e797a3bf8aa1b35b650150f7522d5d10377
 
 dependencies:
   async: ^2.4.2
