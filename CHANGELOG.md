@@ -1,3 +1,10 @@
+## [1.0.3] - january 25, 2021
+
+* multiple route observers support
+* some fixes
+* basic text selection menu
+* deleted switcher
+
 ## [1.0.2] - november 25, 2020
 
 * updated namings

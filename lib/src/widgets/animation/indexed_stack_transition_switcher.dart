@@ -14,12 +14,13 @@ import 'package:flutter/material.dart';
 class IndexedTransitionSwitcher extends StatefulWidget {
   /// Creates an [IndexedTransitionSwitcher].
   const IndexedTransitionSwitcher({
+    Key key,
     @required this.index,
     @required this.children,
     @required this.transitionBuilder,
     this.reverse = false,
     this.duration = const Duration(milliseconds: 300),
-  });
+  }) : super(key: key);
 
   /// The index of the child to show.
   final int index;

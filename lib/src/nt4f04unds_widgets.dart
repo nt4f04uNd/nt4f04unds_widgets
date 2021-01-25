@@ -27,12 +27,12 @@ abstract class NFWidgets {
   /// [defaultBottomSheetSystemUiStyle].
   static void init({
     @required GlobalKey<NavigatorState> navigatorKey,
-    @required RouteObserver<Route> routeObserver,
+    @required List<RouteObserver> routeObservers,
     @required SystemUiOverlayStyle defaultSystemUiStyle,
     @required SystemUiOverlayStyle defaultModalSystemUiStyle,
     @required SystemUiOverlayStyle defaultBottomSheetSystemUiStyle,
   }) {
-    NFWidgets.routeObserver = routeObserver;
+    NFWidgets.routeObservers = routeObservers;
     NFWidgets.navigatorKey = navigatorKey;
     NFWidgets.defaultSystemUiStyle = defaultSystemUiStyle;
     NFWidgets.defaultModalSystemUiStyle = defaultModalSystemUiStyle;
@@ -57,8 +57,8 @@ abstract class NFWidgets {
   /// A key of you root navigator.
   static GlobalKey<NavigatorState> navigatorKey;
 
-  /// Route observer which is used inside route transitions.
-  static RouteObserver<Route> routeObserver;
+  /// Route observers which are used inside route transitions.
+  static List<RouteObserver> routeObservers;
 
   /// Default style of the system ui.
   ///

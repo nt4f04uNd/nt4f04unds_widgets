@@ -20,6 +20,5 @@ export 'selection.dart';
 export 'show_functions.dart';
 export 'slidable.dart';
 export 'stack.dart';
-export 'switcher.dart';
 export 'system_ui_animations.dart';
 export 'types.dart';

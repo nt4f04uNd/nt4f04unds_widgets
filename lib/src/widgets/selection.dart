@@ -3,14 +3,15 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'package:nt4f04unds_widgets/src/constants.dart';
 
 /// Just an [AppBar], but has the properties to specify how it will look in the selection mode.
 /// Also performs a fade switch animation while switching in and out of the selection mode.
-class SelectionAppBar extends AppBar {
-  SelectionAppBar({
+class NFSelectionAppBar extends AppBar {
+  NFSelectionAppBar({
     Key key,
     @required NFSelectionController selectionController,
     @required Widget title,
@@ -21,6 +22,7 @@ class SelectionAppBar extends AppBar {
 
     /// Actions to show in selection
     @required List<Widget> actionsSelection,
+    @required Function onMenuClick,
 
     /// Go to selection animation
     Curve curve = Curves.easeOutCubic,
@@ -53,9 +55,7 @@ class SelectionAppBar extends AppBar {
               return NFAnimatedMenuCloseButton(
                 animation: selectionController.animationController,
                 onCloseClick: selectionController.close,
-                onMenuClick: () {
-                  Scaffold.of(context).openDrawer();
-                },
+                onMenuClick: onMenuClick,
               );
             },
           ),
@@ -77,6 +77,7 @@ class SelectionAppBar extends AppBar {
                   reverseCurve: reverseCurve,
                   parent: selectionController.animationController,
                 ),
+                builder2: _selectionActionsBuilder,
                 child1: Row(children: actions),
                 child2: Row(children: actionsSelection),
               ),
@@ -100,8 +101,25 @@ class SelectionAppBar extends AppBar {
           toolbarOpacity: toolbarOpacity,
           bottomOpacity: bottomOpacity,
         );
+
+  static Widget _selectionActionsBuilder(
+    BuildContext context,
+    Animation<double> animation,
+    Widget child,
+  ) {
+    return FadeTransition(
+      opacity: animation,
+      child: Transform(
+        transform: Matrix4.identity()
+          ..rotateX((1.0 - animation.value) * math.pi / 2),
+        origin: const Offset(0.0, 30.0),
+        child: child,
+      ),
+    );
+  }
 }
 
+// todo: duration
 class NFAnimatedMenuCloseButton extends StatefulWidget {
   NFAnimatedMenuCloseButton({
     Key key,
@@ -140,8 +158,10 @@ class NFAnimatedMenuCloseButtonState extends State<NFAnimatedMenuCloseButton>
   @override
   void initState() {
     super.initState();
-    controller =
-        AnimationController(vsync: this, duration: kNFSelectionDuration);
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
     animation = Tween(begin: 0.0, end: 1.0).animate(
       NFDefaultAnimation(parent: controller),
     );

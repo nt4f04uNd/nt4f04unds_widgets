@@ -256,10 +256,10 @@ class NFSnackbarWrapperState extends State<_NFSnackbarWrapper>
                   }
                 }),
                 direction: DismissDirection.down,
-                onDismissed: (_) => NFSnackbarControl._handleSnackbarDismissed(),
+                onDismissed: (_) =>
+                    NFSnackbarControl._handleSnackbarDismissed(),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: 4.0, left: 8.0, right: 8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10.0),

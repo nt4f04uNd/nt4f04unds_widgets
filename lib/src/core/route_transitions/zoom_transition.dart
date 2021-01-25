@@ -16,49 +16,15 @@ class ZoomRouteTransition<T extends Widget> extends RouteTransition<T> {
   @override
   final T route;
   @override
-  BoolFunction checkEntAnimationEnabled;
-  @override
-  BoolFunction checkExitAnimationEnabled;
-  @override
-  final Curve entCurve;
-  @override
-  final Curve entReverseCurve;
-  @override
-  final Curve exitCurve;
-  @override
-  final Curve exitReverseCurve;
-  @override
-  final bool entIgnore;
-  @override
-  final bool exitIgnore;
-  @override
-  RoutePageBuilder pageBuilder;
-  @override
-  UIFunction checkSystemUi;
+  final RouteTransitionSettings transitionSettings;
 
   ZoomRouteTransition({
     @required this.route,
-    this.checkEntAnimationEnabled = defRouteTransitionBoolFunc,
-    this.checkExitAnimationEnabled = defRouteTransitionBoolFunc,
-    this.entCurve = Curves.linearToEaseOut,
-    this.entReverseCurve = Curves.easeInToLinear,
-    this.exitCurve = Curves.linearToEaseOut,
-    this.exitReverseCurve = Curves.easeInToLinear,
-    this.entIgnore = false,
-    this.exitIgnore = false,
-    this.checkSystemUi,
-    Duration transitionDuration = kNFRouteTransitionDuration,
-    Duration reverseTransitionDuration = kNFRouteTransitionDuration,
-    RouteSettings settings,
-    bool opaque = true,
-    bool maintainState = false,
-  }) : super(
+    RouteTransitionSettings transitionSettings,
+  })  : transitionSettings = transitionSettings ?? RouteTransitionSettings(),
+        super(
           route: route,
-          transitionDuration: transitionDuration,
-          reverseTransitionDuration: reverseTransitionDuration,
-          settings: settings,
-          opaque: opaque,
-          maintainState: maintainState,
+          transitionSettings: transitionSettings ?? RouteTransitionSettings(),
         ) {
     transitionsBuilder = (
       BuildContext context,

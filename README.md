@@ -35,7 +35,7 @@ class _AppState extends State<App> {
     super.initState();
     
     NFWidgets.init(
-      routeObserver: routeObserver,
+      routeObservers: [routeObserver],
       navigatorKey: App.navigatorKey,
       defaultSystemUiStyle: Constants.AppSystemUIThemes.defaultStyle,
       defaultModalSystemUiStyle: null,

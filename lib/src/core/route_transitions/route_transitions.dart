@@ -17,7 +17,6 @@ import 'package:flutter/services.dart';
 
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-
 // todo: [NR] add transitionDuration parameter for the ui animation (and for secondary animation too)
 // and allow ui animation customization on whole
 // todo: rewrite either allow both, instead of animating the ui with `animateSystemUiOverlay`, bind it to the route animations instead
@@ -25,12 +24,12 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 const Duration kNFRouteTransitionDuration = const Duration(milliseconds: 240);
 
 /// Type for function that returns boolean
-/// 
+///
 /// todo: to seprate file
 typedef bool BoolFunction();
 
 /// Needed to define constant [defRouteTransitionBoolFunc]
-/// 
+///
 /// todo: to seprate file
 bool trueFunc() => true;
 
@@ -51,9 +50,30 @@ final Tween<double> exitRevDimTween = Tween<double>(begin: 1.0, end: 0.93);
 /// Tween that always evaluates to one
 final Tween<double> constTween = Tween<double>(begin: 1.0, end: 1.0);
 
-/// Abstract class to create various route transitions
-abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
-  final T route;
+/// Configures the look of the route transition.
+class RouteTransitionSettings {
+  RouteTransitionSettings({
+    this.transitionDuration = kNFRouteTransitionDuration,
+    this.reverseTransitionDuration = kNFRouteTransitionDuration,
+    this.settings,
+    this.opaque = true,
+    this.maintainState = false,
+    this.checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    this.checkExitAnimationEnabled = defRouteTransitionBoolFunc,
+    this.entCurve = Curves.linearToEaseOut,
+    this.entReverseCurve = Curves.easeInToLinear,
+    this.exitCurve = Curves.linearToEaseOut,
+    this.exitReverseCurve = Curves.easeInToLinear,
+    this.entIgnore = false,
+    this.exitIgnore = false,
+    this.checkSystemUi,
+  });
+
+  final Duration transitionDuration;
+  final Duration reverseTransitionDuration;
+  final RouteSettings settings;
+  final bool opaque;
+  final bool maintainState;
 
   /// Function that checks whether to play enter animation or not
   ///
@@ -68,41 +88,72 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   /// A curve for enter animation
   ///
   /// Defaults to [Curves.linearToEaseOut]
-  final Curve entCurve;
+  Curve entCurve;
 
   /// A curve for reverse enter animation
   ///
   /// Defaults to [Curves.easeInToLinear]
-  final Curve entReverseCurve;
+  Curve entReverseCurve;
 
   /// A curve for exit animation
   ///
   /// Defaults to [Curves.linearToEaseOut]
-  final Curve exitCurve;
+  Curve exitCurve;
 
   /// A curve for reverse exit animation
   ///
   /// Defaults to [Curves.easeInToLinear]
-  final Curve exitReverseCurve;
+  Curve exitReverseCurve;
 
   /// Whether to ignore touch events while enter forward animation.
   ///
   /// The reverse one is ignored by me, becuse it doesn't register taps, only drags and this behaviour is pointless.
   ///
   /// Defaults to `false`
-  final bool entIgnore;
+  bool entIgnore;
 
   /// Whether to ignore touch events while exit reverse animation
   ///
   /// The forward one is ignored by the framework and it's not possible to change that.
   ///
   /// Defaults to `false`
-  final bool exitIgnore;
+  bool exitIgnore;
 
   /// Function to get system Ui to be set when navigating to route.
   ///
   /// Defaults to function that returns [NFWidgets.defaultSystemUiStyle].
   UIFunction checkSystemUi;
+}
+
+class RouteTransitionSettingsProvider extends InheritedWidget {
+  const RouteTransitionSettingsProvider({
+    Key key,
+    @required this.child,
+    @required this.transitionSettings,
+  })  : assert(child != null),
+        assert(transitionSettings != null),
+        super(key: key, child: child);
+
+  final Widget child;
+  final RouteTransitionSettings transitionSettings;
+
+  static RouteTransitionSettingsProvider of<T>(BuildContext context) {
+    return context
+        .getElementForInheritedWidgetOfExactType<
+            RouteTransitionSettingsProvider>()
+        .widget;
+  }
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
+    return false;
+  }
+}
+
+/// Abstract class to create various route transitions
+abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
+  final T route;
+  final RouteTransitionSettings transitionSettings;
 
   @override
   RoutePageBuilder pageBuilder;
@@ -129,27 +180,15 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
 
   RouteTransition({
     @required this.route,
-
-    this.checkEntAnimationEnabled = defRouteTransitionBoolFunc,
-    this.checkExitAnimationEnabled = defRouteTransitionBoolFunc,
-    this.entCurve = Curves.linearToEaseOut,
-    this.entReverseCurve = Curves.easeInToLinear,
-    this.exitCurve = Curves.linearToEaseOut,
-    this.exitReverseCurve = Curves.easeInToLinear,
-    this.entIgnore = false,
-    this.exitIgnore = false,
-    this.checkSystemUi,
-    Duration transitionDuration = kNFRouteTransitionDuration,
-    Duration reverseTransitionDuration = kNFRouteTransitionDuration,
-    RouteSettings settings,
-    bool opaque = true,
-    bool maintainState = false,
-  }) : super(
-            settings: settings,
-            opaque: opaque,
-            maintainState: maintainState,
-            transitionDuration: transitionDuration,
-            reverseTransitionDuration: reverseTransitionDuration,
+    RouteTransitionSettings transitionSettings,
+  })  : transitionSettings = transitionSettings ?? RouteTransitionSettings(),
+        super(
+            settings: transitionSettings.settings,
+            opaque: transitionSettings.opaque,
+            maintainState: transitionSettings.maintainState,
+            transitionDuration: transitionSettings.transitionDuration,
+            reverseTransitionDuration:
+                transitionSettings.reverseTransitionDuration,
             pageBuilder: (
               BuildContext context,
               Animation<double> animation,
@@ -168,10 +207,11 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
           if (!uiAnimating) {
             uiAnimating = true;
             await NFSystemUiControl.animateSystemUiOverlay(
-              to: checkSystemUi(),
-              curve: entReverseCurve,
-              settings:
-                  NFAnimationControllerSettings(duration: transitionDuration),
+              to: transitionSettings.checkSystemUi(),
+              curve: transitionSettings.entReverseCurve,
+              settings: NFAnimationControllerSettings(
+                duration: transitionDuration,
+              ),
             );
             uiAnimating = false;
           }
@@ -194,14 +234,14 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   /// Won't be called if route is created via [onGenerateInitialRoutes].
   void handleSystemUiCheck(
       Animation<double> animation, Animation<double> secondaryAnimation) {
-    checkSystemUi ??= () => NFWidgets.defaultSystemUiStyle;
+    transitionSettings.checkSystemUi ??= () => NFWidgets.defaultSystemUiStyle;
 
-    animation.addStatusListener((status) async {
-      if (!uiAnimating && status == AnimationStatus.forward) {
+    Future<void> animate() async {
+      if (!uiAnimating && animation.status == AnimationStatus.forward) {
         uiAnimating = true;
         await NFSystemUiControl.animateSystemUiOverlay(
-          to: checkSystemUi(),
-          curve: entCurve,
+          to: transitionSettings.checkSystemUi(),
+          curve: transitionSettings.entCurve,
           settings: NFAnimationControllerSettings(
             // TODO: why * 2?
             duration: transitionDuration * 2,
@@ -209,17 +249,24 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
         );
         uiAnimating = false;
       }
+    }
+
+    animate();
+    animation.addStatusListener((status) {
+      animate();
     });
   }
 
   /// Checks if animation  must be enabled
   void handleEnabledCheck(
       Animation<double> animation, Animation<double> secondaryAnimation) {
+    entAnimationEnabled = transitionSettings.checkEntAnimationEnabled();
     animation.addStatusListener((status) {
-      entAnimationEnabled = checkEntAnimationEnabled();
+      entAnimationEnabled = transitionSettings.checkEntAnimationEnabled();
     });
+    exitAnimationEnabled = transitionSettings.checkExitAnimationEnabled();
     secondaryAnimation.addStatusListener((status) {
-      exitAnimationEnabled = checkExitAnimationEnabled();
+      exitAnimationEnabled = transitionSettings.checkExitAnimationEnabled();
     });
   }
 
@@ -227,12 +274,14 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   void handleIgnoranceCheck(
       Animation<double> animation, Animation<double> secondaryAnimation) {
     animation.addStatusListener((status) {
-      ignore = entIgnore && status == AnimationStatus.forward ||
-          status == AnimationStatus.reverse;
+      ignore =
+          transitionSettings.entIgnore && status == AnimationStatus.forward ||
+              status == AnimationStatus.reverse;
     });
 
     secondaryAnimation.addStatusListener((status) {
-      secondaryIgnore = exitIgnore && status == AnimationStatus.reverse;
+      secondaryIgnore =
+          transitionSettings.exitIgnore && status == AnimationStatus.reverse;
     });
   }
 }
@@ -240,7 +289,7 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
 class RouteAwareWidget extends StatefulWidget {
   RouteAwareWidget({
     @required this.child,
-    this.routeObserver,
+    this.routeObservers,
     this.onPush,
     this.onPop,
     this.onPushNext,
@@ -248,7 +297,7 @@ class RouteAwareWidget extends StatefulWidget {
     this.logging = false,
   }) : assert(child != null);
   final Widget child;
-  final RouteObserver routeObserver;
+  final List<RouteObserver> routeObservers;
   final Function onPush;
   final Function onPop;
   final Function onPushNext;
@@ -261,17 +310,21 @@ class RouteAwareWidget extends StatefulWidget {
 
 // Implement RouteAware in a widget's state and subscribe it to the RouteObserver.
 class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
-  RouteObserver _routeObserver;
+  List<RouteObserver> _routeObservers;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _routeObserver = widget.routeObserver ?? NFWidgets.routeObserver;
-    _routeObserver.subscribe(this, ModalRoute.of(context));
+    _routeObservers = widget.routeObservers ?? NFWidgets.routeObservers;
+    for (final observer in _routeObservers) {
+      observer.subscribe(this, ModalRoute.of(context));
+    }
   }
 
   @override
   void dispose() {
-    _routeObserver.unsubscribe(this);
+    for (final observer in _routeObservers) {
+      observer.unsubscribe(this);
+    }
     super.dispose();
   }
 

@@ -7,99 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'route_transitions.dart';
 
-/// Creates customizable stack route transition with fade, very similar to Telegram app
-class StackFadeRouteTransition<T extends Widget> extends RouteTransition<T> {
-  @override
-  final T route;
-  @override
-  BoolFunction checkEntAnimationEnabled;
-  @override
-  final Curve entCurve;
-  @override
-  final Curve entReverseCurve;
-  @override
-  final bool entIgnore;
-  @override
-  final bool exitIgnore;
-  @override
-  UIFunction checkSystemUi;
-
-  /// Begin offset for the enter animation
-  ///
-  /// Defaults to [const Offset(0.16, 0.0)]
-  final Offset entBegin;
-
-  /// End offset for the exit animation
-  ///
-  /// Defaults to [const Offset(0.2, 0.0)]
-  final Offset exitEnd;
-
-  /// Whether the route can be dismissed with the swipe.
-  ///
-  /// If true, then [opaque] property will be ignored.
-  /// Defaults to `false`.
-  final bool dismissible;
-
-  /// The direction of the swipe to dismiss the route.
-  ///
-  /// Defaults to [DismissDirection.startToEnd]
-  final SlideDirection dismissDirection;
-
-  /// Widget to show as barrier.
-  ///
-  /// By default container of [Colors.black26].
-  final Widget dismissBarrier;
-
-  factory StackFadeRouteTransition.fromBottom({
-    @required T route,
-    BoolFunction checkEntAnimationEnabled = defRouteTransitionBoolFunc,
-    Curve entCurve = Curves.easeOutCubic,
-    Curve entReverseCurve = Curves.easeInCubic,
-    bool entIgnore = false,
-    bool exitIgnore = false,
-    UIFunction checkSystemUi,
-    bool dismissible = false,
-    SlideDirection dismissDirection = SlideDirection.startToEnd,
-    Widget dismissBarrier,
-    Duration transitionDuration = kNFRouteTransitionDuration,
-    Duration reverseTransitionDuration = kNFRouteTransitionDuration,
-    RouteSettings settings,
-    bool opaque = true,
-    bool maintainState = false,
-  }) {
-    return StackFadeRouteTransition(
-      route: route,
-      checkEntAnimationEnabled: checkEntAnimationEnabled,
-      entCurve: entCurve,
-      entReverseCurve: entReverseCurve,
-      entIgnore: entIgnore,
-      exitIgnore: exitIgnore,
-      checkSystemUi: checkSystemUi,
-      entBegin: const Offset(0.0, 0.16),
-      exitEnd: const Offset(0.0, 0.2),
-      dismissible: dismissible,
-      dismissDirection: dismissDirection,
-      dismissBarrier: dismissBarrier,
-      transitionDuration: transitionDuration,
-      reverseTransitionDuration: reverseTransitionDuration,
-      settings: settings,
-      opaque: opaque,
-      maintainState: maintainState,
-    );
-  }
-
-  /// Whether route has been dismissed by users swipe.
-  /// Needed to determine whether to show a barrier and shadow from the route.
-  bool _beenDismissed = false;
-
-  StackFadeRouteTransition({
-    @required this.route,
-    this.checkEntAnimationEnabled = defRouteTransitionBoolFunc,
-    this.entCurve = Curves.easeOutCubic,
-    this.entReverseCurve = Curves.easeInCubic,
-    this.entIgnore = false,
-    this.exitIgnore = false,
-    this.checkSystemUi,
+/// Settings for the [StackFadeRouteTransition].
+class StackFadeRouteTransitionSettings extends RouteTransitionSettings {
+  /// Creates transition that comes from right to left.
+  StackFadeRouteTransitionSettings({
     this.entBegin = const Offset(0.16, 0.0),
     this.exitEnd = const Offset(0.2, 0.0),
     this.dismissible = false,
@@ -110,13 +21,122 @@ class StackFadeRouteTransition<T extends Widget> extends RouteTransition<T> {
     RouteSettings settings,
     bool opaque = true,
     bool maintainState = false,
-  }) : super(
-          route: route,
+    BoolFunction checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    BoolFunction checkExitAnimationEnabled = defRouteTransitionBoolFunc,
+    // entCurve and entReverseCurve have different defaults, compared to other transitions
+    Curve entCurve = Curves.easeOutCubic,
+    Curve entReverseCurve = Curves.easeInCubic,
+    Curve exitCurve = Curves.linearToEaseOut,
+    Curve exitReverseCurve = Curves.easeInToLinear,
+    bool entIgnore = false,
+    bool exitIgnore = false,
+    UIFunction checkSystemUi,
+  })  : assert(!dismissible || !opaque,
+            'If dismissible set to true, the opaque property must be set to false'),
+        super(
           transitionDuration: transitionDuration,
           reverseTransitionDuration: reverseTransitionDuration,
           settings: settings,
-          opaque: opaque && !dismissible,
+          opaque: opaque,
           maintainState: maintainState,
+          checkEntAnimationEnabled: checkEntAnimationEnabled,
+          checkExitAnimationEnabled: checkExitAnimationEnabled,
+          entCurve: entCurve,
+          entReverseCurve: entReverseCurve,
+          exitCurve: exitCurve,
+          exitReverseCurve: exitReverseCurve,
+          entIgnore: entIgnore,
+          exitIgnore: exitIgnore,
+          checkSystemUi: checkSystemUi,
+        );
+
+  /// Creates transition that comes from bottom to top.
+  StackFadeRouteTransitionSettings.fromBottom({
+    this.dismissible = false,
+    this.dismissDirection = SlideDirection.startToEnd,
+    this.dismissBarrier,
+    Duration transitionDuration = kNFRouteTransitionDuration,
+    Duration reverseTransitionDuration = kNFRouteTransitionDuration,
+    RouteSettings settings,
+    bool opaque = true,
+    bool maintainState = false,
+    BoolFunction checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    BoolFunction checkExitAnimationEnabled = defRouteTransitionBoolFunc,
+    // entCurve and entReverseCurve have different defaults, compared to other transitions
+    Curve entCurve = Curves.easeOutCubic,
+    Curve entReverseCurve = Curves.easeInCubic,
+    Curve exitCurve = Curves.linearToEaseOut,
+    Curve exitReverseCurve = Curves.easeInToLinear,
+    bool entIgnore = false,
+    bool exitIgnore = false,
+    UIFunction checkSystemUi,
+  })  : assert(!dismissible || !opaque,
+            'If dismissible set to true, the opaque property must be set to false'),
+        entBegin = const Offset(0.0, 0.16),
+        exitEnd = const Offset(0.0, 0.2),
+        super(
+          transitionDuration: transitionDuration,
+          reverseTransitionDuration: reverseTransitionDuration,
+          settings: settings,
+          opaque: opaque,
+          maintainState: maintainState,
+          checkEntAnimationEnabled: checkEntAnimationEnabled,
+          checkExitAnimationEnabled: checkExitAnimationEnabled,
+          entCurve: entCurve,
+          entReverseCurve: entReverseCurve,
+          exitCurve: exitCurve,
+          exitReverseCurve: exitReverseCurve,
+          entIgnore: entIgnore,
+          exitIgnore: exitIgnore,
+          checkSystemUi: checkSystemUi,
+        );
+
+  /// Begin offset for the enter animation
+  ///
+  /// Defaults to [const Offset(0.16, 0.0)]
+  Offset entBegin;
+
+  /// End offset for the exit animation
+  ///
+  /// Defaults to [const Offset(0.2, 0.0)]
+  Offset exitEnd;
+
+  /// Whether the route can be dismissed with the swipe.
+  ///
+  /// If true, then [opaque] property will be ignored.
+  /// Defaults to `false`.
+  bool dismissible;
+
+  /// The direction of the swipe to dismiss the route.
+  ///
+  /// Defaults to [DismissDirection.startToEnd]
+  SlideDirection dismissDirection;
+
+  /// Widget to show as barrier.
+  ///
+  /// By default container of [Colors.black26].
+  Widget dismissBarrier;
+}
+
+/// Creates customizable stack route transition with fade, very similar to Telegram app
+class StackFadeRouteTransition<T extends Widget> extends RouteTransition<T> {
+  @override
+  final T route;
+  @override
+  final StackFadeRouteTransitionSettings transitionSettings;
+
+  /// Whether route has been dismissed by users swipe.
+  /// Needed to determine whether to show a barrier and shadow from the route.
+  bool _beenDismissed = false;
+
+  StackFadeRouteTransition({
+    @required this.route,
+    StackFadeRouteTransitionSettings transitionSettings,
+  })  : transitionSettings =
+            transitionSettings ?? StackFadeRouteTransitionSettings(),
+        super(
+          route: route,
+          transitionSettings: transitionSettings ?? RouteTransitionSettings(),
         ) {
     transitionsBuilder = (
       BuildContext context,
@@ -129,19 +149,22 @@ class StackFadeRouteTransition<T extends Widget> extends RouteTransition<T> {
 
       final slideAnimation = animation.status == AnimationStatus.forward
           // Move in on enter
-          ? Tween<Offset>(begin: entBegin, end: Offset.zero).animate(
+          ? Tween<Offset>(
+                  begin: this.transitionSettings.entBegin, end: Offset.zero)
+              .animate(
               CurvedAnimation(
                 parent: animation,
-                curve: entCurve,
+                curve: this.transitionSettings.entCurve,
               ),
             )
           // Move out on enter reverse
           : animation.status == AnimationStatus.reverse
-              ? Tween(begin: exitEnd, end: Offset.zero).animate(
+              ? Tween(begin: this.transitionSettings.exitEnd, end: Offset.zero)
+                  .animate(
                   CurvedAnimation(
                     parent: animation,
-                    curve: entCurve,
-                    reverseCurve: entReverseCurve,
+                    curve: this.transitionSettings.entCurve,
+                    reverseCurve: this.transitionSettings.entReverseCurve,
                   ),
                 )
               // Stand still in other cases
@@ -179,7 +202,7 @@ class StackFadeRouteTransition<T extends Widget> extends RouteTransition<T> {
         child: IgnorePointer(
           // Disable any touch events on exit while in transition
           ignoring: secondaryIgnore,
-          child: dismissible
+          child: this.transitionSettings.dismissible
               ? _DismissibleRoute(
                   routeTransition: this,
                   animatedChild: animatedChild,
@@ -288,10 +311,11 @@ class _DismissibleRouteState extends State<_DismissibleRoute>
               forward: true,
               reverse: true,
             ),
-            direction: widget.routeTransition.dismissDirection,
+            direction:
+                widget.routeTransition.transitionSettings.dismissDirection,
             invertBarrierProgress: true,
             barrier: _showBarrier
-                ? widget.routeTransition.dismissBarrier ??
+                ? widget.routeTransition.transitionSettings.dismissBarrier ??
                     Container(color: Colors.black26)
                 : null,
             onDragUpdate: (_, __) {

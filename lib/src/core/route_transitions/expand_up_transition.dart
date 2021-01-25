@@ -22,6 +22,57 @@ final Tween<Offset> _secondaryTranslationTween = Tween<Offset>(
   end: const Offset(0.0, -0.025),
 );
 
+/// Settings for the [ExpandUpRouteTransition].
+class ExpandUpRouteTransitionSettings extends RouteTransitionSettings {
+  ExpandUpRouteTransitionSettings({
+    this.exitBegin = Offset.zero,
+    this.exitEnd = const Offset(-0.2, 0.0),
+    this.playMaterialExit = false,
+    Duration transitionDuration = kNFRouteTransitionDuration,
+    Duration reverseTransitionDuration = kNFRouteTransitionDuration,
+    RouteSettings settings,
+    bool opaque = true,
+    bool maintainState = false,
+    BoolFunction checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    BoolFunction checkExitAnimationEnabled = defRouteTransitionBoolFunc,
+    Curve entCurve = Curves.linearToEaseOut,
+    Curve entReverseCurve = Curves.easeInToLinear,
+    Curve exitCurve = Curves.linearToEaseOut,
+    Curve exitReverseCurve = Curves.easeInToLinear,
+    bool entIgnore = false,
+    bool exitIgnore = false,
+    UIFunction checkSystemUi,
+  }) : super(
+          transitionDuration: transitionDuration,
+          reverseTransitionDuration: reverseTransitionDuration,
+          settings: settings,
+          opaque: opaque,
+          maintainState: maintainState,
+          checkEntAnimationEnabled: checkEntAnimationEnabled,
+          checkExitAnimationEnabled: checkExitAnimationEnabled,
+          entCurve: entCurve,
+          entReverseCurve: entReverseCurve,
+          exitCurve: exitCurve,
+          exitReverseCurve: exitReverseCurve,
+          entIgnore: entIgnore,
+          exitIgnore: exitIgnore,
+          checkSystemUi: checkSystemUi,
+        );
+
+  /// Begin offset for exit animation
+  ///
+  /// Defaults to [Offset.zero]
+  Offset exitBegin;
+
+  /// End offset for exit animation
+  ///
+  /// Defaults to [const Offset(-0.2, 0.0)]
+  Offset exitEnd;
+
+  /// If true, default material exit animation will be played.
+  bool playMaterialExit;
+}
+
 /// Creates customizable expand up route transition
 ///
 /// By default acts pretty same as [OpenUpwardsPageTransitionsBuilder] - creates upwards expand in transition
@@ -29,64 +80,17 @@ class ExpandUpRouteTransition<T extends Widget> extends RouteTransition<T> {
   @override
   final T route;
   @override
-  BoolFunction checkEntAnimationEnabled;
-  @override
-  BoolFunction checkExitAnimationEnabled;
-  @override
-  final Curve entCurve;
-  @override
-  final Curve entReverseCurve;
-  @override
-  final Curve exitCurve;
-  @override
-  final Curve exitReverseCurve;
-  @override
-  final bool entIgnore;
-  @override
-  final bool exitIgnore;
-  @override
-  UIFunction checkSystemUi;
-
-  /// Begin offset for exit animation
-  ///
-  /// Defaults to [Offset.zero]
-  final Offset exitBegin;
-
-  /// End offset for exit animation
-  ///
-  /// Defaults to [const Offset(-0.3, 0.0)]
-  final Offset exitEnd;
-
-  /// If true, default material exit animation will be played
-  final bool playMaterialExit;
+  ExpandUpRouteTransitionSettings transitionSettings;
 
   ExpandUpRouteTransition({
     @required this.route,
-    this.checkEntAnimationEnabled = defRouteTransitionBoolFunc,
-    this.checkExitAnimationEnabled = defRouteTransitionBoolFunc,
-    this.entCurve = Curves.linearToEaseOut,
-    this.entReverseCurve = Curves.easeInToLinear,
-    this.exitCurve = Curves.linearToEaseOut,
-    this.exitReverseCurve = Curves.easeInToLinear,
-    this.entIgnore = false,
-    this.exitIgnore = false,
-    this.checkSystemUi,
-    this.exitBegin = Offset.zero,
-    this.exitEnd = const Offset(-0.2, 0.0),
-    Duration transitionDuration = kNFRouteTransitionDuration,
-    Duration reverseTransitionDuration = kNFRouteTransitionDuration,
-    RouteSettings settings,
-    bool opaque = true,
-    bool maintainState = false,
-    this.playMaterialExit = false,
-  }) : super(
-          route: route,
-          transitionDuration: transitionDuration,
-          reverseTransitionDuration: reverseTransitionDuration,
-          settings: settings,
-          opaque: opaque,
-          maintainState: maintainState,
-        ) {
+    ExpandUpRouteTransitionSettings transitionSettings,
+  })  : this.transitionSettings =
+            transitionSettings ?? ExpandUpRouteTransitionSettings(),
+        super(
+            route: route,
+            transitionSettings:
+                transitionSettings ?? ExpandUpRouteTransitionSettings()) {
     transitionsBuilder = (
       BuildContext context,
       Animation<double> animation,
@@ -166,7 +170,7 @@ class ExpandUpRouteTransition<T extends Widget> extends RouteTransition<T> {
                 ),
               );
             },
-            child: playMaterialExit
+            child: this.transitionSettings.playMaterialExit
                 ? AnimatedBuilder(
                     animation: secondaryAnimation,
                     child: FractionalTranslation(
@@ -182,11 +186,14 @@ class ExpandUpRouteTransition<T extends Widget> extends RouteTransition<T> {
                   )
                 : TurnableSlideTransition(
                     enabled: exitAnimationEnabled,
-                    position: Tween(begin: exitBegin, end: exitEnd).animate(
+                    position: Tween(
+                      begin: this.transitionSettings.exitBegin,
+                      end: this.transitionSettings.exitEnd,
+                    ).animate(
                       CurvedAnimation(
                         parent: secondaryAnimation,
-                        curve: exitCurve,
-                        reverseCurve: exitReverseCurve,
+                        curve: this.transitionSettings.exitCurve,
+                        reverseCurve: this.transitionSettings.exitReverseCurve,
                       ),
                     ),
                     child: materialWrappedChild,

@@ -8,112 +8,46 @@ import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-/// Creates [Raised] with border radius, by default colored into main app color
-class NFPrimaryRaisedButton extends StatelessWidget {
-  const NFPrimaryRaisedButton({
-    Key key,
-    @required this.text,
-    @required this.onPressed,
-    this.loading = false,
-    this.textStyle,
-    this.materialTapTargetSize = MaterialTapTargetSize.shrinkWrap,
-    this.color,
-    this.borderRadius = 15.0,
-    this.padding,
-  });
+/// Possible appearance variants for [NFButton].
+enum NFButtonVariant { raised, flat }
 
-  /// Text to show inside button
-  final String text;
-  final Function onPressed;
+const kNFButtonVariant = NFButtonVariant.flat;
 
-  /// Loading shows loading inside button
-  final bool loading;
+enum _NFButtonFlavor { accept, cancel, close }
 
-  /// Style applied to text
-  final TextStyle textStyle;
-
-  /// Specifies whether the button will have margins or not
-  final MaterialTapTargetSize materialTapTargetSize;
-  final Color color;
-  final double borderRadius;
-  final EdgeInsets padding;
-
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        splashFactory: NFListTileInkRipple.splashFactory,
-      ),
-      child: RaisedButton(
-        key: key,
-        splashColor: Colors.black.withOpacity(0.18),
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeInCubic,
-          child: loading
-              ? SizedBox(
-                  width: 25.0,
-                  height: 25.0,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: const AlwaysStoppedAnimation(Colors.white),
-                  ),
-                )
-              : Text(
-                  text,
-                  style: textStyle ??
-                      TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        fontWeight: FontWeight.w900,
-                      ),
-                ),
-        ),
-        color: color ?? Theme.of(context).colorScheme.primary,
-        onPressed: loading ? null : onPressed,
-        materialTapTargetSize: materialTapTargetSize,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius),
-        ),
-        padding: padding,
-      ),
-    );
-  }
-}
-
-enum _DialogRaisedButtonFlavours { accept, cancel }
-
-/// Possible appearance variants for [NFDialogButton].
-enum NFDialogButtonVariant { raised, flat }
-
-const kNFDialogButtonVariant = NFDialogButtonVariant.flat;
-
-/// Creates button to use in dialogs.
-class NFDialogButton extends StatelessWidget {
-  const NFDialogButton({
+/// todo: Migrage to new buttons from flutter when they add splash customization
+/// Temporarily [ColorScheme.onSecondary] used for default text color
+class NFButton extends StatelessWidget {
+  const NFButton({
     Key key,
     this.text,
     this.textStyle,
     this.color,
-    this.variant = kNFDialogButtonVariant,
+    this.splashColor,
+    this.loading = false,
+    this.onPressed,
+    this.variant = kNFButtonVariant,
     this.padding = const EdgeInsets.symmetric(horizontal: 15.0),
     this.borderRadius = 15.0,
-    this.onPressed,
+    this.materialTapTargetSize = MaterialTapTargetSize.shrinkWrap,
   })  : _flavour = null,
         super(key: key);
 
   /// Applies a specific flavour to button to restyle it later.
   /// Primarily needed to get localizations, because they require build context.
-  NFDialogButton._createFlavour({
-    @required _DialogRaisedButtonFlavours flavour,
+  NFButton._createFlavor({
+    @required _NFButtonFlavor flavour,
     Key key,
     this.text,
     this.textStyle,
     this.color,
-    this.variant = kNFDialogButtonVariant,
+    this.splashColor,
+    this.loading = false,
+    this.onPressed,
+    this.variant = kNFButtonVariant,
     this.padding = const EdgeInsets.symmetric(horizontal: 15.0),
     this.borderRadius = 15.0,
-    this.onPressed,
+    this.materialTapTargetSize = MaterialTapTargetSize.shrinkWrap,
   })  : _flavour = flavour,
         super(key: key);
 
@@ -121,9 +55,13 @@ class NFDialogButton extends StatelessWidget {
   final String text;
   final TextStyle textStyle;
   final Color color;
+  final Color splashColor;
+
+  /// Loading shows loading inside button
+  final bool loading;
 
   /// Control the appearance of the button.
-  final NFDialogButtonVariant variant;
+  final NFButtonVariant variant;
   final EdgeInsets padding;
   final double borderRadius;
 
@@ -131,49 +69,111 @@ class NFDialogButton extends StatelessWidget {
   final Function onPressed;
 
   /// Applies additional specific style.
-  final _DialogRaisedButtonFlavours _flavour;
+  final _NFButtonFlavor _flavour;
 
-  /// Constructs an accept button.
-  ///
-  /// `true` will be always passed to [Navigator.maybePop()] call.
-  factory NFDialogButton.accept({
+  /// Specifies whether the button will have margins or not.
+  final MaterialTapTargetSize materialTapTargetSize;
+  factory NFButton.accept({
+    Key key,
     String text,
+    TextStyle textStyle,
+    Color color,
+    Color splashColor,
+    bool loading = false,
     Function onPressed,
-    NFDialogButtonVariant variant = kNFDialogButtonVariant,
+    NFButtonVariant variant = kNFButtonVariant,
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 15.0),
+    double borderRadius = 15.0,
+    MaterialTapTargetSize materialTapTargetSize =
+        MaterialTapTargetSize.shrinkWrap,
   }) {
-    return NFDialogButton._createFlavour(
+    return NFButton._createFlavor(
+      flavour: _NFButtonFlavor.accept,
+      key: key,
       text: text,
-      variant: variant,
-      flavour: _DialogRaisedButtonFlavours.accept,
+      textStyle: textStyle,
+      color: color,
+      splashColor: splashColor,
+      loading: loading,
       onPressed: () {
         if (onPressed != null) {
           onPressed();
         }
         return true;
       },
+      variant: variant,
+      padding: padding,
+      borderRadius: borderRadius,
+      materialTapTargetSize: materialTapTargetSize,
     );
   }
 
-  /// Constructs a cancel button.
-  ///
-  /// `false` will be always passed to [Navigator.maybePop()] call.
-  factory NFDialogButton.cancel({
+  factory NFButton.cancel({
+    Key key,
     String text,
+    TextStyle textStyle,
+    Color color,
+    Color splashColor,
+    bool loading = false,
     Function onPressed,
-    NFDialogButtonVariant variant = kNFDialogButtonVariant,
+    NFButtonVariant variant = kNFButtonVariant,
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 15.0),
+    double borderRadius = 15.0,
+    MaterialTapTargetSize materialTapTargetSize =
+        MaterialTapTargetSize.shrinkWrap,
   }) {
-    return NFDialogButton._createFlavour(
+    return NFButton._createFlavor(
+      flavour: _NFButtonFlavor.cancel,
+      key: key,
       text: text,
-      variant: variant,
-      flavour: _DialogRaisedButtonFlavours.cancel,
-      color: const Color(0xfff1f2f4),
-      textStyle: TextStyle(color: Colors.black),
+      textStyle: textStyle,
+      color: color,
+      splashColor: splashColor,
+      loading: loading,
       onPressed: () {
         if (onPressed != null) {
           onPressed();
         }
         return false;
       },
+      variant: variant,
+      padding: padding,
+      borderRadius: borderRadius,
+      materialTapTargetSize: materialTapTargetSize,
+    );
+  }
+  factory NFButton.close({
+    Key key,
+    String text,
+    TextStyle textStyle,
+    Color color,
+    Color splashColor,
+    bool loading = false,
+    Function onPressed,
+    NFButtonVariant variant = kNFButtonVariant,
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 15.0),
+    double borderRadius = 15.0,
+    MaterialTapTargetSize materialTapTargetSize =
+        MaterialTapTargetSize.shrinkWrap,
+  }) {
+    return NFButton._createFlavor(
+      flavour: _NFButtonFlavor.close,
+      key: key,
+      text: text,
+      textStyle: textStyle,
+      color: color,
+      splashColor: splashColor,
+      loading: loading,
+      onPressed: () {
+        if (onPressed != null) {
+          onPressed();
+        }
+        return false;
+      },
+      variant: variant,
+      padding: padding,
+      borderRadius: borderRadius,
+      materialTapTargetSize: materialTapTargetSize,
     );
   }
 
@@ -181,52 +181,86 @@ class NFDialogButton extends StatelessWidget {
   String _getDefaultButtonText(BuildContext context) {
     final l10n = NFLocalizations.of(context);
     switch (_flavour) {
-      case _DialogRaisedButtonFlavours.accept:
+      case _NFButtonFlavor.accept:
         return l10n.accept;
-      case _DialogRaisedButtonFlavours.cancel:
+      case _NFButtonFlavor.cancel:
         return l10n.cancel;
-      default:
+      case _NFButtonFlavor.close:
         return l10n.close;
+      default:
+        return '';
     }
   }
 
   Future<void> _handleOnPressed(BuildContext context) async {
-    var res;
     if (onPressed != null) {
-      res = await onPressed();
+      final res = await onPressed();
+      if (_flavour != null) {
+        Navigator.of(context).maybePop(await onPressed());
+      }
     }
-    Navigator.of(context).maybePop(res);
+  }
+
+  Widget _buildChild(BuildContext context) {
+    final theme = Theme.of(context);
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      child: loading
+          ? SizedBox(
+              width: 25.0,
+              height: 25.0,
+              child: const CircularProgressIndicator(
+                strokeWidth: 3.0,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+              ),
+            )
+          : Text(
+              text ?? _getDefaultButtonText(context),
+              style: TextStyle(
+                color: variant == NFButtonVariant.raised
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.onSecondary,
+                fontWeight: FontWeight.w900,
+              ).merge(textStyle),
+            ),
+    );
   }
 
   Widget _buildButton(BuildContext context) {
+    final theme = Theme.of(context);
     switch (variant) {
-      case NFDialogButtonVariant.raised:
+      case NFButtonVariant.raised:
         return RaisedButton(
-          splashColor: Colors.black.withOpacity(0.18),
-          child: Text(
-            text ?? _getDefaultButtonText(context),
-            style: textStyle ??
-                TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-          ),
-          color: color ?? Theme.of(context).colorScheme.primary,
+          color: color ?? theme.colorScheme.primary,
+          splashColor: splashColor ?? Colors.black.withOpacity(0.18),
+          highlightColor: Colors.transparent,
+          onPressed: () => _handleOnPressed(context),
           padding: padding,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
-          onPressed: () => _handleOnPressed(context),
+          materialTapTargetSize: materialTapTargetSize,
+          child: _buildChild(context),
         );
-      case NFDialogButtonVariant.flat:
+      case NFButtonVariant.flat:
         return FlatButton(
-          splashColor: Theme.of(context).splashColor,
-          child: Text(
-            text ?? _getDefaultButtonText(context),
-            style: const TextStyle(fontWeight: FontWeight.w900),
-          ),
+          color: color ?? Colors.transparent,
+          splashColor: splashColor ?? theme.splashColor,
+          highlightColor: Colors.transparent,
+          onPressed: () => _handleOnPressed(context),
           padding: padding,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
-          onPressed: () => _handleOnPressed(context),
+          materialTapTargetSize: materialTapTargetSize,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            child: _buildChild(context),
+          ),
         );
       default:
         assert(false);

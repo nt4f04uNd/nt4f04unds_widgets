@@ -6,9 +6,10 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// TODO: migrate this to null safety (copited this on flutter master 43e1d1596e)
-// TODO: add shouldAlwaysWin function (or smth like that) to make the drag recognizer
-// optionally eagly win in arena (like i did for NFTapGestureRecognizer)
+/// ###########################################################################################
+/// copited this on flutter master 43e1d1596e
+/// TODO: migrate this back to null safety (copited this on flutter master 43e1d1596e)
+/// ###########################################################################################
 
 import 'dart:ui';
 
@@ -72,8 +73,7 @@ typedef GestureVelocityTrackerBuilder = VelocityTracker Function(
 ///  * [HorizontalDragGestureRecognizer], for left and right drags.
 ///  * [VerticalDragGestureRecognizer], for up and down drags.
 ///  * [PanGestureRecognizer], for drags that are not locked to a single axis.
-abstract class NFDragGestureRecognizer
-    extends OneSequenceGestureRecognizer {
+abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   /// Initialize the object.
   ///
   /// [dragStartBehavior] must not be null.
@@ -522,7 +522,7 @@ abstract class NFDragGestureRecognizer
 }
 
 /// Recognizes movement in the vertical direction.
-/// 
+///
 /// Copied from Flutter, but extended with [shouldGiveUp] method.
 ///
 /// Used for vertical scrolling.
@@ -533,8 +533,7 @@ abstract class NFDragGestureRecognizer
 ///    horizontal movement.
 ///  * [MultiDragGestureRecognizer], for a family of gesture recognizers that
 ///    track each touch point independently.
-class NFVerticalDragGestureRecognizer
-    extends NFDragGestureRecognizer {
+class NFVerticalDragGestureRecognizer extends NFDragGestureRecognizer {
   /// Create a gesture recognizer for interactions in the vertical axis.
   ///
   /// {@macro flutter.gestures.GestureRecognizer.kind}
@@ -568,7 +567,7 @@ class NFVerticalDragGestureRecognizer
 }
 
 /// Recognizes movement in the horizontal direction.
-/// 
+///
 /// Copied from Flutter, but extended with [shouldGiveUp] method.
 ///
 /// Used for horizontal scrolling.
@@ -579,8 +578,7 @@ class NFVerticalDragGestureRecognizer
 ///    vertical movement.
 ///  * [MultiDragGestureRecognizer], for a family of gesture recognizers that
 ///    track each touch point independently.
-class NFHorizontalDragGestureRecognizer
-    extends NFDragGestureRecognizer {
+class NFHorizontalDragGestureRecognizer extends NFDragGestureRecognizer {
   /// Create a gesture recognizer for interactions in the horizontal axis.
   ///
   /// {@macro flutter.gestures.GestureRecognizer.kind}
@@ -614,7 +612,7 @@ class NFHorizontalDragGestureRecognizer
 }
 
 /// Recognizes movement both horizontally and vertically.
-/// 
+///
 /// Copied from Flutter, but extended with [shouldGiveUp] method.
 ///
 /// See also:
@@ -626,8 +624,7 @@ class NFHorizontalDragGestureRecognizer
 ///    some time has passed.
 class NFPanGestureRecognizer extends NFDragGestureRecognizer {
   /// Create a gesture recognizer for tracking movement on a plane.
-  NFPanGestureRecognizer({Object debugOwner})
-      : super(debugOwner: debugOwner);
+  NFPanGestureRecognizer({Object debugOwner}) : super(debugOwner: debugOwner);
 
   @override
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {

@@ -10,25 +10,10 @@ const double kNFAppBarPreferredSize = 52.0;
 
 /// Creates [Scaffold] with preferred size [AppBar]
 class NFPageBase extends StatelessWidget {
-  final Widget child;
-
-  /// Text that will be displayed in app bar title
-  final String name;
-  final Color backgroundColor;
-  final Color appBarBackgroundColor;
-  final bool enableElevation;
-
-  /// Actions in [AppBar]
-  final List<Widget> actions;
-
-  /// Overrides default [NFBackButton] widget
-  final Widget backButton;
-  final bool resizeToAvoidBottomInset;
-
   const NFPageBase({
     Key key,
     @required this.child,
-    this.name = "",
+    this.name = '',
     this.backgroundColor,
     this.appBarBackgroundColor,
     this.enableElevation = true,
@@ -38,97 +23,74 @@ class NFPageBase extends StatelessWidget {
   })  : assert(child != null),
         super(key: key);
 
+  /// Text that will be displayed in app bar title
+  final String name;
+  final Widget child;
+  final Color backgroundColor;
+  final bool resizeToAvoidBottomInset;
+  final Color appBarBackgroundColor;
+  final bool enableElevation;
+  final List<Widget> actions;
+  final Widget backButton;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: child,
       backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      appBar: PreferredSize(
-        preferredSize:
-            Size.fromHeight(kNFAppBarPreferredSize), // here the desired height
-        child: Container(
-          decoration: BoxDecoration(
-            boxShadow: [
-              if (enableElevation)
-                const BoxShadow(
-                  color: Colors.black12,
-                  spreadRadius: 2.0,
-                  blurRadius: 2.0,
-                  offset: const Offset(0.0, 0.5),
-                ),
-            ],
-          ),
-          child: AppBar(
-            titleSpacing: 0.0,
-            automaticallyImplyLeading: false,
-            backgroundColor: appBarBackgroundColor,
-            leading: backButton,
-            actions: actions,
-            title: Text(
-              name,
-              style: Theme.of(context).appBarTheme.textTheme.headline6.copyWith(
-                    fontSize: 21.0,
-                  ),
-            ),
-          ),
-        ),
+      appBar: NFAppBar(
+        title: name,
+        actions: actions,
+        leading: backButton,
+        backgroundColor: appBarBackgroundColor,
+        elevation: enableElevation ? 2.0 : 0.0,
       ),
-      body: child,
     );
   }
 }
 
-/// Creates [Scaffold] with preferred size [AppBar]
-///
-/// Also receives the color animation to change the background color
-class NFAnimatedPageBase extends AnimatedWidget {
-  final Widget child;
-  final Animation<Color> animation;
+class NFAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const NFAppBar({
+    Key key,
+    this.preferredHeight,
+    this.leading,
+    this.title,
+    this.actions,
+    this.elevation = 2.0,
+    this.backgroundColor,
+  }) : super(key: key);
 
-  /// Text that will be displayed in app bar title
-  final String name;
+  final double preferredHeight;
+  final Widget leading;
+  final String title;
+  final List<Widget> actions;
+  final double elevation;
   final Color backgroundColor;
 
-  /// Actions in [AppBar]
-  final List<Widget> actions;
-
-  /// Overrides default [NFBackButton] widget
-  final Widget backButton;
-
-  const NFAnimatedPageBase({
-    Key key,
-    @required this.child,
-    @required this.animation,
-    this.name = "",
-    this.backgroundColor,
-    this.actions = const [],
-    this.backButton = const NFBackButton(),
-  })  : assert(child != null),
-        super(key: key, listenable: animation);
+  @override
+  Size get preferredSize => Size.fromHeight(
+        preferredHeight ?? kNFAppBarPreferredSize,
+      );
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: animation.value,
-      appBar: PreferredSize(
-        preferredSize:
-            Size.fromHeight(kNFAppBarPreferredSize), // here the desired height
-        child: AppBar(
-          titleSpacing: 0.0,
-          backgroundColor: Colors.transparent,
-          automaticallyImplyLeading: false,
-          leading: backButton,
-          actions: actions,
-          title: Text(
-            name,
-            style: TextStyle(
-              color: Theme.of(context).textTheme.headline6.color,
-              // fontWeight: FontWE
-            ),
-          ),
+    return PreferredSize(
+      preferredSize: preferredSize,
+      child: AppBar(
+        elevation: elevation,
+        titleSpacing: 0.0,
+        automaticallyImplyLeading: false,
+        backgroundColor: backgroundColor,
+        leading: leading ?? const NFBackButton(),
+        actions: actions,
+        title: Text(
+          title,
+          style: Theme.of(context).appBarTheme.textTheme.headline6.copyWith(
+                fontSize: 21.0,
+              ),
         ),
       ),
-      body: child,
     );
   }
 }

@@ -6,62 +6,9 @@
 import 'package:flutter/material.dart';
 import 'route_transitions.dart';
 
-/// Creates customizable stack route transition (basically, one route slides over another)
-///
-/// Slides from right to left by default
-class StackRouteTransition<T extends Widget> extends RouteTransition<T> {
-  @override
-  final T route;
-  @override
-  BoolFunction checkEntAnimationEnabled;
-  @override
-  BoolFunction checkExitAnimationEnabled;
-  @override
-  final Curve entCurve;
-  @override
-  final Curve entReverseCurve;
-  @override
-  final Curve exitCurve;
-  @override
-  final Curve exitReverseCurve;
-  @override
-  final bool entIgnore;
-  @override
-  final bool exitIgnore;
-  @override
-  UIFunction checkSystemUi;
-
-  /// Begin offset for enter animation
-  ///
-  /// Defaults to [const Offset(1.0, 0.0)]
-  final Offset entBegin;
-
-  /// End offset for enter animation
-  ///
-  /// Defaults to [Offset.zero]
-  final Offset entEnd;
-
-  /// Begin offset for exit animation
-  ///
-  /// Defaults to [Offset.zero]
-  final Offset exitBegin;
-
-  /// End offset for exit animation
-  ///
-  /// Defaults to [const Offset(-0.3, 0.0)]
-  final Offset exitEnd;
-
-  StackRouteTransition({
-    @required this.route,
-    this.checkEntAnimationEnabled = defRouteTransitionBoolFunc,
-    this.checkExitAnimationEnabled = defRouteTransitionBoolFunc,
-    this.entCurve = Curves.linearToEaseOut,
-    this.entReverseCurve = Curves.easeInToLinear,
-    this.exitCurve = Curves.linearToEaseOut,
-    this.exitReverseCurve = Curves.easeInToLinear,
-    this.entIgnore = false,
-    this.exitIgnore = false,
-    this.checkSystemUi,
+/// Settings for the [StackRouteTransition].
+class StackRouteTransitionSettings extends RouteTransitionSettings {
+  StackRouteTransitionSettings({
     this.entBegin = const Offset(1.0, 0.0),
     this.entEnd = Offset.zero,
     this.exitBegin = Offset.zero,
@@ -71,13 +18,68 @@ class StackRouteTransition<T extends Widget> extends RouteTransition<T> {
     RouteSettings settings,
     bool opaque = true,
     bool maintainState = false,
+    BoolFunction checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    BoolFunction checkExitAnimationEnabled = defRouteTransitionBoolFunc,
+    Curve entCurve = Curves.linearToEaseOut,
+    Curve entReverseCurve = Curves.easeInToLinear,
+    Curve exitCurve = Curves.linearToEaseOut,
+    Curve exitReverseCurve = Curves.easeInToLinear,
+    bool entIgnore = false,
+    bool exitIgnore = false,
+    UIFunction checkSystemUi,
   }) : super(
-          route: route,
           transitionDuration: transitionDuration,
           reverseTransitionDuration: reverseTransitionDuration,
           settings: settings,
           opaque: opaque,
           maintainState: maintainState,
+          checkEntAnimationEnabled: checkEntAnimationEnabled,
+          checkExitAnimationEnabled: checkExitAnimationEnabled,
+          entCurve: entCurve,
+          entReverseCurve: entReverseCurve,
+          exitCurve: exitCurve,
+          exitReverseCurve: exitReverseCurve,
+          entIgnore: entIgnore,
+          exitIgnore: exitIgnore,
+          checkSystemUi: checkSystemUi,
+        );
+
+  /// Begin offset for enter animation
+  ///
+  /// Defaults to [const Offset(1.0, 0.0)]
+  Offset entBegin;
+
+  /// End offset for enter animation
+  ///
+  /// Defaults to [Offset.zero]
+  Offset entEnd;
+
+  /// Begin offset for exit animation
+  ///
+  /// Defaults to [Offset.zero]
+  Offset exitBegin;
+
+  /// End offset for exit animation
+  ///
+  /// Defaults to [const Offset(-0.2, 0.0)]
+  Offset exitEnd;
+}
+
+/// Creates customizable stack route transition (basically, one route slides over another)
+///
+/// Slides from right to left by default
+class StackRouteTransition<T extends Widget> extends RouteTransition<T> {
+  @override
+  final T route;
+  @override
+  final StackRouteTransitionSettings transitionSettings;
+
+  StackRouteTransition({@required this.route, transitionSettings})
+      : transitionSettings =
+            transitionSettings ?? StackRouteTransitionSettings(),
+        super(
+          route: route,
+          transitionSettings: transitionSettings ?? RouteTransitionSettings(),
         ) {
     transitionsBuilder = (
       BuildContext context,
@@ -87,15 +89,24 @@ class StackRouteTransition<T extends Widget> extends RouteTransition<T> {
     ) {
       return TurnableSlideTransition(
         enabled: entAnimationEnabled,
-        position: Tween(begin: entBegin, end: entEnd).animate(CurvedAnimation(
-            parent: animation, curve: entCurve, reverseCurve: entReverseCurve)),
+        position: Tween(
+          begin: this.transitionSettings.entBegin,
+          end: this.transitionSettings.entEnd,
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: this.transitionSettings.entCurve,
+          reverseCurve: this.transitionSettings.entReverseCurve,
+        )),
         child: TurnableSlideTransition(
           enabled: exitAnimationEnabled,
-          position: Tween(begin: exitBegin, end: exitEnd).animate(
-              CurvedAnimation(
-                  parent: secondaryAnimation,
-                  curve: exitCurve,
-                  reverseCurve: exitReverseCurve)),
+          position: Tween(
+            begin: this.transitionSettings.exitBegin,
+            end: this.transitionSettings.exitEnd,
+          ).animate(CurvedAnimation(
+            parent: secondaryAnimation,
+            curve: this.transitionSettings.exitCurve,
+            reverseCurve: this.transitionSettings.exitReverseCurve,
+          )),
           child: Container(
             color: Colors.black,
             child: FadeTransition(

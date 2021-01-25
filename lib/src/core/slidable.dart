@@ -304,7 +304,6 @@ class SlidableState extends State<Slidable>
     super.initState();
     _controller = (widget.controller ??
         SlidableController(duration: widget.duration, vsync: this));
-    // _controller._bindSlidable(this);
     if (widget.onSlideChange != null) {
       _controller.addListener(_handleControllerChange);
     }
@@ -323,7 +322,6 @@ class SlidableState extends State<Slidable>
     if (widget.onSlideChange != null) {
       _controller.removeListener(_handleControllerChange);
     }
-    // _controller._unbindSlidable(this);
     super.dispose();
   }
 
@@ -568,6 +566,11 @@ class SlidableState extends State<Slidable>
         ),
       );
     }
+
+    /// Sometimes on poor framerates the [AnimatedBuilder] may not rebuild
+    /// causing wrong hit test behaviour and ignoring pointer.
+    /// This needed to update them and avoid this.
+    setState(() {});
   }
 
   @override
@@ -577,7 +580,8 @@ class SlidableState extends State<Slidable>
     assert(!_directionIsXAxis || debugCheckHasDirectionality(context));
 
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
-    if (_textScaleFactor != textScaleFactor) { // todo: rewrite this with [NFWidgetsBindingObserver]
+    if (_textScaleFactor != textScaleFactor) {
+      // todo: rewrite this with [NFWidgetsBindingObserver]
       // Update the position on text scale scale change.
       _textScaleFactor = textScaleFactor;
       _updateAnimation();
@@ -594,12 +598,12 @@ class SlidableState extends State<Slidable>
         HitTestBehavior hitTestBehavior;
         final status = _controller.status;
 
-        final ignoring = widget.barrierIgnoringStrategy.evaluate(status);
+        final ignoring = widget.barrierIgnoringStrategy.evaluateStatus(status);
         if (_controller._dragged || !ignoring) {
           hitTestBehavior =
-              widget.notIgnoringHitTestBehaviorStrategy.ask(status);
+              widget.notIgnoringHitTestBehaviorStrategy.askStatus(status);
         } else {
-          hitTestBehavior = widget.hitTestBehaviorStrategy.ask(status);
+          hitTestBehavior = widget.hitTestBehaviorStrategy.askStatus(status);
         }
 
         // We are not resizing but we may be being dragging in widget.direction.
@@ -711,7 +715,7 @@ class SlidableController extends AnimationController
 
   bool _dragged = false;
   bool get dragged => _dragged;
-  
+
   @override
   TickerFuture fling({
     double velocity = 1.0,
@@ -727,15 +731,15 @@ class SlidableController extends AnimationController
   }
 
   /// Calls [fling] with default velocity to end in the [opened] state.
-  void open({SpringDescription springDescription}) {
-    fling(
+  TickerFuture open({SpringDescription springDescription}) {
+    return fling(
       springDescription: springDescription ?? this.springDescription,
     );
   }
 
   /// Calls [fling] with default velocity to end in the [closed] state.
-  void close({SpringDescription springDescription}) {
-    fling(
+  TickerFuture close({SpringDescription springDescription}) {
+    return fling(
       velocity: -1.0,
       springDescription: springDescription ?? this.springDescription,
     );

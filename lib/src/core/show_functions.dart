@@ -10,10 +10,8 @@ import 'package:flutter/material.dart' as flutter
     show showGeneralDialog, showBottomSheet, showModalBottomSheet;
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-const EdgeInsets defaultAlertTitlePadding =
-    EdgeInsets.fromLTRB(26.0, 24.0, 26.0, 1.0);
-const EdgeInsets defaultAlertContentPadding =
-    EdgeInsets.fromLTRB(26.0, 0.0, 26.0, 3.0);
+const defaultAlertTitlePadding = EdgeInsets.fromLTRB(26.0, 24.0, 26.0, 1.0);
+const defaultAlertContentPadding = EdgeInsets.fromLTRB(26.0, 0.0, 26.0, 3.0);
 
 /// Class that contains composed 'show' functions, like [showDialog] and others
 class NFShowFunctions {
@@ -35,12 +33,13 @@ class NFShowFunctions {
     EdgeInsets titlePadding = defaultAlertTitlePadding,
     EdgeInsets contentPadding = defaultAlertContentPadding,
     Widget acceptButton,
+    Color buttonSplashColor,
     List<Widget> additionalActions,
     SystemUiOverlayStyle ui,
   }) async {
     final l10n = NFLocalizations.of(context);
     title ??= Text(l10n.warning);
-    acceptButton ??= NFDialogButton.accept(text: l10n.close);
+    acceptButton ??= NFButton.close();
     return showDialog<T>(
       context,
       title: title,
@@ -48,8 +47,10 @@ class NFShowFunctions {
       titlePadding: titlePadding,
       contentPadding: contentPadding,
       acceptButton: acceptButton,
+      buttonSplashColor: buttonSplashColor,
       additionalActions: additionalActions,
-      hideDeclineButton: true,
+      hideCancelButton: true,
+      ui: ui,
     );
   }
 
@@ -63,8 +64,9 @@ class NFShowFunctions {
     EdgeInsets titlePadding: defaultAlertTitlePadding,
     EdgeInsets contentPadding = defaultAlertContentPadding,
     Widget acceptButton,
-    Widget declineButton,
-    bool hideDeclineButton = false,
+    Widget cancelButton,
+    Color buttonSplashColor,
+    bool hideCancelButton = false,
     List<Widget> additionalActions,
     double borderRadius = 8.0,
     SystemUiOverlayStyle ui,
@@ -77,9 +79,9 @@ class NFShowFunctions {
     // Animate ui on open.
     NFSystemUiControl.animateSystemUiOverlay(to: ui);
 
-    acceptButton ??= NFDialogButton.accept();
-    if (!hideDeclineButton) {
-      declineButton ??= NFDialogButton.cancel();
+    acceptButton ??= NFButton.accept(splashColor: buttonSplashColor);
+    if (!hideCancelButton) {
+      cancelButton ??= NFButton.cancel(splashColor: buttonSplashColor);
     }
 
     return flutter.showGeneralDialog<T>(
@@ -152,7 +154,6 @@ class NFShowFunctions {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  //  widget(child: content),
                   if (content != null)
                     Flexible(
                       child: Padding(
@@ -173,7 +174,11 @@ class NFShowFunctions {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          left: 14.0, right: 14.0, bottom: 10.0),
+                        top: 4.0,
+                        left: 14.0,
+                        right: 14.0,
+                        bottom: 10.0,
+                      ),
                       child: Row(
                         mainAxisAlignment: additionalActions == null
                             ? MainAxisAlignment.end
@@ -190,12 +195,12 @@ class NFShowFunctions {
                             mainAxisSize: MainAxisSize.min,
                             alignment: MainAxisAlignment.end,
                             children: <Widget>[
-                              acceptButton,
-                              if (!hideDeclineButton)
+                              if (!hideCancelButton)
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: declineButton,
-                                )
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: cancelButton,
+                                ),
+                              acceptButton,
                             ],
                           ),
                         ],
