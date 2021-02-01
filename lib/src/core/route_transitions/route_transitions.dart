@@ -178,6 +178,9 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   /// Says when to ignore widget in [secondaryAnimation]
   bool secondaryIgnore = false;
 
+  UIFunction get _checkSystemUi =>
+      transitionSettings.checkSystemUi ?? () => NFWidgets.defaultSystemUiStyle;
+
   RouteTransition({
     @required this.route,
     RouteTransitionSettings transitionSettings,
@@ -207,7 +210,7 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
           if (!uiAnimating) {
             uiAnimating = true;
             await NFSystemUiControl.animateSystemUiOverlay(
-              to: transitionSettings.checkSystemUi(),
+              to: _checkSystemUi(),
               curve: transitionSettings.entReverseCurve,
               settings: NFAnimationControllerSettings(
                 duration: transitionDuration,
@@ -234,13 +237,11 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   /// Won't be called if route is created via [onGenerateInitialRoutes].
   void handleSystemUiCheck(
       Animation<double> animation, Animation<double> secondaryAnimation) {
-    transitionSettings.checkSystemUi ??= () => NFWidgets.defaultSystemUiStyle;
-
     Future<void> animate() async {
       if (!uiAnimating && animation.status == AnimationStatus.forward) {
         uiAnimating = true;
         await NFSystemUiControl.animateSystemUiOverlay(
-          to: transitionSettings.checkSystemUi(),
+          to: _checkSystemUi(),
           curve: transitionSettings.entCurve,
           settings: NFAnimationControllerSettings(
             // TODO: why * 2?

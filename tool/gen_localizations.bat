@@ -1,4 +1,4 @@
-:: This script will recreate all json serizalisables
+:: This script will generate arb from the localization dart file and generate messages from arb
 
 :: Do not close the window on error
 if not defined in_subprocess (cmd /k set in_subprocess=y ^& %0 %*) & exit )
