@@ -4,6 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'route_transitions.dart';
 
@@ -238,7 +239,7 @@ class _DismissibleRoute extends StatefulWidget {
 }
 
 class _DismissibleRouteState extends State<_DismissibleRoute>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, RouteAware {
   bool _dragged = false;
 
   /// Needed to make sure I call Navigator pop only once.
@@ -293,70 +294,74 @@ class _DismissibleRouteState extends State<_DismissibleRoute>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return RouteAwareWidget(
-      onPop: () {
-        _beenPopped = true;
-      },
-      child: Stack(
-        children: [
-          Slidable(
-            startOffset: Offset.zero,
-            endOffset: const Offset(1.0, 0.0),
-            barrierIgnoringStrategy: const IgnoringStrategy(
-              dismissed: true,
-              reverse: true,
-            ),
-            catchIgnoringStrategy: const MovingIgnoringStrategy(
-              forward: true,
-              reverse: true,
-            ),
-            direction:
-                widget.routeTransition.transitionSettings.dismissDirection,
-            invertBarrierProgress: true,
-            barrier: _showBarrier
-                ? widget.routeTransition.transitionSettings.dismissBarrier ??
-                    Container(color: Colors.black26)
-                : null,
-            onDragUpdate: (_, __) {
-              setState(() {
-                _dragged = true;
-              });
-            },
-            onDragEnd: (_, res) {
-              setState(() {
-                widget.routeTransition._beenDismissed = res;
-                _dragged = false;
-              });
-            },
-            onSlideChange: (value) {
-              if (widget.routeTransition._beenDismissed &&
-                  !_beenPopped &&
-                  (widget.routeTransition.animation.status ==
-                          AnimationStatus.completed ||
-                      widget.routeTransition.animation.status ==
-                          AnimationStatus.forward)) {
-                Navigator.of(context).pop();
-              }
+  void didPop() {
+    _beenPopped = true;
+  }
 
-              if (value != 0.0 &&
-                  _controller.status != AnimationStatus.forward) {
-                _controller.forward();
-              } else if (value == 0.0) {
-                _controller.reset();
-              }
-            },
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) => Container(
-                child: !widget.routeTransition._beenDismissed
-                    ? widget.animatedChild
-                    : widget.child,
-                decoration: _boxDecorationAnimation.value,
-              ),
-            ),
-          ),
-        ],
+  @override
+  Widget build(BuildContext context) {
+    return Slidable(
+      springDescription: SpringDescription.withDampingRatio(
+        mass: 0.01,
+        stiffness: 500.0,
+        ratio: 3.0,
+      ),
+      startOffset: Offset.zero,
+      endOffset: const Offset(1.0, 0.0),
+      barrierIgnoringStrategy: const IgnoringStrategy(
+        dismissed: true,
+        reverse: true,
+      ),
+      catchIgnoringStrategy: const MovingIgnoringStrategy(
+        forward: true,
+        reverse: true,
+      ),
+      direction: widget.routeTransition.transitionSettings.dismissDirection,
+      invertBarrierProgress: true,
+      barrier: _showBarrier
+          ? widget.routeTransition.transitionSettings.dismissBarrier ??
+              Container(color: Colors.black26)
+          : null,
+      onDragUpdate: (_, __) {
+        setState(() {
+          _dragged = true;
+        });
+      },
+      onDragEnd: (_, res) {
+        setState(() {
+          widget.routeTransition._beenDismissed = res;
+          _dragged = false;
+        });
+      },
+      onSlideChange: (value) {
+        final status = widget.routeTransition.animation.status;
+        if (widget.routeTransition._beenDismissed &&
+            !_beenPopped &&
+            (status == AnimationStatus.completed ||
+                status == AnimationStatus.forward) &&
+            value == 1.0) {
+          if (widget.routeTransition._beenDismissed) {
+            // ignore: invalid_use_of_protected_member
+            widget.routeTransition.controller.reverseDuration =
+                const Duration();
+          }
+          Navigator.of(context).pop();
+        }
+
+        if (value != 0.0 && _controller.status != AnimationStatus.forward) {
+          _controller.forward();
+        } else if (value == 0.0) {
+          _controller.reset();
+        }
+      },
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) => Container(
+          child: !widget.routeTransition._beenDismissed
+              ? widget.animatedChild
+              : widget.child,
+          decoration: _boxDecorationAnimation.value,
+        ),
       ),
     );
   }

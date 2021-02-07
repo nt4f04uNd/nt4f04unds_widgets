@@ -140,6 +140,7 @@ class Slidable extends StatefulWidget {
     Key key,
     @required this.child,
     this.controller,
+    this.springDescription,
     this.startOffset = Offset.zero,
     this.endOffset = const Offset(1.0, 0.0),
     this.onDragStart,
@@ -162,7 +163,8 @@ class Slidable extends StatefulWidget {
     this.barrier,
     this.invertBarrierProgress = false,
     this.dragStartBehavior = DragStartBehavior.start,
-  })  : assert(dragStartBehavior != null),
+  })  : assert(springDescription == null || controller == null),
+        assert(dragStartBehavior != null),
         super(key: key);
 
   /// The widget below this widget in the tree.
@@ -172,6 +174,10 @@ class Slidable extends StatefulWidget {
 
   /// The animation controller to use instead of the default one.
   final SlidableController controller;
+
+  /// The spring to use with default [controller].
+  /// If you specify this value, [controller] must be null.
+  final SpringDescription springDescription;
 
   /// Called when user starts dragging the slidable.
   final SlideStartCallback onDragStart;
@@ -303,7 +309,11 @@ class SlidableState extends State<Slidable>
   void initState() {
     super.initState();
     _controller = (widget.controller ??
-        SlidableController(duration: widget.duration, vsync: this));
+        SlidableController(
+          vsync: this,
+          duration: widget.duration,
+          springDescription: widget.springDescription,
+        ));
     if (widget.onSlideChange != null) {
       _controller.addListener(_handleControllerChange);
     }

@@ -85,19 +85,22 @@ class _TextSelectionToolbarState extends State<_TextSelectionToolbar>
     assert(isLast != null);
 
     final theme = Theme.of(context);
-    return NFButton(
-      text: itemData.label,
-      onPressed: itemData.onPressed,
-      padding: EdgeInsets.only(
-        top: 8.0,
-        bottom: 8.0,
-        // These values were eyeballed to match the native text selection menu
-        // on a Pixel 2 running Android 10.
-        left: 9.5 + (isFirst ? 5.0 : 0.0),
-        right: 9.5 + (isLast ? 5.0 : 0.0),
+    return ButtonTheme(
+      minWidth: 0.0,
+      child: NFButton(
+        text: itemData.label,
+        onPressed: itemData.onPressed,
+        padding: EdgeInsets.only(
+          top: 8.0,
+          bottom: 8.0,
+          // These values were eyeballed to match the native text selection menu
+          // on a Pixel 2 running Android 10.
+          left: 9.5 + (isFirst ? 5.0 : 0.0),
+          right: 9.5 + (isLast ? 5.0 : 0.0),
+        ),
+        textStyle: TextStyle(color: theme.colorScheme.onBackground),
+        borderRadius: 0.0,
       ),
-      textStyle: TextStyle(color: theme.colorScheme.onBackground),
-      borderRadius: 0.0,
     );
   }
 
