@@ -303,7 +303,7 @@ class _DismissibleRouteState extends State<_DismissibleRoute>
     return Slidable(
       springDescription: SpringDescription.withDampingRatio(
         mass: 0.01,
-        stiffness: 500.0,
+        stiffness: 200.0,
         ratio: 3.0,
       ),
       startOffset: Offset.zero,
