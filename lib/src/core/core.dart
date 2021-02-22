@@ -14,7 +14,7 @@ export 'dismissible.dart';
 export 'duration.dart';
 export 'lifecycle.dart';
 export 'prefs.dart';
-export 'screen.dart';
+export 'screen_size.dart';
 export 'scroll_physics.dart';
 export 'selection.dart';
 export 'show_functions.dart';

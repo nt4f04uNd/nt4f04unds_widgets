@@ -6,7 +6,7 @@
 import 'package:flutter/material.dart';
 
 /// Screen sizes.
-enum Screen { standart, small, tablet }
+enum ScreenSize { standart, small, tablet }
 
 /// Stores screen width.
 ///
@@ -21,16 +21,16 @@ double screenHeight;
 /// Store the screen size the applicaiton is running on.
 ///
 /// Initialized in the [NFWidgets].
-Screen screen = Screen.standart;
+ScreenSize screen = ScreenSize.standart;
 
 /// Designates whether the the app has standart, medium sized screen - not too small, and not a tabet.
-bool get standartScreen => screen == Screen.standart;
+bool get standartScreen => screen == ScreenSize.standart;
 
 /// Designates whether the app is running on very small screen.
-bool get smallScreen => screen == Screen.small;
+bool get smallScreen => screen == ScreenSize.small;
 
 /// Designates whether the app is running on tablet.
-bool get tablet => screen == Screen.tablet;
+bool get tabletScreen => screen == ScreenSize.tablet;
 
 /// Checks the current [screen] size and returns a value dependent on that.
 T pickSize<T>(T standart, {T small, T tablet}) {
@@ -43,11 +43,11 @@ T pickSize<T>(T standart, {T small, T tablet}) {
     tablet = standart;
   }
   switch (screen) {
-    case Screen.standart:
+    case ScreenSize.standart:
       return standart;
-    case Screen.small:
+    case ScreenSize.small:
       return small;
-    case Screen.tablet:
+    case ScreenSize.tablet:
       return tablet;
     default:
       assert(false);
@@ -62,10 +62,10 @@ void updateScreenSize() {
   screenHeight = size.height;
   final shortestSide = size.shortestSide;
   if (shortestSide >= 600) {
-    screen = Screen.tablet;
+    screen = ScreenSize.tablet;
   } else if (shortestSide <= 345) {
-    screen = Screen.small;
+    screen = ScreenSize.small;
   } else {
-    screen = Screen.standart;
+    screen = ScreenSize.standart;
   }
 }

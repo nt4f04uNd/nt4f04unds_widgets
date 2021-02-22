@@ -317,12 +317,17 @@ class _DismissibleRouteState extends State<_DismissibleRoute>
         reverse: true,
       ),
       direction: widget.routeTransition.transitionSettings.dismissDirection,
-      invertBarrierProgress: true,
+      barrierBuilder: (animation, child) {
+        return FadeTransition(
+          opacity: animation.drive(Tween(begin: 1.0, end: 0.0)), 
+          child: child,
+        );
+      },
       barrier: _showBarrier
           ? widget.routeTransition.transitionSettings.dismissBarrier ??
               Container(color: Colors.black26)
           : null,
-      onDragUpdate: (_, __) {
+      onDragUpdate: (_) {
         setState(() {
           _dragged = true;
         });

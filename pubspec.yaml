@@ -7,18 +7,15 @@ issue_tracker: https://github.com/nt4f04uNd/nt4f04unds_widgets/issues
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-  # Targeting flutter commit 183f0e797a3bf8aa1b35b650150f7522d5d10377
 
 dependencies:
   async: ^2.4.2
-  marquee: ^1.6.1
-  equatable: ^1.2.5
+  marquee: ^1.7.0
+  equatable: ^1.2.6
   auto_size_text: ^2.1.0
   url_launcher: ^5.7.10
   shared_preferences: ^0.5.12+4
-  multiple_localization:
-    git:
-      url: https://github.com/nt4f04uNd/flutter_multiple_localization
+  multiple_localization: ^0.2.0-nullsafety.0
   flutter:
     sdk: flutter
 
