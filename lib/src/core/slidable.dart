@@ -130,6 +130,7 @@ class Slidable extends StatefulWidget {
     this.onDragUpdate,
     this.onDragEnd,
     this.onSlideChange,
+    this.shouldGiveUpGesture,
     this.disableSlideTransition = false,
     this.barrierIgnoringStrategy = const IgnoringStrategy(dismissed: true, reverse: true),
     this.catchIgnoringStrategy = const MovingIgnoringStrategy(),
@@ -205,6 +206,11 @@ class Slidable extends StatefulWidget {
 
   /// Fires whenever value of the [controller] changes.
   final SlideChangeCallback? onSlideChange;
+
+  /// Called on each pointer move event (even before the drag was accepted).
+  ///
+  /// Return `false` to give up the gesture.
+  final ShouldGiveUpCallback? shouldGiveUpGesture;
 
   ///todo: docs
   final bool disableSlideTransition;
@@ -577,15 +583,34 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
     final Widget wrappedChild = widget.disableSlideTransition ? child : SlideTransition(position: _animation, child: child);
 
     return RepaintBoundary(
-      child: GestureDetector(
+      child: RawGestureDetector(
         behavior: _hitTestBehavior,
-        dragStartBehavior: widget.dragStartBehavior,
-        onHorizontalDragStart: _draggable && _directionIsXAxis ? _handleDragStart : null,
-        onHorizontalDragUpdate: _draggable && _directionIsXAxis ? _handleDragUpdate : null,
-        onHorizontalDragEnd: _draggable && _directionIsXAxis ? _handleDragEnd : null,
-        onVerticalDragStart: _draggable && !_directionIsXAxis ? _handleDragStart : null,
-        onVerticalDragUpdate: _draggable && !_directionIsXAxis ? _handleDragUpdate : null,
-        onVerticalDragEnd: _draggable && !_directionIsXAxis ? _handleDragEnd : null,
+        gestures: <Type, GestureRecognizerFactory>{
+          if (_draggable && _directionIsXAxis)
+            NFHorizontalDragGestureRecognizer:
+                GestureRecognizerFactoryWithHandlers<
+                    NFHorizontalDragGestureRecognizer>(
+              () => NFHorizontalDragGestureRecognizer(),
+              (NFHorizontalDragGestureRecognizer instance) => instance
+                ..onStart = _handleDragStart
+                ..onUpdate = _handleDragUpdate
+                ..onEnd = _handleDragEnd
+                ..dragStartBehavior = widget.dragStartBehavior
+                ..shouldGiveUp = widget.shouldGiveUpGesture,
+            ),
+          if (_draggable && !_directionIsXAxis)
+            NFVerticalDragGestureRecognizer:
+                GestureRecognizerFactoryWithHandlers<
+                    NFVerticalDragGestureRecognizer>(
+              () => NFVerticalDragGestureRecognizer(),
+              (NFVerticalDragGestureRecognizer instance) => instance
+                ..onStart = _handleDragStart
+                ..onUpdate = _handleDragUpdate
+                ..onEnd = _handleDragEnd
+                ..dragStartBehavior = widget.dragStartBehavior
+                ..shouldGiveUp = widget.shouldGiveUpGesture,
+            ),
+        },
         child: barrier == null
           ? wrappedChild
           : () {
