@@ -3,11 +3,11 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// @dart = 2.12
+
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart'
-    hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
-import 'package:flutter/material.dart' as flutter
-    show showGeneralDialog, showBottomSheet, showModalBottomSheet;
+import 'package:flutter/material.dart' hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
+import 'package:flutter/material.dart' as flutter show showGeneralDialog, showBottomSheet, showModalBottomSheet;
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const defaultAlertTitlePadding = EdgeInsets.fromLTRB(26.0, 24.0, 26.0, 1.0);
@@ -26,16 +26,16 @@ class NFShowFunctions {
   /// Calls [showGeneralDialog] function from Flutter material library to show a message to user (only accept button).
   ///
   /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [NFWidgets.defaultModalSystemUiStyle].
-  Future<T> showAlert<T>(
+  Future<T?> showAlert<T extends Object?>(
     BuildContext context, {
-    Widget title,
-    Widget content,
+    Widget? title,
+    Widget? content,
     EdgeInsets titlePadding = defaultAlertTitlePadding,
     EdgeInsets contentPadding = defaultAlertContentPadding,
-    Widget acceptButton,
-    Color buttonSplashColor,
-    List<Widget> additionalActions,
-    SystemUiOverlayStyle ui,
+    Widget? acceptButton,
+    Color? buttonSplashColor,
+    List<Widget>? additionalActions,
+    SystemUiOverlayStyle? ui,
   }) async {
     final l10n = NFLocalizations.of(context);
     title ??= Text(l10n.warning);
@@ -57,27 +57,27 @@ class NFShowFunctions {
   /// Calls [showGeneralDialog] function from Flutter material library to show a dialog to user (accept and decline buttons).
   ///
   /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [NFWidgets.defaultModalSystemUiStyle].
-  Future<T> showDialog<T>(
+  Future<T?> showDialog<T extends Object?>(
     BuildContext context, {
-    @required Widget title,
-    Widget content,
+    required Widget title,
+    Widget? content,
     EdgeInsets titlePadding: defaultAlertTitlePadding,
     EdgeInsets contentPadding = defaultAlertContentPadding,
-    Widget acceptButton,
-    Widget cancelButton,
-    Color buttonSplashColor,
+    Widget? acceptButton,
+    Widget? cancelButton,
+    Color? buttonSplashColor,
     bool hideCancelButton = false,
-    List<Widget> additionalActions,
+    List<Widget>? additionalActions,
     double borderRadius = 8.0,
-    SystemUiOverlayStyle ui,
+    SystemUiOverlayStyle? ui,
   }) async {
     assert(title != null);
 
     ui ??= NFWidgets.defaultModalSystemUiStyle;
-    final lastUi = NFSystemUiControl.lastUi;
+    final lastUi = SystemUiStyleController.lastUi;
 
     // Animate ui on open.
-    NFSystemUiControl.animateSystemUiOverlay(to: ui);
+    SystemUiStyleController.animateSystemUiOverlay(to: ui);
 
     acceptButton ??= NFButton.accept(splashColor: buttonSplashColor);
     if (!hideCancelButton) {
@@ -98,13 +98,11 @@ class NFShowFunctions {
             parent: animation,
           ),
         );
-
         final fadeAnimation = CurvedAnimation(
           curve: Curves.easeOutCubic,
           reverseCurve: Curves.easeInCubic,
           parent: animation,
         );
-
         return ScaleTransition(
           scale: scaleAnimation,
           child: FadeTransition(
@@ -117,23 +115,26 @@ class NFShowFunctions {
         return RouteAwareWidget(
           onPopNext: () {
             // Animate ui when the route on top pops.
-            NFSystemUiControl.animateSystemUiOverlay(to: ui);
+            SystemUiStyleController.animateSystemUiOverlay(to: ui!);
           },
           onPop: () {
             // Animate ui after sheet been closed.
-            NFSystemUiControl.animateSystemUiOverlay(to: lastUi);
+            SystemUiStyleController.animateSystemUiOverlay(to: lastUi!);
           },
           child: SafeArea(
             child: AlertDialog(
               backgroundColor: Theme.of(context).colorScheme.surface,
               contentPadding: EdgeInsets.zero,
               titlePadding: EdgeInsets.zero,
-              contentTextStyle: Theme.of(context).textTheme.subtitle1.copyWith(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15.0,
-                  ),
-              titleTextStyle: Theme.of(context).textTheme.headline5.copyWith(
-                  fontWeight: FontWeight.w700, fontSize: 20.0, height: 1.5),
+              contentTextStyle: Theme.of(context).textTheme.subtitle1?.copyWith(
+                fontWeight: FontWeight.w500,
+                fontSize: 15.0,
+              ),
+              titleTextStyle: Theme.of(context).textTheme.headline5?.copyWith(
+                fontWeight: FontWeight.w700, 
+                fontSize: 20.0, 
+                height: 1.5
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(borderRadius),
@@ -200,7 +201,7 @@ class NFShowFunctions {
                                   padding: const EdgeInsets.only(right: 8.0),
                                   child: cancelButton,
                                 ),
-                              acceptButton,
+                              acceptButton!,
                             ],
                           ),
                         ],
@@ -220,28 +221,28 @@ class NFShowFunctions {
   ///
   /// [ui] Defaults to [NFWidgets.defaultBottomSheetSystemUiStyle].
   PersistentBottomSheetController<T> showBottomSheet<T>({
-    @required BuildContext context,
-    @required WidgetBuilder builder,
-    SystemUiOverlayStyle ui,
-    Color backgroundColor,
-    double elevation,
-    ShapeBorder shape,
-    Clip clipBehavior,
+    required BuildContext context,
+    required WidgetBuilder builder,
+    SystemUiOverlayStyle? ui,
+    Color? backgroundColor,
+    double? elevation,
+    ShapeBorder? shape,
+    Clip? clipBehavior,
   }) {
     ui ??= NFWidgets.defaultBottomSheetSystemUiStyle;
-    final lastUi = NFSystemUiControl.lastUi;
+    final lastUi = SystemUiStyleController.lastUi;
     // Animate ui on open.
-    NFSystemUiControl.animateSystemUiOverlay(to: ui);
+    SystemUiStyleController.animateSystemUiOverlay(to: ui);
     return flutter.showBottomSheet<T>(
       context: context,
       builder: (context) => RouteAwareWidget(
         onPopNext: () {
           // Animate ui when the route on top pops.
-          NFSystemUiControl.animateSystemUiOverlay(to: ui);
+          SystemUiStyleController.animateSystemUiOverlay(to: ui!);
         },
         onPop: () {
           // Animate ui after sheet been closed.
-          NFSystemUiControl.animateSystemUiOverlay(to: lastUi);
+          SystemUiStyleController.animateSystemUiOverlay(to: lastUi!);
         },
         child: builder(context),
       ),
@@ -255,35 +256,35 @@ class NFShowFunctions {
   /// Calls [showModalBottomSheet], but also handles system UI animations to the custom [ui] and out of it on pop.
   ///
   /// [ui] Defaults to [FWidgets.defaultBottomSheetSystemUiStyle].
-  Future<T> showModalBottomSheet<T>({
-    @required BuildContext context,
-    @required WidgetBuilder builder,
-    SystemUiOverlayStyle ui,
-    Color backgroundColor,
-    double elevation,
-    ShapeBorder shape,
-    Clip clipBehavior,
-    Color barrierColor,
+  Future<T?> showModalBottomSheet<T>({
+    required BuildContext context,
+    required WidgetBuilder builder,
+    SystemUiOverlayStyle? ui,
+    Color? backgroundColor,
+    double? elevation,
+    ShapeBorder? shape,
+    Clip? clipBehavior,
+    Color? barrierColor,
     bool isScrollControlled = false,
     bool useRootNavigator = false,
     bool isDismissible = true,
     bool enableDrag = true,
-    RouteSettings routeSettings,
+    RouteSettings? routeSettings,
   }) {
     ui ??= NFWidgets.defaultBottomSheetSystemUiStyle;
-    final lastUi = NFSystemUiControl.lastUi;
+    final lastUi = SystemUiStyleController.lastUi;
     // Animate ui on open.
-    NFSystemUiControl.animateSystemUiOverlay(to: ui);
+    SystemUiStyleController.animateSystemUiOverlay(to: ui);
     return flutter.showModalBottomSheet<T>(
       context: context,
       builder: (context) => RouteAwareWidget(
         onPopNext: () {
           // Animate ui when the route on top pops.
-          NFSystemUiControl.animateSystemUiOverlay(to: ui);
+          SystemUiStyleController.animateSystemUiOverlay(to: ui!);
         },
         onPop: () {
           // Animate ui after sheet been closed.
-          NFSystemUiControl.animateSystemUiOverlay(to: lastUi);
+          SystemUiStyleController.animateSystemUiOverlay(to: lastUi!);
         },
         child: builder(context),
       ),

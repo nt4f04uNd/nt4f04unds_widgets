@@ -5,6 +5,7 @@
 
 import 'route_transitions.dart';
 import 'package:flutter/material.dart';
+import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 // Used by all of the transition animations.
 const Curve _transitionCurve = Cubic(0.20, 0.00, 0.00, 1.00);
@@ -33,8 +34,8 @@ class ExpandUpRouteTransitionSettings extends RouteTransitionSettings {
     RouteSettings settings,
     bool opaque = true,
     bool maintainState = false,
-    BoolFunction checkEntAnimationEnabled = defRouteTransitionBoolFunc,
-    BoolFunction checkExitAnimationEnabled = defRouteTransitionBoolFunc,
+    BoolCallback checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    BoolCallback checkExitAnimationEnabled = defRouteTransitionBoolFunc,
     Curve entCurve = Curves.linearToEaseOut,
     Curve entReverseCurve = Curves.easeInToLinear,
     Curve exitCurve = Curves.linearToEaseOut,

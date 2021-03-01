@@ -29,8 +29,9 @@ class NFMarquee extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
     return SizedBox(
-      height: (fontSize + 13.0) * MediaQuery.of(context).textScaleFactor,
+      height: (fontSize + 13.0) * textScaleFactor,
       child: AutoSizeText(
         text,
         minFontSize: fontSize,

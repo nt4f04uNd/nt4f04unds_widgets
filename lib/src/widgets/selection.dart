@@ -13,7 +13,7 @@ import 'package:nt4f04unds_widgets/src/constants.dart';
 class NFSelectionAppBar extends AppBar {
   NFSelectionAppBar({
     Key key,
-    @required NFSelectionController selectionController,
+    @required SelectionController selectionController,
     @required Widget title,
 
     /// Title to show in selection
@@ -59,7 +59,7 @@ class NFSelectionAppBar extends AppBar {
               );
             },
           ),
-          title: NFAnimationSwitcher(
+          title: AnimationSwitcher(
             animation: CurvedAnimation(
               curve: curve,
               reverseCurve: reverseCurve,
@@ -71,7 +71,7 @@ class NFSelectionAppBar extends AppBar {
           actions: <Widget>[
             Padding(
               padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-              child: NFAnimationSwitcher(
+              child: AnimationSwitcher(
                 animation: CurvedAnimation(
                   curve: curve,
                   reverseCurve: reverseCurve,
@@ -102,11 +102,7 @@ class NFSelectionAppBar extends AppBar {
           bottomOpacity: bottomOpacity,
         );
 
-  static Widget _selectionActionsBuilder(
-    BuildContext context,
-    Animation<double> animation,
-    Widget child,
-  ) {
+  static Widget _selectionActionsBuilder(Widget child, Animation<double> animation,) {
     return FadeTransition(
       opacity: animation,
       child: Transform(

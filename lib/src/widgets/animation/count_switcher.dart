@@ -3,29 +3,33 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// @dart = 2.12
+
 import 'package:flutter/material.dart';
 
-/// A widget that will perform 'top-to-down' stack/fade animation
-/// based on some given [valueIncreased] condition
-/// (e.g., when, new number is greater than the prev),
-/// or same 'down-to-bot' animation
+/// A widget that based on some given [valueIncreased] condition will perform either:
+/// 
+/// * 'top-to-down' stack/fade animation (for example when new number is greater than the prev) 
+/// * 'down-to-top' animation
 ///
-/// Perfect for showing number counters.
+/// Can be used for showing number counters.
 class CountSwitcher extends StatelessWidget {
   const CountSwitcher({
-    Key key,
-    this.childKey,
+    Key? key,
     this.child,
+    this.childKey,
     this.valueIncreased = true,
   }) : super(key: key);
 
+  final Widget? child;
+  
   /// A key that will be applied to the child widget.
-  ///
   /// Can be used to lock the switch animation.
-  final Key childKey;
-  final Widget child;
+  final Key? childKey;
 
-  /// `true` will play top-to-down animation, `false` vice-versa
+  /// When:
+  /// * `true` will play 'top-to-down' animation
+  /// * `false` vice-versa - 'down-to-top'
   final bool valueIncreased;
 
   @override
@@ -48,7 +52,6 @@ class CountSwitcher extends StatelessWidget {
             begin: const Offset(0.0, -0.7),
             end: const Offset(0.0, 0.0),
           ).animate(baseAnimation);
-
           final inBackAnimation = Tween<Offset>(
             begin: const Offset(0.0, 0.7),
             end: const Offset(0.0, 0.0),
@@ -58,10 +61,9 @@ class CountSwitcher extends StatelessWidget {
             begin: const Offset(0.0, 0.7),
             end: const Offset(0.0, 0.0),
           ).animate(baseReversedAnimation);
-
           final outBackAnimation = Tween<Offset>(
             begin: const Offset(0.0, -0.7),
-            end: const Offset(0.0, 0.0),
+            end: const Offset(0.0, 0.0)
           ).animate(baseReversedAnimation);
 
           //* For entering widget
@@ -82,9 +84,8 @@ class CountSwitcher extends StatelessWidget {
                   child: child,
                 ),
               );
-          }
+          } else {
           //* For exiting widget
-          else {
             if (valueIncreased) {
               return SlideTransition(
                 position: outForwardAnimation,

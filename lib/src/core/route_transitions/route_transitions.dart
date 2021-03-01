@@ -23,18 +23,13 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const Duration kNFRouteTransitionDuration = const Duration(milliseconds: 240);
 
-/// Type for function that returns boolean
-///
-/// todo: to seprate file
-typedef bool BoolFunction();
-
 /// Needed to define constant [defRouteTransitionBoolFunc]
 ///
 /// todo: to seprate file
 bool trueFunc() => true;
 
 /// Used as default bool function in [RouteTransition]
-const BoolFunction defRouteTransitionBoolFunc = trueFunc;
+const BoolCallback defRouteTransitionBoolFunc = trueFunc;
 
 /// Type for function that returns [SystemUiOverlayStyle]
 typedef SystemUiOverlayStyle UIFunction();
@@ -77,13 +72,13 @@ class RouteTransitionSettings {
 
   /// Function that checks whether to play enter animation or not
   ///
-  /// E.G disable enter animation for main route
-  BoolFunction checkEntAnimationEnabled;
+  /// E.g disable enter animation for main route
+  BoolCallback checkEntAnimationEnabled;
 
   /// Function that checks whether to play exit animation or not
   ///
-  /// E.G disable exit animation for particular route pushes
-  BoolFunction checkExitAnimationEnabled;
+  /// E.g disable exit animation for particular route pushes
+  BoolCallback checkExitAnimationEnabled;
 
   /// A curve for enter animation
   ///
@@ -209,12 +204,10 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
         onPopNext: () async {
           if (!uiAnimating) {
             uiAnimating = true;
-            await NFSystemUiControl.animateSystemUiOverlay(
+            await SystemUiStyleController.animateSystemUiOverlay(
               to: _checkSystemUi(),
               curve: transitionSettings.entReverseCurve,
-              settings: NFAnimationControllerSettings(
-                duration: transitionDuration,
-              ),
+              duration: transitionDuration,
             );
             uiAnimating = false;
           }
@@ -240,13 +233,11 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
     Future<void> animate() async {
       if (!uiAnimating && animation.status == AnimationStatus.forward) {
         uiAnimating = true;
-        await NFSystemUiControl.animateSystemUiOverlay(
+        await SystemUiStyleController.animateSystemUiOverlay(
           to: _checkSystemUi(),
           curve: transitionSettings.entCurve,
-          settings: NFAnimationControllerSettings(
-            // TODO: why * 2?
-            duration: transitionDuration * 2,
-          ),
+          // TODO: why * 2?
+          duration: transitionDuration * 2,
         );
         uiAnimating = false;
       }

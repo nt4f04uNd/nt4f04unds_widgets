@@ -59,11 +59,7 @@ class ResponsiveWidgetState extends State<ResponsiveWidget>
       controller.duration = widget.duration;
     } else {
       // Slow if tapped on the not dismissed state.
-      controller.duration = widget.duration +
-          Duration(
-            milliseconds:
-                (widget.duration.inMilliseconds / 2 * controller.value).toInt(),
-          );
+      controller.duration = widget.duration + Duration(milliseconds: (widget.duration.inMilliseconds / 2 * controller.value).toInt());
     }
     operation?.cancel();
     operation = CancelableOperation.fromFuture(controller.forward());

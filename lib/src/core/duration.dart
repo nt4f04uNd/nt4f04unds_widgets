@@ -3,6 +3,8 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// @dart = 2.12
+
 /// Returns the formatted time string in format <M>:<S>.
 ///
 /// * Minutes can go from 0 to 99.

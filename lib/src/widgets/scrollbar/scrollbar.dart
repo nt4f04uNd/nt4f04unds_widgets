@@ -6,14 +6,16 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// @dart = 2.12
+
 export 'draggable_scrollbar.dart';
 
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-const double kNFScrollbarHeight = 40.0;
-const double kScrollbarThickness = 6.0;
+const double _kScrollbarHeight = 40.0;
+const double _kScrollbarThickness = 6.0;
 const Duration kScrollbarFadeDuration = Duration(milliseconds: 500);
 const Duration kScrollbarTimeToFade = Duration(milliseconds: 1000);
 const Duration kScrollbarLabelTimeToFade = Duration(milliseconds: 800);
@@ -32,15 +34,15 @@ class NFScrollbar extends StatefulWidget {
   /// The [child] should be a source of [ScrollNotification] notifications,
   /// typically a [Scrollable] widget.
   const NFScrollbar({
-    Key key,
-    @required this.child,
+    Key? key,
+    required this.child,
     this.color,
-    this.thickness = kScrollbarThickness,
+    this.thickness = _kScrollbarThickness,
     this.padding = EdgeInsets.zero,
     this.mainAxisMargin = 3.0,
     this.crossAxisMargin = 0.0,
     this.radius = const Radius.circular(8.0),
-    this.minLength = kNFScrollbarHeight,
+    this.minLength = _kScrollbarHeight,
     this.minOverscrollLength,
   }) : super(key: key);
 
@@ -53,27 +55,26 @@ class NFScrollbar extends StatefulWidget {
   final Widget child;
 
   /// These are just properties from the [ScrollbarPainter]
-  final Color color;
+  final Color? color;
   final double thickness;
   final EdgeInsets padding;
   final double mainAxisMargin;
   final double crossAxisMargin;
   final Radius radius;
   final double minLength;
-  final double minOverscrollLength;
+  final double? minOverscrollLength;
 
   @override
   _NFScrollbarState createState() => _NFScrollbarState();
 }
 
-class _NFScrollbarState extends State<NFScrollbar>
-    with SingleTickerProviderStateMixin {
-  ScrollbarPainter _scrollbarPainter;
-  TextDirection _textDirection;
-  Color _themeColor;
-  AnimationController _fadeoutAnimationController;
-  Animation<double> _fadeoutOpacityAnimation;
-  Timer _fadeoutTimer;
+class _NFScrollbarState extends State<NFScrollbar> with SingleTickerProviderStateMixin {
+  late ScrollbarPainter _scrollbarPainter;
+  late TextDirection _textDirection;
+  late Color _themeColor;
+  late AnimationController _fadeoutAnimationController;
+  late Animation<double> _fadeoutOpacityAnimation;
+  Timer? _fadeoutTimer;
 
   @override
   void initState() {
@@ -109,7 +110,7 @@ class _NFScrollbarState extends State<NFScrollbar>
   ScrollbarPainter _buildScrollbarPainter() {
     return ScrollbarPainter(
       color: widget.color ?? _themeColor,
-      thickness: widget.thickness ?? kScrollbarThickness,
+      thickness: widget.thickness,
       padding: widget.padding,
       mainAxisMargin: widget.mainAxisMargin,
       crossAxisMargin: widget.crossAxisMargin,
@@ -135,9 +136,8 @@ class _NFScrollbarState extends State<NFScrollbar>
         _fadeoutAnimationController.forward();
       }
 
-      _scrollbarPainter.update(
-          notification.metrics, notification.metrics.axisDirection);
-      _fadeoutTimer?.cancel();
+      _scrollbarPainter.update(notification.metrics, notification.metrics.axisDirection);
+      _fadeoutTimer!.cancel();
       _fadeoutTimer = Timer(kScrollbarTimeToFade, () {
         _fadeoutAnimationController.reverse();
         _fadeoutTimer = null;
@@ -150,7 +150,7 @@ class _NFScrollbarState extends State<NFScrollbar>
   void dispose() {
     _fadeoutAnimationController.dispose();
     _fadeoutTimer?.cancel();
-    _scrollbarPainter?.dispose();
+    _scrollbarPainter.dispose();
     super.dispose();
   }
 

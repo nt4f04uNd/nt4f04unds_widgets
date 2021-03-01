@@ -22,8 +22,8 @@ class StackFadeRouteTransitionSettings extends RouteTransitionSettings {
     RouteSettings settings,
     bool opaque = true,
     bool maintainState = false,
-    BoolFunction checkEntAnimationEnabled = defRouteTransitionBoolFunc,
-    BoolFunction checkExitAnimationEnabled = defRouteTransitionBoolFunc,
+    BoolCallback checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    BoolCallback checkExitAnimationEnabled = defRouteTransitionBoolFunc,
     // entCurve and entReverseCurve have different defaults, compared to other transitions
     Curve entCurve = Curves.easeOutCubic,
     Curve entReverseCurve = Curves.easeInCubic,
@@ -61,8 +61,8 @@ class StackFadeRouteTransitionSettings extends RouteTransitionSettings {
     RouteSettings settings,
     bool opaque = true,
     bool maintainState = false,
-    BoolFunction checkEntAnimationEnabled = defRouteTransitionBoolFunc,
-    BoolFunction checkExitAnimationEnabled = defRouteTransitionBoolFunc,
+    BoolCallback checkEntAnimationEnabled = defRouteTransitionBoolFunc,
+    BoolCallback checkExitAnimationEnabled = defRouteTransitionBoolFunc,
     // entCurve and entReverseCurve have different defaults, compared to other transitions
     Curve entCurve = Curves.easeOutCubic,
     Curve entReverseCurve = Curves.easeInCubic,

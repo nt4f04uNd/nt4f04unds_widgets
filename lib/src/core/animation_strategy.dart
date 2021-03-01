@@ -9,8 +9,8 @@ import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 
 
-/// An interface for other animation strategies. You can imagine that this class sort of
-/// tells someone what to do when depending on the current animation status.
+/// Describes what to do when depending on the current animation status.
+/// An interface for other animation strategies.
 @immutable
 abstract class AnimationStrategy<T> implements MovingAnimationStrategy<T> {
   const AnimationStrategy({ 
@@ -26,7 +26,6 @@ abstract class AnimationStrategy<T> implements MovingAnimationStrategy<T> {
   final T reverse;
 
   /// Decides what to do based on current animation status.
-  /// todo: macros
   T ask(Animation<Object> animation) {
     return decide(animation.status);
   }
@@ -60,8 +59,8 @@ abstract class AnimationStrategy<T> implements MovingAnimationStrategy<T> {
   int get hashCode => hashValues(dismissed, forward, completed, reverse);
 }
 
-/// An interface for other animation strategies. You can imagine that this class sort of
-/// tells someone what to do when animation status is either [AnimationStatus.forward], or [AnimationStatus.reverse].
+/// Describes what to do when depending on the current animation status, that's either [AnimationStatus.forward], or [AnimationStatus.reverse].
+/// An interface for other animation strategies.
 @immutable
 abstract class MovingAnimationStrategy<T> {
   const MovingAnimationStrategy({ 

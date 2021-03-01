@@ -20,8 +20,8 @@ class NFPageBase extends StatelessWidget {
     this.actions = const [],
     this.backButton = const NFBackButton(),
     this.resizeToAvoidBottomInset,
-  })  : assert(child != null),
-        super(key: key);
+  }) : assert(child != null),
+       super(key: key);
 
   /// Text that will be displayed in app bar title
   final String name;
@@ -69,9 +69,7 @@ class NFAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color backgroundColor;
 
   @override
-  Size get preferredSize => Size.fromHeight(
-        preferredHeight ?? kNFAppBarPreferredSize,
-      );
+  Size get preferredSize => Size.fromHeight(preferredHeight ?? kNFAppBarPreferredSize);
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +84,7 @@ class NFAppBar extends StatelessWidget implements PreferredSizeWidget {
         actions: actions,
         title: Text(
           title,
-          style: Theme.of(context).appBarTheme.textTheme.headline6.copyWith(
-                fontSize: 21.0,
-              ),
+          style: Theme.of(context).appBarTheme.textTheme.headline6.copyWith(fontSize: 21.0),
         ),
       ),
     );

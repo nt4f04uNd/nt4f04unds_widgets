@@ -1,6 +1,6 @@
 name: nt4f04unds_widgets
 description: A new Flutter package project.
-version: 1.0.3
+version: 1.0.4
 homepage: https://github.com/nt4f04uNd/nt4f04unds_widgets
 repository: https://github.com/nt4f04uNd/nt4f04unds_widgets
 issue_tracker: https://github.com/nt4f04uNd/nt4f04unds_widgets/issues
@@ -9,12 +9,12 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  async: ^2.4.2
+  async: ^2.5.0
   marquee: ^1.7.0
-  equatable: ^1.2.6
-  auto_size_text: ^2.1.0
-  url_launcher: ^5.7.10
-  shared_preferences: ^0.5.12+4
+  equatable: ^2.0.0-nullsafety.4
+  auto_size_text: ^3.0.0-nullsafety.0
+  url_launcher: ^6.0.1
+  shared_preferences: ^2.0.1
   multiple_localization: ^0.2.0-nullsafety.0
   flutter:
     sdk: flutter

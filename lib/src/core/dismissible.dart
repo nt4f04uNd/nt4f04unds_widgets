@@ -16,8 +16,7 @@ const double _kFlingVelocityScale = 1.0 / 300.0;
 const double _kDismissThreshold = 0.4;
 
 /// For [NFDismissible.onDismissProgress].
-typedef DismissProgressCallback = void Function(
-    DismissDirection direction, double progress);
+typedef DismissProgressCallback = void Function(DismissDirection direction, double progress);
 
 /// A widget that can be dismissed by dragging in the indicated [direction].
 ///

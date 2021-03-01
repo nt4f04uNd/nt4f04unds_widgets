@@ -13,13 +13,20 @@ import 'package:flutter/services.dart';
 
 import 'core/core.dart';
 
+class _Observer extends WidgetsBindingObserver {
+  @override
+  void didChangeMetrics() {
+    updateScreenSize();
+  }
+}
+
 abstract class NFWidgets {
   /// Prevents class inheritance.
   NFWidgets._();
 
   static SystemUiOverlayStyle _defaultModalSystemUiStyle;
   static SystemUiOverlayStyle _defaultBottomSheetSystemUiStyle;
-  static NFWidgetsBindingObserver _observer;
+  static _Observer _observer;
 
   /// Pass the parameters for the package to work properly.
   ///
@@ -39,9 +46,7 @@ abstract class NFWidgets {
     NFWidgets.defaultBottomSheetSystemUiStyle = defaultBottomSheetSystemUiStyle;
     updateScreenSize();
     if (_observer == null) {
-      _observer = NFWidgetsBindingObserver(onChangeMetrics: () {
-        updateScreenSize();
-      });
+      _observer = _Observer();
       WidgetsBinding.instance.addObserver(_observer);
     }
   }
@@ -71,8 +76,7 @@ abstract class NFWidgets {
   ///
   /// Used in [NFShowFunctions.showAlert] and [NFShowFunctions.showDialog].
   /// If not specified, the [defaultSystemUiStyle] is used instead.
-  static SystemUiOverlayStyle get defaultModalSystemUiStyle =>
-      _defaultModalSystemUiStyle ?? defaultSystemUiStyle;
+  static SystemUiOverlayStyle get defaultModalSystemUiStyle => _defaultModalSystemUiStyle ?? defaultSystemUiStyle;
   static set defaultModalSystemUiStyle(SystemUiOverlayStyle value) {
     _defaultModalSystemUiStyle = value;
   }
@@ -81,8 +85,7 @@ abstract class NFWidgets {
   ///
   /// [NFShowFunctions.showBottomSheet] and [NFShowFunctions.showModalBottomSheet]
   /// If not specified, the [defaultSystemUiStyle] is used instead.
-  static SystemUiOverlayStyle get defaultBottomSheetSystemUiStyle =>
-      _defaultBottomSheetSystemUiStyle ?? defaultSystemUiStyle;
+  static SystemUiOverlayStyle get defaultBottomSheetSystemUiStyle => _defaultBottomSheetSystemUiStyle ?? defaultSystemUiStyle;
   static set defaultBottomSheetSystemUiStyle(SystemUiOverlayStyle value) {
     _defaultBottomSheetSystemUiStyle = value;
   }

@@ -6,6 +6,8 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// todo: review when https://github.com/flutter/flutter/issues/73163 is closed
+
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';

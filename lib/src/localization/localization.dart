@@ -3,6 +3,8 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// @dart = 2.12
+
 import 'dart:async';
 
 import 'package:intl/intl.dart';
@@ -29,7 +31,7 @@ class NFLocalizations {
   }
 
   static NFLocalizations of(BuildContext context) {
-    return Localizations.of<NFLocalizations>(context, NFLocalizations);
+    return Localizations.of<NFLocalizations>(context, NFLocalizations)!;
   }
 
   String get warning {

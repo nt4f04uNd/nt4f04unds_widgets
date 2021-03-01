@@ -3,7 +3,10 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// @dart = 2.12
+
 import 'package:flutter/material.dart';
+import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// Screen sizes.
 enum ScreenSize { standart, small, tablet }
@@ -11,12 +14,12 @@ enum ScreenSize { standart, small, tablet }
 /// Stores screen width.
 ///
 /// Initialized in the [NFWidgets].
-double screenWidth;
+late double screenWidth;
 
 /// Stores screen height.
 ///
 /// Initialized in the [NFWidgets].
-double screenHeight;
+late double screenHeight;
 
 /// Store the screen size the applicaiton is running on.
 ///
@@ -33,9 +36,8 @@ bool get smallScreen => screen == ScreenSize.small;
 bool get tabletScreen => screen == ScreenSize.tablet;
 
 /// Checks the current [screen] size and returns a value dependent on that.
-T pickSize<T>(T standart, {T small, T tablet}) {
-  assert(small != null || tablet != null,
-      'Must specify at least one additional size for size picker except standart');
+T pickSize<T>(T standart, { T? small, T? tablet }) {
+  assert(small != null || tablet != null, 'Must specify at least one additional size for size picker except standart');
   if (small == null) {
     small = standart;
   }
@@ -46,18 +48,15 @@ T pickSize<T>(T standart, {T small, T tablet}) {
     case ScreenSize.standart:
       return standart;
     case ScreenSize.small:
-      return small;
+      return small!;
     case ScreenSize.tablet:
-      return tablet;
-    default:
-      assert(false);
-      return null;
+      return tablet!;
   }
 }
 
 /// Updates [screenWidth], [screenHeight] and [screen].
 void updateScreenSize() {
-  final size = MediaQueryData.fromWindow(WidgetsBinding.instance.window).size;
+  final size = MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size;
   screenWidth = size.width;
   screenHeight = size.height;
   final shortestSide = size.shortestSide;

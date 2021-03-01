@@ -3,7 +3,8 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/material.dart';
+// @dart = 2.12
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
       
@@ -14,15 +15,9 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// static final Pref<bool> devModeBool =
 ///     Pref<bool>(key: 'dev_mode', defaultValue: false);
 /// ```
-///
-/// Even if default value is null, you should specify it explicitly and give a pref variable `Nullable` postfix.
-/// In case with previous example, that would be `devModeBoolNullable`.
 class Pref<T> {
-  Pref({
-    @required this.key,
-    @required this.defaultValue,
-  }) : assert(key != null) {
-    /// Call this to check current pref value and set it to default, if it's null
+  Pref({ required this.key, required this.defaultValue }) : assert(key != null) {
+    // Call this to check current pref value and set it to default, if it's null.
     get();
   }
 
@@ -30,8 +25,9 @@ class Pref<T> {
   final T defaultValue;
 
   /// Sets pref [value].
-  /// Without any [value] given will set the pref to its [defaultValue].
-  Future<bool> set([T value]) async {
+  /// 
+  /// Without any [value] given will set the pref to the [defaultValue].
+  Future<bool> set([ T? value ]) async {
     value ??= defaultValue;
     final prefs = await SharedPreferences.getInstance();
 
@@ -51,6 +47,7 @@ class Pref<T> {
   }
 
   /// Gets pref value.
+  /// 
   /// If the current value is `null`, will return [defaultValue] and call [setPref] to reset the pref to the [defaultValue].
   Future<T> get() async {
     final prefs = await SharedPreferences.getInstance();

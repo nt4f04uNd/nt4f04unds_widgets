@@ -1,3 +1,9 @@
+## [1.0.4] - TBD
+
+* null safety migration
+* improved docs
+* refactor
+ 
 ## [1.0.3] - january 25, 2021
 
 * multiple route observers support
