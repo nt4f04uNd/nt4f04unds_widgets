@@ -68,13 +68,6 @@ class NFLocalizations {
       name: 'copied',
     );
   }
-
-  String get whatDoesItMean {
-    return Intl.message(
-      'What does it mean?',
-      name: 'whatDoesItMean',
-    );
-  }
 }
 
 class _NFLocalizationsDelegate extends LocalizationsDelegate<NFLocalizations> {

@@ -10,6 +10,7 @@ export 'constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 import 'core/core.dart';
 
@@ -20,30 +21,29 @@ class _Observer extends WidgetsBindingObserver {
   }
 }
 
-abstract class NFWidgets {
-  /// Prevents class inheritance.
-  NFWidgets._();
-
-  static SystemUiOverlayStyle _defaultModalSystemUiStyle;
-  static SystemUiOverlayStyle _defaultBottomSheetSystemUiStyle;
+/// Core widget of the library.
+/// 
+/// At the app start you should call [init] method. That is required for some of the
+/// widgets and functions in library to work properly.
+/// 
+/// You also should wrap your widget tree with [NFTheme].
+class NFWidgets {
   static _Observer _observer;
 
-  /// Pass the parameters for the package to work properly.
-  ///
-  /// You can actually pass null to [defaultModalSystemUiStyle] and
-  /// [defaultBottomSheetSystemUiStyle].
+  /// A key of you root navigator.
+  /// todo: remove
+  static GlobalKey<NavigatorState> navigatorKey;
+
+  /// Route observers which are used inside route transitions.
+  static List<RouteObserver> routeObservers;
+
+  /// Initializes some parameters for the package to work correctly.
   static void init({
     @required GlobalKey<NavigatorState> navigatorKey,
     @required List<RouteObserver> routeObservers,
-    @required SystemUiOverlayStyle defaultSystemUiStyle,
-    @required SystemUiOverlayStyle defaultModalSystemUiStyle,
-    @required SystemUiOverlayStyle defaultBottomSheetSystemUiStyle,
   }) {
     NFWidgets.routeObservers = routeObservers;
     NFWidgets.navigatorKey = navigatorKey;
-    NFWidgets.defaultSystemUiStyle = defaultSystemUiStyle;
-    NFWidgets.defaultModalSystemUiStyle = defaultModalSystemUiStyle;
-    NFWidgets.defaultBottomSheetSystemUiStyle = defaultBottomSheetSystemUiStyle;
     updateScreenSize();
     if (_observer == null) {
       _observer = _Observer();
@@ -58,35 +58,86 @@ abstract class NFWidgets {
       _observer = null;
     }
   }
+}
 
-  /// A key of you root navigator.
-  static GlobalKey<NavigatorState> navigatorKey;
+/// Provides access to [NFThemeData].
+/// 
+/// This is required for some of the widgets and functions in library, so you should
+/// wrap your app into this widget.
+class NFTheme extends InheritedWidget  {
+  /// Creates inherited defaults widget.
+  NFTheme({ @required this.data, @required this.child });
 
-  /// Route observers which are used inside route transitions.
-  static List<RouteObserver> routeObservers;
+  /// Default library-wide values.
+  final NFThemeData data;
+
+  /// The widget below this widget in the tree.
+  final Widget child;
+
+  static NFThemeData of(BuildContext context) {
+    return context.findAncestorWidgetOfExactType<NFTheme>().data;
+  }
+
+  @override
+  bool updateShouldNotify(NFTheme oldWidget) {
+    return oldWidget.data != data;
+  }
+}
+
+/// Wraps up all default library-wide values.
+///
+/// This is required for some of the widgets and functions in library, so you should
+/// wrap your app into [NFTheme] and pass this class into it.
+
+class NFThemeData {
+  /// Creates defaults values.
+  NFThemeData({
+    @required this.systemUiStyle,
+    SystemUiOverlayStyle modalSystemUiStyle,
+    SystemUiOverlayStyle bottomSheetSystemUiStyle,
+    this.iconSize = NFConstants.iconSize,
+    this.iconButtonSize = NFConstants.iconButtonSize,
+  }) : _modalSystemUiStyle = modalSystemUiStyle,
+       _bottomSheetSystemUiStyle = bottomSheetSystemUiStyle;
 
   /// Default style of the system ui.
   ///
   /// For example, used within [RouteTransitions],
-  /// or instead of [defaultModalSystemUiStyle], [defaultBottomSheetSystemUiStyle],
+  /// or instead of [modalSystemUiStyle], [bottomSheetSystemUiStyle],
   /// if they were not specified.
-  static SystemUiOverlayStyle defaultSystemUiStyle;
+  final SystemUiOverlayStyle systemUiStyle;
+  final SystemUiOverlayStyle _modalSystemUiStyle;
+  final SystemUiOverlayStyle _bottomSheetSystemUiStyle;
+
+  /// Default icon size.
+  final double iconSize;
+
+  /// Default icon button size.
+  final double iconButtonSize;
 
   /// Default style of the system ui with modals.
   ///
   /// Used in [NFShowFunctions.showAlert] and [NFShowFunctions.showDialog].
   /// If not specified, the [defaultSystemUiStyle] is used instead.
-  static SystemUiOverlayStyle get defaultModalSystemUiStyle => _defaultModalSystemUiStyle ?? defaultSystemUiStyle;
-  static set defaultModalSystemUiStyle(SystemUiOverlayStyle value) {
-    _defaultModalSystemUiStyle = value;
-  }
+  SystemUiOverlayStyle get modalSystemUiStyle => _modalSystemUiStyle ?? systemUiStyle;
 
   /// Default style of the system ui with bottom sheets.
   ///
   /// [NFShowFunctions.showBottomSheet] and [NFShowFunctions.showModalBottomSheet]
   /// If not specified, the [defaultSystemUiStyle] is used instead.
-  static SystemUiOverlayStyle get defaultBottomSheetSystemUiStyle => _defaultBottomSheetSystemUiStyle ?? defaultSystemUiStyle;
-  static set defaultBottomSheetSystemUiStyle(SystemUiOverlayStyle value) {
-    _defaultBottomSheetSystemUiStyle = value;
+  SystemUiOverlayStyle get bottomSheetSystemUiStyle => _bottomSheetSystemUiStyle ?? systemUiStyle;
+
+  /// Creates a copy of these defaults but with the given fields replaced with
+  /// the new values.
+  NFThemeData copyWith({
+    SystemUiOverlayStyle systemUiStyle,
+    SystemUiOverlayStyle modalSystemUiStyle,
+    SystemUiOverlayStyle bottomSheetSystemUiStyle,
+  }) {
+    return NFThemeData(
+      systemUiStyle: this.systemUiStyle ?? systemUiStyle,
+      modalSystemUiStyle: this.modalSystemUiStyle ?? modalSystemUiStyle,
+      bottomSheetSystemUiStyle: this.bottomSheetSystemUiStyle ?? bottomSheetSystemUiStyle,
+    );
   }
 }

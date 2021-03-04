@@ -3,30 +3,34 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// todo: review
+
+// @dart = 2.12
+
 import 'package:flutter/material.dart';
 
 /// Creates a setting item with [title], [description] and [content] sections.
 class NFSettingItem extends StatelessWidget {
   const NFSettingItem({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
     this.description,
     this.trailing,
-    this.content,
+    this.child,
   })  : assert(title != null),
         super(key: key);
 
-  /// Text displayed as main title of the settings
+  /// Text displayed as main title of the settings.
   final String title;
 
-  /// Text displayed as the settings description
-  final String description;
+  /// Text displayed as the settings description.
+  final String? description;
 
-  /// A place for widget to display at the end of title line
-  final Widget trailing;
+  /// A place for widget to display at the end of title line.
+  final Widget? trailing;
 
-  /// A place for a custom widget (e.g. slider)
-  final Widget content;
+  /// A place for a custom widget at the bottom of the item.
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +39,6 @@ class NFSettingItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          //******** Title ********
           Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -47,22 +50,22 @@ class NFSettingItem extends StatelessWidget {
                   style: const TextStyle(fontSize: 16.0),
                 ),
               ),
-              if (trailing != null) trailing
+              if (trailing != null)
+                trailing!
             ],
           ),
-          //******** Description ********
           if (description != null)
             Padding(
               padding: const EdgeInsets.only(top: 2.0),
               child: Text(
-                description,
+                description!,
                 style: TextStyle(
-                  color: Theme.of(context).textTheme.caption.color,
+                  color: Theme.of(context).textTheme.caption?.color,
                 ),
               ),
             ),
-          //******** Content ********
-          content
+          if (child != null)
+            child!
         ],
       ),
     );
@@ -75,8 +78,8 @@ class NFSettingItem extends StatelessWidget {
 /// The [child] is untouchable in the animation.
 class NFChangedSwitcher extends StatefulWidget {
   NFChangedSwitcher({
-    Key key,
-    this.changed,
+    Key? key,
+    this.changed = false,
     this.child,
   }) : super(key: key);
 
@@ -85,7 +88,9 @@ class NFChangedSwitcher extends StatefulWidget {
   ///
   /// Represents that some setting has been changed.
   final bool changed;
-  final Widget child;
+
+  /// The widget below this widget in the tree.
+  final Widget? child;
 
   @override
   _NFChangedSwitcherState createState() => _NFChangedSwitcherState();
@@ -103,9 +108,7 @@ class _NFChangedSwitcherState extends State<NFChangedSwitcher> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeOutCubic,
-          padding: widget.changed
-              ? const EdgeInsets.only(right: 0.0)
-              : const EdgeInsets.only(right: 3.0),
+          padding: EdgeInsets.only(right: widget.changed ? 0.0 : 3.0),
           child: widget.child,
         ),
       ),

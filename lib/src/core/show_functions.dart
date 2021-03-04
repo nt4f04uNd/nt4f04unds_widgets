@@ -73,7 +73,7 @@ class NFShowFunctions {
   }) async {
     assert(title != null);
 
-    ui ??= NFWidgets.defaultModalSystemUiStyle;
+    ui ??= NFTheme.of(context).modalSystemUiStyle;
     final lastUi = SystemUiStyleController.lastUi;
 
     // Animate ui on open.
@@ -229,7 +229,7 @@ class NFShowFunctions {
     ShapeBorder? shape,
     Clip? clipBehavior,
   }) {
-    ui ??= NFWidgets.defaultBottomSheetSystemUiStyle;
+    ui ??= NFTheme.of(context).bottomSheetSystemUiStyle;
     final lastUi = SystemUiStyleController.lastUi;
     // Animate ui on open.
     SystemUiStyleController.animateSystemUiOverlay(to: ui);
@@ -271,7 +271,7 @@ class NFShowFunctions {
     bool enableDrag = true,
     RouteSettings? routeSettings,
   }) {
-    ui ??= NFWidgets.defaultBottomSheetSystemUiStyle;
+    ui ??= NFTheme.of(context).bottomSheetSystemUiStyle;
     final lastUi = SystemUiStyleController.lastUi;
     // Animate ui on open.
     SystemUiStyleController.animateSystemUiOverlay(to: ui);

@@ -8,6 +8,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
+// todo: rewrite this to use Slidable instadead of NFDismissible
+
 const Duration kNFSnackbarAnimationDuration = Duration(milliseconds: 270);
 const Duration kNFSnackbarDismissMovementDuration = Duration(milliseconds: 170);
 const int _kSnackbarMaxQueueLength = 15;
@@ -19,7 +21,7 @@ class NFSnackbarSettings {
     this.duration = const Duration(seconds: 4),
     this.important = false,
   }) : assert(child != null) {
-    if (globalKey == null) this.globalKey = GlobalKey<NFSnackbarWrapperState>();
+    this.globalKey ??= GlobalKey<NFSnackbarWrapperState>();
   }
 
   /// Main widget to display as a snackbar
@@ -102,12 +104,11 @@ abstract class NFSnackbarControl {
 
   /// Creates next snackbar and shows it to screen
   /// [index] can be used to justify what snackbar to show
-  static void _showSnackbar({int index = 0}) {
+  static void _showSnackbar({ int index = 0 }) {
     assert(!snackbarsList[index].onScreen);
     snackbarsList[index].createSnackbar();
     try {
-      NFWidgets.navigatorKey.currentState.overlay
-          .insert(snackbarsList[index].overlayEntry);
+      NFWidgets.navigatorKey.currentState.overlay.insert(snackbarsList[index].overlayEntry);
     } catch (ex) {
       // Suppress exceptions (they usually caused by that some other widget in tree produces an exception).
     }
@@ -119,8 +120,6 @@ abstract class NFSnackbarControl {
     snackbarsList[index].removeSnackbar();
     snackbarsList.removeAt(index);
   }
-
-  // static void
 }
 
 /// Custom snackbar to display it in the [Overlay]
@@ -128,8 +127,8 @@ class _NFSnackbarWrapper extends StatefulWidget {
   _NFSnackbarWrapper({
     Key key,
     @required this.settings,
-  })  : assert(settings != null),
-        super(key: key);
+  }) : assert(settings != null),
+       super(key: key);
 
   final NFSnackbarSettings settings;
 
@@ -204,7 +203,7 @@ class NFSnackbarWrapperState extends State<_NFSnackbarWrapper>
     });
     slideController.reverse();
     opacityController.reverse();
-    var res = await completer.future;
+    final res = await completer.future;
     if (res) {
       NFSnackbarControl._handleSnackbarDismissed();
     }
@@ -229,7 +228,6 @@ class NFSnackbarWrapperState extends State<_NFSnackbarWrapper>
         Tween(begin: const Offset(0.0, 0.5), end: Offset.zero).animate(
       CurvedAnimation(curve: Curves.easeOutCubic, parent: slideController),
     );
-
     return GestureDetector(
       onPanDown: (_) {
         stopTimer();
@@ -248,7 +246,6 @@ class NFSnackbarWrapperState extends State<_NFSnackbarWrapper>
             ignoring: slideController.status == AnimationStatus.reverse,
             child: StatefulBuilder(
               builder: (BuildContext context, setState) => NFDismissible( 
-                // todo: rewrite this to use Slidable instadead of NFDismissible
                 key: dismissibleKey,
                 movementDuration: kNFSnackbarDismissMovementDuration,
                 onDismissProgress: (_, value) => setState(() {
@@ -288,6 +285,7 @@ class NFSnackbar extends StatelessWidget {
     this.color,
     this.messagePadding = EdgeInsets.zero,
   }) : super(key: key);
+  
   final Widget leading;
   final String message;
   final Widget action;

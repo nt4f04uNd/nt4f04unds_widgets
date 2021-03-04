@@ -56,7 +56,10 @@ T pickSize<T>(T standart, { T? small, T? tablet }) {
 
 /// Updates [screenWidth], [screenHeight] and [screen].
 void updateScreenSize() {
-  final size = MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size;
+  final window = WidgetsBinding.instance?.window;
+  if (window == null)
+    return;
+  final size = MediaQueryData.fromWindow(window).size;
   screenWidth = size.width;
   screenHeight = size.height;
   final shortestSide = size.shortestSide;

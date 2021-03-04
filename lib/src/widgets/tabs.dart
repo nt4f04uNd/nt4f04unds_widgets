@@ -6,6 +6,8 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// todo: propose changes to the tabs in the framework and delete this. 
+
 /// This is file with copied tabs stuff from flutter framework.
 ///
 /// I needed to have some styles on tabs,
@@ -233,7 +235,6 @@ class NFTabBar extends StatefulWidget implements PreferredSizeWidget {
     this.labelStyle,
     this.labelPadding,
     this.tabBorderRadius = const BorderRadius.all(Radius.circular(8.0)),
-    // this.tabPadding = const EdgeInsets.only(left: 2.0, right: 2.0, top: 2.0),
     this.tabPadding = const EdgeInsets.only(left: 2.0, right: 2.0, top: 2.0),
     this.tabBarPadding = const EdgeInsets.only(left: 5.0, right: 5.0),
     this.unselectedLabelColor,
@@ -243,8 +244,7 @@ class NFTabBar extends StatefulWidget implements PreferredSizeWidget {
   })  : assert(tabs != null),
         assert(isScrollable != null),
         assert(dragStartBehavior != null),
-        assert(indicator != null ||
-            (indicatorWeight != null && indicatorWeight > 0.0)),
+        assert(indicator != null || (indicatorWeight != null && indicatorWeight > 0.0)),
         assert(indicator != null || (indicatorPadding != null)),
         super(key: key);
 

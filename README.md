@@ -25,40 +25,37 @@ class App extends StatefulWidget {
   @override
   _AppState createState() => _AppState();
 
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 }
 
 class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    
     NFWidgets.init(
       routeObservers: [routeObserver],
       navigatorKey: App.navigatorKey,
-      defaultSystemUiStyle: Constants.AppSystemUIThemes.defaultStyle,
-      defaultModalSystemUiStyle: null,
-      defaultBottomSheetSystemUiStyle: null,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Example',
-      color: Colors.black,
-      navigatorKey: App.navigatorKey,
-      theme: Constants.AppTheme.theme,
-      supportedLocales: Constants.Config.supportedLocales
-          .map<Locale>((e) => Locale(e, e.toUpperCase())),
-      localizationsDelegates: const [
-        NFLocalizations.delegate,
-        // ... other locales
-      ],
-      navigatorObservers: [routeObserver],
-      onGenerateInitialRoutes: (routeName) => RouteControl.handleOnGenerateInitialRoutes(routeName, context),
-      onGenerateRoute: (settings) => RouteControl.handleOnGenerateRoutes(settings),
+    return NFTheme(
+      data: NFThemeData(systemUiStyle: SystemUiOverlayStyle.dark),
+      child: MaterialApp(
+        title: 'Example',
+        color: Colors.black,
+        navigatorKey: App.navigatorKey,
+        theme: Constants.AppTheme.theme,
+        supportedLocales: Constants.Config.supportedLocales.map<Locale>((e) => Locale(e, e.toUpperCase())),
+        localizationsDelegates: const [
+          NFLocalizations.delegate,
+          // ... other locales
+        ],
+        navigatorObservers: [routeObserver],
+        onGenerateInitialRoutes: (routeName) => RouteControl.handleOnGenerateInitialRoutes(routeName, context),
+        onGenerateRoute: (settings) => RouteControl.handleOnGenerateRoutes(settings),
+      ),
     );
   }
 }

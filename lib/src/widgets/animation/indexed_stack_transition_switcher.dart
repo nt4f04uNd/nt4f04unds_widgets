@@ -3,6 +3,8 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// todo: remove this when this issue gets resolved https://github.com/flutter/flutter/issues/56662
+
 // @dart = 2.12
 
 import 'package:flutter/animation.dart';
@@ -11,8 +13,6 @@ import 'package:flutter/material.dart';
 /// Based on the [PageTransitionSwitcher] from the `animations` package, this widget
 /// allows you to transition between an array of widgets using entry and exit
 /// animations whilst maintaining their state.
-///
-/// todo: remove this when this issue gets resolved https://github.com/flutter/flutter/issues/56662
 class IndexedTransitionSwitcher extends StatefulWidget {
   /// Creates an [IndexedTransitionSwitcher].
   const IndexedTransitionSwitcher({
@@ -35,8 +35,7 @@ class IndexedTransitionSwitcher extends StatefulWidget {
   /// When the index changes, the new child will animate in with the primary
   /// animation, and the old widget will animate out with the secondary
   /// animation.
-  final Widget Function(Widget child, Animation<double> primaryAnimation,
-      Animation<double> secondaryAnimation) transitionBuilder;
+  final Widget Function(Widget child, Animation<double> primaryAnimation, Animation<double> secondaryAnimation) transitionBuilder;
 
   /// The duration of the transition.
   final Duration duration;
@@ -53,8 +52,7 @@ class IndexedTransitionSwitcher extends StatefulWidget {
       _IndexedTransitionSwitcherState();
 }
 
-class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher>
-    with TickerProviderStateMixin {
+class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher> with TickerProviderStateMixin {
   late List<_ChildEntry> _childEntries;
 
   @override

@@ -51,11 +51,11 @@ class NFSpinner extends StatelessWidget {
     this.color,
   })  : assert(
           size != NFSpinnerSize.custom &&
-                  sizeValue == null &&
-                  strokeWidth == null ||
-              size == NFSpinnerSize.custom &&
-                  sizeValue != null &&
-                  strokeWidth != null,
+          sizeValue == null &&
+          strokeWidth == null ||
+            size == NFSpinnerSize.custom &&
+            sizeValue != null &&
+            strokeWidth != null,
           'If you use NFSpinnerSize.custom or sizeValue or strokeWidth, you have to provide all of them together',
         ),
         radius = null,

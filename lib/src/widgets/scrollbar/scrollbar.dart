@@ -6,6 +6,8 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// todo: propose changes to the scrollbar in the framework and delete this. 
+
 // @dart = 2.12
 
 export 'draggable_scrollbar.dart';

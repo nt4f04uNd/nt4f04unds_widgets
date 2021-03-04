@@ -120,31 +120,6 @@ class RouteTransitionSettings {
   UIFunction checkSystemUi;
 }
 
-class RouteTransitionSettingsProvider extends InheritedWidget {
-  const RouteTransitionSettingsProvider({
-    Key key,
-    @required this.child,
-    @required this.transitionSettings,
-  })  : assert(child != null),
-        assert(transitionSettings != null),
-        super(key: key, child: child);
-
-  final Widget child;
-  final RouteTransitionSettings transitionSettings;
-
-  static RouteTransitionSettingsProvider of<T>(BuildContext context) {
-    return context
-        .getElementForInheritedWidgetOfExactType<
-            RouteTransitionSettingsProvider>()
-        .widget;
-  }
-
-  @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return false;
-  }
-}
-
 /// Abstract class to create various route transitions
 abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   final T route;
@@ -173,39 +148,34 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   /// Says when to ignore widget in [secondaryAnimation]
   bool secondaryIgnore = false;
 
-  UIFunction get _checkSystemUi =>
-      transitionSettings.checkSystemUi ?? () => NFWidgets.defaultSystemUiStyle;
+  SystemUiOverlayStyle _checkSystemUi(context) {
+    return transitionSettings.checkSystemUi?.call() ?? NFTheme.of(context).systemUiStyle;
+  }
 
   RouteTransition({
     @required this.route,
     RouteTransitionSettings transitionSettings,
-  })  : transitionSettings = transitionSettings ?? RouteTransitionSettings(),
-        super(
-            settings: transitionSettings.settings,
-            opaque: transitionSettings.opaque,
-            maintainState: transitionSettings.maintainState,
-            transitionDuration: transitionSettings.transitionDuration,
-            reverseTransitionDuration:
-                transitionSettings.reverseTransitionDuration,
-            pageBuilder: (
-              BuildContext context,
-              Animation<double> animation,
-              Animation<double> secondaryAnimation,
-            ) {
-              return route;
-            }) {
+  }) : transitionSettings = transitionSettings ?? RouteTransitionSettings(),
+       super(
+         settings: transitionSettings.settings,
+         opaque: transitionSettings.opaque,
+         maintainState: transitionSettings.maintainState,
+         transitionDuration: transitionSettings.transitionDuration,
+         reverseTransitionDuration: transitionSettings.reverseTransitionDuration,
+         pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) => route
+       ) {
     pageBuilder = (
       BuildContext context,
       Animation<double> animation,
       Animation<double> secondaryAnimation,
     ) {
-      handleChecks(animation, secondaryAnimation);
+      handleChecks(context, animation, secondaryAnimation);
       return RouteAwareWidget(
         onPopNext: () async {
           if (!uiAnimating) {
             uiAnimating = true;
             await SystemUiStyleController.animateSystemUiOverlay(
-              to: _checkSystemUi(),
+              to: _checkSystemUi(context),
               curve: transitionSettings.entReverseCurve,
               duration: transitionDuration,
             );
@@ -218,9 +188,8 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   }
 
   /// Must be called in page builder.
-  void handleChecks(
-      Animation<double> animation, Animation<double> secondaryAnimation) {
-    handleSystemUiCheck(animation, secondaryAnimation);
+  void handleChecks(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+    handleSystemUiCheck(context, animation, secondaryAnimation);
     handleEnabledCheck(animation, secondaryAnimation);
     handleIgnoranceCheck(animation, secondaryAnimation);
   }
@@ -228,13 +197,12 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   /// Checks for provided system ui.
   ///
   /// Won't be called if route is created via [onGenerateInitialRoutes].
-  void handleSystemUiCheck(
-      Animation<double> animation, Animation<double> secondaryAnimation) {
+  void handleSystemUiCheck(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     Future<void> animate() async {
       if (!uiAnimating && animation.status == AnimationStatus.forward) {
         uiAnimating = true;
         await SystemUiStyleController.animateSystemUiOverlay(
-          to: _checkSystemUi(),
+          to: _checkSystemUi(context),
           curve: transitionSettings.entCurve,
           // TODO: why * 2?
           duration: transitionDuration * 2,
@@ -250,8 +218,7 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   }
 
   /// Checks if animation  must be enabled
-  void handleEnabledCheck(
-      Animation<double> animation, Animation<double> secondaryAnimation) {
+  void handleEnabledCheck(Animation<double> animation, Animation<double> secondaryAnimation) {
     entAnimationEnabled = transitionSettings.checkEntAnimationEnabled();
     animation.addStatusListener((status) {
       entAnimationEnabled = transitionSettings.checkEntAnimationEnabled();

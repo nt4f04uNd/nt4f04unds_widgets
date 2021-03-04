@@ -3,15 +3,19 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// todo: maybe PR this to marquee package
+
+// @dart = 2.12
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 
 class NFMarquee extends StatelessWidget {
   const NFMarquee({
-    Key key,
-    @required this.text,
-    @required this.fontSize,
+    Key? key,
+    required this.text,
+    required this.fontSize,
     this.fontWeight = FontWeight.w600,
     this.velocity = 30.0,
     this.blankSpace = 65.0,

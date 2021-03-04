@@ -13,4 +13,11 @@
 			"final l10n = NFLocalizations.of(context);"
 		],
 	},
+	"Get NFTheme": {
+		"prefix": "_nftheme",
+		"description": "Get the package theme",
+		"body": [
+			"final nftheme = NFTheme.of(context);"
+		],
+	},
 }

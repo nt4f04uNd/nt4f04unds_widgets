@@ -36,5 +36,9 @@ class NFDefaultAnimation extends CurvedAnimation {
     Curve curve = Curves.easeOutCubic,
     Curve reverseCurve = Curves.easeInCubic,
     required Animation<double> parent,
-  }) : super(curve: curve, reverseCurve: reverseCurve, parent: parent);
+  }) : super(
+        curve: curve,
+        reverseCurve: reverseCurve,
+        parent: parent
+      );
 }

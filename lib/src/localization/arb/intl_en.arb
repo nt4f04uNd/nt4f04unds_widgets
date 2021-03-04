@@ -24,10 +24,5 @@
   "@copied": {
     "type": "text",
     "placeholders": {}
-  },
-  "whatDoesItMean": "What does it mean?",
-  "@whatDoesItMean": {
-    "type": "text",
-    "placeholders": {}
   }
 }

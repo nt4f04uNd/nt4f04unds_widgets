@@ -6,7 +6,9 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// todo: review when https://github.com/flutter/flutter/issues/73163 is closed
+// todo: propose changes to the icon button in the framework and delete this. blocked by splash fidelity issue https://github.com/flutter/flutter/issues/73163
+
+// @dart = 2.12
 
 import 'dart:math' as math;
 
@@ -132,8 +134,8 @@ class NFIconButton extends StatelessWidget {
   /// The [icon] argument must be specified, and is typically either an [Icon]
   /// or an [ImageIcon].
   const NFIconButton({
-    Key key,
-    @required this.icon,
+    Key? key,
+    required this.icon,
     this.size = NFConstants.iconButtonSize,
     this.iconSize = NFConstants.iconSize,
     this.color,
@@ -142,7 +144,7 @@ class NFIconButton extends StatelessWidget {
     this.highlightColor,
     this.splashColor,
     this.disabledColor,
-    @required this.onPressed,
+    required this.onPressed,
     this.focusNode,
     this.autofocus = false,
     this.tooltip,
@@ -182,12 +184,12 @@ class NFIconButton extends StatelessWidget {
   /// The color for the button's icon when it has the input focus.
   ///
   /// Defaults to [ThemeData.focusColor] of the ambient theme.
-  final Color focusColor;
+  final Color? focusColor;
 
   /// The color for the button's icon when a pointer is hovering over it.
   ///
   /// Defaults to [ThemeData.hoverColor] of the ambient theme.
-  final Color hoverColor;
+  final Color? hoverColor;
 
   /// The color to use for the icon inside the button, if the icon is enabled.
   /// Defaults to leaving this up to the [icon] widget.
@@ -203,7 +205,7 @@ class NFIconButton extends StatelessWidget {
   ///   icon: Icons.widgets,
   /// )
   /// ```
-  final Color color;
+  final Color? color;
 
   /// The primary color of the button when the button is in the down (pressed) state.
   /// The splash is represented as a circular overlay that appears above the
@@ -213,7 +215,7 @@ class NFIconButton extends StatelessWidget {
   /// color has transparency then the highlight and button color will show through.
   ///
   /// Defaults to the Theme's splash color, [ThemeData.splashColor].
-  final Color splashColor;
+  final Color? splashColor;
 
   /// The secondary color of the button when the button is in the down (pressed)
   /// state. The highlight color is represented as a solid color that is overlaid over the
@@ -221,7 +223,7 @@ class NFIconButton extends StatelessWidget {
   /// will show through. The highlight fades in quickly as the button is held down.
   ///
   /// Defaults to the Theme's highlight color, [ThemeData.highlightColor].
-  final Color highlightColor;
+  final Color? highlightColor;
 
   /// The color to use for the icon inside the button, if the icon is disabled.
   /// Defaults to the [ThemeData.disabledColor] of the current [Theme].
@@ -229,15 +231,15 @@ class NFIconButton extends StatelessWidget {
   /// The icon is disabled if [onPressed] is null.
   ///
   /// See also [color].
-  final Color disabledColor;
+  final Color? disabledColor;
 
   /// The callback that is called when the button is tapped or otherwise activated.
   ///
   /// If this is set to null, the button will be disabled.
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   /// {@macro flutter.widgets.Focus.focusNode}
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
 
   /// {@macro flutter.widgets.Focus.autofocus}
   final bool autofocus;
@@ -246,7 +248,7 @@ class NFIconButton extends StatelessWidget {
   ///
   /// This text is displayed when the user long-presses on the button and is
   /// used for accessibility.
-  final String tooltip;
+  final String? tooltip;
 
   /// Whether detected gestures should provide acoustic and/or haptic feedback.
   ///
@@ -263,7 +265,7 @@ class NFIconButton extends StatelessWidget {
     assert(debugCheckHasMaterial(context));
     Color currentColor;
     if (onPressed != null)
-      currentColor = color ?? Theme.of(context).iconTheme.color;
+      currentColor = color ?? Theme.of(context).iconTheme.color!;
     else
       currentColor = disabledColor ?? Theme.of(context).disabledColor;
 
@@ -285,7 +287,7 @@ class NFIconButton extends StatelessWidget {
 
     if (tooltip != null) {
       result = Tooltip(
-        message: tooltip,
+        message: tooltip!,
         child: result,
       );
     }

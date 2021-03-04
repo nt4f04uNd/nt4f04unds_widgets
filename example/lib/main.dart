@@ -41,9 +41,6 @@ class _HomeState extends State<Home> {
     NFWidgets.init(
       navigatorKey: Home.navigatorKey,
       routeObservers: [RouteObserver()],
-      defaultSystemUiStyle: SystemUiOverlayStyle.dark, 
-      defaultModalSystemUiStyle: null, 
-      defaultBottomSheetSystemUiStyle: null,
     );
   }
 
@@ -53,18 +50,21 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Screen(
-      name: 'Examples',
-      children: [
-        Tile(
-          name: 'slidable',
-          onTap: () => _handleTap(SlidableExamples()),
-        ),
-        Tile(
-          name: 'route_transitions',
-          onTap: () => _handleTap(RouteTransitionExamples()),
-        ),
-      ],
+    return NFTheme(
+      data: NFThemeData(systemUiStyle: SystemUiOverlayStyle.dark),
+      child: Screen(
+        name: 'Examples',
+        children: [
+          Tile(
+            name: 'slidable',
+            onTap: () => _handleTap(SlidableExamples()),
+          ),
+          Tile(
+            name: 'route_transitions',
+            onTap: () => _handleTap(RouteTransitionExamples()),
+          ),
+        ],
+      ),
     );
   }
 }

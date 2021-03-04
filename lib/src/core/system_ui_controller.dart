@@ -11,7 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
+/// Allows to perform animations on [SystemUiOverlayStyle] and provides some convenience methods
+/// ands properties, like [actualUi].
 /// 
+/// When using this class, it's recommended to never call [SystemChrome.setSystemUIOverlayStyle] directly.
 abstract class SystemUiStyleController {
   static SystemUiOverlayStyle? _ui;
   static late SystemUiOverlayStyle _from;
@@ -53,6 +56,12 @@ abstract class SystemUiStyleController {
   }
 
   /// Performs a transition from one [SystemUiOverlayStyle] to another one.
+  /// 
+  /// First time calling this method, you have to either: 
+  /// * provide [from]
+  /// * before once call [setSystemUiOverlay]
+  /// 
+  /// Otherwise, we won't know from which color we should perform the animation.
   ///
   /// The returned future will complete after the animation ends.
   ///
@@ -73,8 +82,8 @@ abstract class SystemUiStyleController {
     Duration? duration,
   }) {
     assert(to != null);
-    _ui ??= NFWidgets.defaultSystemUiStyle;
     from ??= _ui;
+    assert(from != null);
     _from = from!;
     _to = to;
     curve ??= SystemUiStyleController.curve;

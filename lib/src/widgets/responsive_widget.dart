@@ -3,41 +3,60 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// @dart = 2.12
+
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-/// A wrapper to create buttons that have pressing animation.
-/// Doesn't draw any by itslef.
+/// When pressed, animates down like a button, and then animates back up, 
+/// when user unpresses it.
 /// 
-/// todo: allow custrom transition builders
+/// todo: maybe allow custrom transition builders
 class ResponsiveWidget extends StatefulWidget {
   ResponsiveWidget({
-    Key key,
-    @required this.child,
-    this.disabled = false,
-    this.duration = const Duration(milliseconds: 100),
-    this.onPressed,
+    Key? key,
+    required this.child,
+    required this.onPressed,
     this.offset = 2.0,
+    this.duration = const Duration(milliseconds: 100),
+    this.reverseDuration,
+    this.curve = Curves.easeOutCubic,
+    this.reverseCurve = Curves.easeInCubic,
   }) : super(key: key);
 
-  final Widget child;
-  final bool disabled;
-  final Duration duration;
-  final Function onPressed;
+  /// The widget below this widget in the tree.
+  final Widget? child;
+
+  /// The callback that is called when the widget is tapped or otherwise activated.
+  ///
+  /// If this is set to null, the widget will be disabled.
+  final VoidCallback? onPressed;
 
   /// Max offset applied to widget at the end of animation when it's pressed.
   final double offset;
 
+  /// The duration of the move down animation.
+  final Duration duration;
+
+  /// The duration of the move up animation.
+  final Duration? reverseDuration;
+
+  /// The curve to use for move down animation.
+  final Curve curve;
+  
+  /// The curve to use for move up animation.
+  final Curve reverseCurve;
+
   @override
-  ResponsiveWidgetState createState() => ResponsiveWidgetState();
+  _ResponsiveWidgetState createState() => _ResponsiveWidgetState();
 }
 
-class ResponsiveWidgetState extends State<ResponsiveWidget>
-    with SingleTickerProviderStateMixin {
-
-  AnimationController controller;
-  CancelableOperation operation;
+class _ResponsiveWidgetState extends State<ResponsiveWidget> with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+  late Animation<double> animation;
+  CancelableOperation? operation;
+  bool get _enabled => widget.onPressed != null;
 
   @override
   void initState() {
@@ -45,7 +64,22 @@ class ResponsiveWidgetState extends State<ResponsiveWidget>
     controller = AnimationController(
       vsync: this,
       duration: widget.duration,
+      reverseDuration: widget.reverseDuration,
     );
+    _createAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant ResponsiveWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    controller.duration = widget.duration;
+    controller.reverseDuration = widget.reverseDuration;
+    if (oldWidget.curve != widget.curve || oldWidget.reverseCurve != widget.reverseCurve) {
+      _createAnimation();
+    }
+    if (!_enabled) {
+      _moveUp();
+    }
   }
 
   @override
@@ -54,7 +88,15 @@ class ResponsiveWidgetState extends State<ResponsiveWidget>
     super.dispose();
   }
 
-  Future<void> moveDown() async {
+  void _createAnimation() {
+    animation = CurvedAnimation(
+      curve: widget.curve,
+      reverseCurve: widget.reverseCurve,
+      parent: controller
+    );
+  }
+
+  void _moveDown() {
     if (controller.isDismissed) {
       controller.duration = widget.duration;
     } else {
@@ -65,9 +107,9 @@ class ResponsiveWidgetState extends State<ResponsiveWidget>
     operation = CancelableOperation.fromFuture(controller.forward());
   }
 
-  Future<void> moveUp() async {
+  Future<void> _moveUp() async {
     await operation?.valueOrCancellation();
-    if (operation != null && operation.isCompleted) {
+    if (operation?.isCompleted ?? false) {
       controller.reverse();
     }
     operation = null;
@@ -75,35 +117,24 @@ class ResponsiveWidgetState extends State<ResponsiveWidget>
 
   @override
   Widget build(BuildContext context) {
-    final animation = NFDefaultAnimation(parent: controller);
-    if (widget.disabled && controller.value != 0.0) {
-      moveUp();
-    }
     return IgnorePointer(
-      ignoring: widget.disabled,
+      ignoring: !_enabled,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onPanDown: (_) {
-          moveDown();
-        },
+        onPanDown: (_) => _moveDown(),
+        onPanEnd: (_) => _moveUp(),
+        onPanCancel: () => _moveUp(),
         onTapUp: (_) {
           try {
-            if (widget.onPressed != null && !widget.disabled)
-              widget.onPressed();
+            widget.onPressed?.call();
           } finally {
-            moveUp();
+            _moveUp();
           }
-        },
-        onPanEnd: (_) {
-          moveUp();
-        },
-        onPanCancel: () {
-          moveUp();
         },
         child: AnimatedBuilder(
           animation: animation,
           child: widget.child,
-          builder: (BuildContext context, Widget child) => Transform.translate(
+          builder: (BuildContext context, Widget? child) => Transform.translate(
             offset: Offset(0.0, widget.offset * animation.value),
             child: child,
           ),
