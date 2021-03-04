@@ -80,8 +80,8 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   ///
   /// {@macro flutter.gestures.GestureRecognizer.kind}
   NFDragGestureRecognizer({
-    Object debugOwner,
-    PointerDeviceKind kind,
+    Object? debugOwner,
+    PointerDeviceKind? kind,
     this.dragStartBehavior = DragStartBehavior.start,
     this.velocityTrackerBuilder = _defaultBuilder,
   })  : assert(dragStartBehavior != null),
@@ -90,7 +90,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   /// Called on each pointer move event (even before the drag was accepted).
   ///
   /// Return `false` to give up the pointer.
-  ShouldGiveUpCallback shouldGiveUp;
+  ShouldGiveUpCallback? shouldGiveUp;
 
   static VelocityTracker _defaultBuilder(PointerEvent event) =>
       VelocityTracker.withKind(event.kind);
@@ -128,7 +128,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   ///
   ///  * [kPrimaryButton], the button this callback responds to.
   ///  * [DragDownDetails], which is passed as an argument to this callback.
-  GestureDragDownCallback onDown;
+  GestureDragDownCallback? onDown;
 
   /// A pointer has contacted the screen with a primary button and has begun to
   /// move.
@@ -145,7 +145,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   ///
   ///  * [kPrimaryButton], the button this callback responds to.
   ///  * [DragStartDetails], which is passed as an argument to this callback.
-  GestureDragStartCallback onStart;
+  GestureDragStartCallback? onStart;
 
   /// A pointer that is in contact with the screen with a primary button and
   /// moving has moved again.
@@ -157,7 +157,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   ///
   ///  * [kPrimaryButton], the button this callback responds to.
   ///  * [DragUpdateDetails], which is passed as an argument to this callback.
-  GestureDragUpdateCallback onUpdate;
+  GestureDragUpdateCallback? onUpdate;
 
   /// A pointer that was previously in contact with the screen with a primary
   /// button and moving is no longer in contact with the screen and was moving
@@ -170,33 +170,33 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   ///
   ///  * [kPrimaryButton], the button this callback responds to.
   ///  * [DragEndDetails], which is passed as an argument to this callback.
-  GestureDragEndCallback onEnd;
+  GestureDragEndCallback? onEnd;
 
   /// The pointer that previously triggered [onDown] did not complete.
   ///
   /// See also:
   ///
   ///  * [kPrimaryButton], the button this callback responds to.
-  GestureDragCancelCallback onCancel;
+  GestureDragCancelCallback? onCancel;
 
   /// The minimum distance an input pointer drag must have moved to
   /// to be considered a fling gesture.
   ///
   /// This value is typically compared with the distance traveled along the
   /// scrolling axis. If null then [kTouchSlop] is used.
-  double minFlingDistance;
+  double? minFlingDistance;
 
   /// The minimum velocity for an input pointer drag to be considered fling.
   ///
   /// This value is typically compared with the magnitude of fling gesture's
   /// velocity along the scrolling axis. If null then [kMinFlingVelocity]
   /// is used.
-  double minFlingVelocity;
+  double? minFlingVelocity;
 
   /// Fling velocity magnitudes will be clamped to this value.
   ///
   /// If null then [kMaxFlingVelocity] is used.
-  double maxFlingVelocity;
+  double? maxFlingVelocity;
 
   /// Determines the type of velocity estimation method to use for a potential
   /// drag gesture, when a new pointer is added.
@@ -223,19 +223,19 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   GestureVelocityTrackerBuilder velocityTrackerBuilder;
 
   _DragState _state = _DragState.ready;
-  OffsetPair _initialPosition;
-  OffsetPair _pendingDragOffset;
-  Duration _lastPendingEventTimestamp;
+  late OffsetPair _initialPosition;
+  late OffsetPair _pendingDragOffset;
+  Duration? _lastPendingEventTimestamp;
   // The buttons sent by `PointerDownEvent`. If a `PointerMoveEvent` comes with a
   // different set of buttons, the gesture is canceled.
-  int _initialButtons;
-  Matrix4 _lastTransform;
+  int? _initialButtons;
+  Matrix4? _lastTransform;
 
   /// Distance moved in the global coordinate space of the screen in drag direction.
   ///
   /// If drag is only allowed along a defined axis, this value may be negative to
   /// differentiate the direction of the drag.
-  double _globalDistanceMoved;
+  late double _globalDistanceMoved;
 
   /// Determines if a gesture is a fling or not based on velocity.
   ///
@@ -245,7 +245,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind);
 
   Offset _getDeltaForDetails(Offset delta);
-  double _getPrimaryValueFromOffset(Offset value);
+  double? _getPrimaryValueFromOffset(Offset? value);
   bool _hasSufficientGlobalDistanceToAccept(
       PointerDeviceKind pointerDeviceKind);
 
@@ -299,13 +299,13 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
     assert(_state != _DragState.ready);
     if (!event.synthesized &&
         (event is PointerDownEvent || event is PointerMoveEvent)) {
-      final VelocityTracker tracker = _velocityTrackers[event.pointer];
+      final VelocityTracker tracker = _velocityTrackers[event.pointer]!;
       assert(tracker != null);
       tracker.addPosition(event.timeStamp, event.localPosition);
     }
 
     if (event is PointerMoveEvent) {
-      if (shouldGiveUp != null && shouldGiveUp(event)) {
+      if (shouldGiveUp != null && shouldGiveUp!(event)) {
         _giveUpPointer(event.pointer);
         return;
       }
@@ -322,13 +322,12 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
           localPosition: event.localPosition,
         );
       } else {
-        _pendingDragOffset +=
-            OffsetPair(local: event.localDelta, global: event.delta);
+        _pendingDragOffset += OffsetPair(local: event.localDelta, global: event.delta);
         _lastPendingEventTimestamp = event.timeStamp;
         _lastTransform = event.transform;
         final Offset movedLocally = _getDeltaForDetails(event.localDelta);
-        final Matrix4 localToGlobalTransform =
-            event.transform == null ? null : Matrix4.tryInvert(event.transform);
+        final Matrix4? localToGlobalTransform =
+            event.transform == null ? null : Matrix4.tryInvert(event.transform!);
         _globalDistanceMoved += PointerEvent.transformDeltaViaPositions(
               transform: localToGlobalTransform,
               untransformedDelta: movedLocally,
@@ -351,17 +350,17 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   void acceptGesture(int pointer) {
     if (_state != _DragState.accepted) {
       _state = _DragState.accepted;
-      final OffsetPair delta = _pendingDragOffset;
-      final Duration timestamp = _lastPendingEventTimestamp;
-      final Matrix4 transform = _lastTransform;
-      Offset localUpdateDelta;
+      final OffsetPair? delta = _pendingDragOffset;
+      final Duration? timestamp = _lastPendingEventTimestamp;
+      final Matrix4? transform = _lastTransform;
+      Offset? localUpdateDelta;
       switch (dragStartBehavior) {
         case DragStartBehavior.start:
-          _initialPosition = _initialPosition + delta;
+          _initialPosition = _initialPosition + delta!;
           localUpdateDelta = Offset.zero;
           break;
         case DragStartBehavior.down:
-          localUpdateDelta = _getDeltaForDetails(delta.local);
+          localUpdateDelta = _getDeltaForDetails(delta!.local);
           break;
       }
       _pendingDragOffset = OffsetPair.zero;
@@ -369,7 +368,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
       _lastTransform = null;
       _checkStart(timestamp, pointer);
       if (localUpdateDelta != Offset.zero && onUpdate != null) {
-        final Matrix4 localToGlobal =
+        final Matrix4? localToGlobal =
             transform != null ? Matrix4.tryInvert(transform) : null;
         final Offset correctedLocalPosition =
             _initialPosition.local + localUpdateDelta;
@@ -431,10 +430,10 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
       globalPosition: _initialPosition.global,
       localPosition: _initialPosition.local,
     );
-    if (onDown != null) invokeCallback<void>('onDown', () => onDown(details));
+    if (onDown != null) invokeCallback<void>('onDown', () => onDown!(details));
   }
 
-  void _checkStart(Duration timestamp, int pointer) {
+  void _checkStart(Duration? timestamp, int pointer) {
     assert(_initialButtons == kPrimaryButton);
     final DragStartDetails details = DragStartDetails(
       sourceTimeStamp: timestamp,
@@ -443,15 +442,15 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
       kind: getKindForPointer(pointer),
     );
     if (onStart != null)
-      invokeCallback<void>('onStart', () => onStart(details));
+      invokeCallback<void>('onStart', () => onStart!(details));
   }
 
   void _checkUpdate({
-    Duration sourceTimeStamp,
-    @required Offset delta,
-    double primaryDelta,
-    @required Offset globalPosition,
-    Offset localPosition,
+    Duration? sourceTimeStamp,
+    required Offset delta,
+    double? primaryDelta,
+    required Offset globalPosition,
+    Offset? localPosition,
   }) {
     assert(_initialButtons == kPrimaryButton);
     final DragUpdateDetails details = DragUpdateDetails(
@@ -462,20 +461,20 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
       localPosition: localPosition,
     );
     if (onUpdate != null)
-      invokeCallback<void>('onUpdate', () => onUpdate(details));
+      invokeCallback<void>('onUpdate', () => onUpdate!(details));
   }
 
   void _checkEnd(int pointer) {
     assert(_initialButtons == kPrimaryButton);
     if (onEnd == null) return;
 
-    final VelocityTracker tracker = _velocityTrackers[pointer];
+    final VelocityTracker tracker = _velocityTrackers[pointer]!;
     assert(tracker != null);
 
     DragEndDetails details;
     String Function() debugReport;
 
-    final VelocityEstimate estimate = tracker.getVelocityEstimate();
+    final VelocityEstimate? estimate = tracker.getVelocityEstimate();
     if (estimate != null && isFlingGesture(estimate, tracker.kind)) {
       final Velocity velocity =
           Velocity(pixelsPerSecond: estimate.pixelsPerSecond).clampMagnitude(
@@ -498,13 +497,13 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
         return '$estimate; judged to not be a fling.';
       };
     }
-    invokeCallback<void>('onEnd', () => onEnd(details),
+    invokeCallback<void>('onEnd', () => onEnd!(details),
         debugReport: debugReport);
   }
 
   void _checkCancel() {
     assert(_initialButtons == kPrimaryButton);
-    if (onCancel != null) invokeCallback<void>('onCancel', onCancel);
+    if (onCancel != null) invokeCallback<void>('onCancel', onCancel!);
   }
 
   @override
@@ -538,8 +537,8 @@ class NFVerticalDragGestureRecognizer extends NFDragGestureRecognizer {
   ///
   /// {@macro flutter.gestures.GestureRecognizer.kind}
   NFVerticalDragGestureRecognizer({
-    Object debugOwner,
-    PointerDeviceKind kind,
+    Object? debugOwner,
+    PointerDeviceKind? kind,
   }) : super(debugOwner: debugOwner, kind: kind);
 
   @override
@@ -560,7 +559,7 @@ class NFVerticalDragGestureRecognizer extends NFDragGestureRecognizer {
   Offset _getDeltaForDetails(Offset delta) => Offset(0.0, delta.dy);
 
   @override
-  double _getPrimaryValueFromOffset(Offset value) => value.dy;
+  double _getPrimaryValueFromOffset(Offset? value) => value!.dy;
 
   @override
   String get debugDescription => 'vertical drag';
@@ -583,8 +582,8 @@ class NFHorizontalDragGestureRecognizer extends NFDragGestureRecognizer {
   ///
   /// {@macro flutter.gestures.GestureRecognizer.kind}
   NFHorizontalDragGestureRecognizer({
-    Object debugOwner,
-    PointerDeviceKind kind,
+    Object? debugOwner,
+    PointerDeviceKind? kind,
   }) : super(debugOwner: debugOwner, kind: kind);
 
   @override
@@ -605,7 +604,7 @@ class NFHorizontalDragGestureRecognizer extends NFDragGestureRecognizer {
   Offset _getDeltaForDetails(Offset delta) => Offset(delta.dx, 0.0);
 
   @override
-  double _getPrimaryValueFromOffset(Offset value) => value.dx;
+  double _getPrimaryValueFromOffset(Offset? value) => value!.dx;
 
   @override
   String get debugDescription => 'horizontal drag';
@@ -624,7 +623,7 @@ class NFHorizontalDragGestureRecognizer extends NFDragGestureRecognizer {
 ///    some time has passed.
 class NFPanGestureRecognizer extends NFDragGestureRecognizer {
   /// Create a gesture recognizer for tracking movement on a plane.
-  NFPanGestureRecognizer({Object debugOwner}) : super(debugOwner: debugOwner);
+  NFPanGestureRecognizer({Object? debugOwner}) : super(debugOwner: debugOwner);
 
   @override
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
@@ -645,7 +644,7 @@ class NFPanGestureRecognizer extends NFDragGestureRecognizer {
   Offset _getDeltaForDetails(Offset delta) => delta;
 
   @override
-  double _getPrimaryValueFromOffset(Offset value) => null;
+  double? _getPrimaryValueFromOffset(Offset? value) => null;
 
   @override
   String get debugDescription => 'pan';

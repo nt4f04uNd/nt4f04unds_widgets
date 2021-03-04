@@ -338,11 +338,11 @@ class NFCopyButton extends StatelessWidget {
               Clipboard.setData(
                 ClipboardData(text: text),
               );
-              NFSnackbarControl.showSnackbar(
-                NFSnackbarSettings(
+              NFSnackbarController.showSnackbar(
+                NFSnackbarEntry(
                   child: NFSnackbar(
-                    message: l10n.copied,
-                    messagePadding: const EdgeInsets.only(left: 8.0),
+                    title: Text(l10n.copied),
+                    titlePadding: const EdgeInsets.only(left: 8.0),
                     leading: Icon(
                       Icons.content_copy_rounded,
                       color: Theme.of(context).colorScheme.onPrimary,

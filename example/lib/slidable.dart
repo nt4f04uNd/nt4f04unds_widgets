@@ -72,16 +72,13 @@ class _Slidable1State extends State<_Slidable1> with SingleTickerProviderStateMi
               ),
             ),
             Slidable(
-              direction: SlideDirection.upFromBottom,
-              startOffset: Offset.zero,
-              endOffset: Offset.zero,
+              start: 0.0,
+              end: 0.0,
               controller: controller,
               disableSlideTransition: true,
               child: Container(
                 constraints: BoxConstraints(maxWidth: screenWidth),
-                child: Image.network(
-                  'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/1024px-YouTube_full-color_icon_%282017%29.svg.png',
-                ),
+                child: Image.asset('assets/yt.png', ),
               ),
               barrier: Container(color: Colors.black54),
               childBuilder: (animation, child) {
@@ -176,9 +173,8 @@ class _Slidable2State extends State<_Slidable2> with SingleTickerProviderStateMi
               ),
             ),
             Slidable(
-              direction: SlideDirection.upFromBottom,
-              startOffset: Offset(1.0 - 64.0 / screenHeight, 0.0),
-              endOffset: Offset.zero,
+              start: 1.0 - 64.0 / screenHeight,
+              end: 0.0,
               controller: controller,
               child: Container(
                 color: Colors.red,
@@ -228,7 +224,7 @@ class _Slidable3State extends State<_Slidable3> with SingleTickerProviderStateMi
               padding: EdgeInsets.only(top: kToolbarHeight),
               child: ListView.builder(
                 itemCount: list.length, 
-                itemBuilder:(context, index) => ListTile(title: Text(index.toString())),
+                itemBuilder: (context, index) => ListTile(title: Text(index.toString())),
               ),
             ),
             AnimatedBuilder(
@@ -238,9 +234,9 @@ class _Slidable3State extends State<_Slidable3> with SingleTickerProviderStateMi
                 child: child
               ),
               child: Slidable(
-                direction: SlideDirection.startToEnd,
-                startOffset: Offset(-304.0 / screenWidth, 0.0),
-                endOffset: Offset(0.0 , 0.0),
+                direction: SlideDirection.right,
+                start: -304.0 / screenWidth,
+                end: 0.0,
                 controller: controller,
                 onBarrierTap: controller.close,
                 barrierIgnoringStrategy: const IgnoringStrategy(
@@ -249,10 +245,11 @@ class _Slidable3State extends State<_Slidable3> with SingleTickerProviderStateMi
                 hitTestBehaviorStrategy: HitTestBehaviorStrategy.opaque(
                   dismissed: HitTestBehavior.translucent,
                 ),
-                draggedHitTestBehaviorStrategy: HitTestBehaviorStrategy.opaque(
-                  dismissed: HitTestBehavior.translucent,
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Container(width: 304.0, alignment: Alignment.centerLeft, child: Drawer())
                 ),
-                child: Container(width: 304.0, alignment: Alignment.centerLeft, child: Drawer()),
                 childBuilder: (animation, child) => controller.isDismissed ? const SizedBox.shrink() : child,
                 barrier: Container(color: Colors.black54),
               ),

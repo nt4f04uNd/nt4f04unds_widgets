@@ -4,20 +4,24 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 import 'slidable.dart';
 import 'route_transitions.dart';
+import 'snackbar.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(App());
 }
 
 MaterialPageRoute route(Widget child) {
   return MaterialPageRoute(builder: (context) => child);
 }
 
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Examples',
+      navigatorKey: App.navigatorKey,
       // checkerboardRasterCacheImages: true,
       // showPerformanceOverlay: true,
       home: Home(),
@@ -28,8 +32,6 @@ class MyApp extends StatelessWidget {
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
 
-  static GlobalKey<NavigatorState> navigatorKey = GlobalKey();
-
   @override
   _HomeState createState() => _HomeState();
 }
@@ -39,7 +41,7 @@ class _HomeState extends State<Home> {
   void initState() { 
     super.initState();
     NFWidgets.init(
-      navigatorKey: Home.navigatorKey,
+      navigatorKey: App.navigatorKey,
       routeObservers: [RouteObserver()],
     );
   }
@@ -62,6 +64,10 @@ class _HomeState extends State<Home> {
           Tile(
             name: 'route_transitions',
             onTap: () => _handleTap(RouteTransitionExamples()),
+          ),
+          Tile(
+            name: 'snackbar',
+            onTap: () => _handleTap(SnackbarExamples()),
           ),
         ],
       ),

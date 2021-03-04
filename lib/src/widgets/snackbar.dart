@@ -3,271 +3,239 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// @dart = 2.12
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-// todo: rewrite this to use Slidable instadead of NFDismissible
-
-const Duration kNFSnackbarAnimationDuration = Duration(milliseconds: 270);
-const Duration kNFSnackbarDismissMovementDuration = Duration(milliseconds: 170);
-const int _kSnackbarMaxQueueLength = 15;
-
-class NFSnackbarSettings {
-  NFSnackbarSettings({
-    @required this.child,
-    this.globalKey,
+/// Describes the snackbar entry and some settings for it.
+class NFSnackbarEntry {
+  NFSnackbarEntry({
+    required this.child,
     this.duration = const Duration(seconds: 4),
     this.important = false,
-  }) : assert(child != null) {
-    this.globalKey ??= GlobalKey<NFSnackbarWrapperState>();
-  }
+    this.overlay,
+    GlobalKey<NFSnackbarEntryState>? globalKey,
+  }) : globalKey = globalKey ?? GlobalKey<NFSnackbarEntryState>();
 
   /// Main widget to display as a snackbar
   final Widget child;
-  GlobalKey<NFSnackbarWrapperState> globalKey;
 
   /// How long the snackbar will be shown
   final Duration duration;
 
-  /// Whether the snack bar is important and must interrupt the current displaying one
+  /// If true, the snackbar will remove the current displaying snackbar entry
+  /// and take its place. Because of that important snackbar only has one place in
+  /// [NFSnackbarController.snackbarsQueue] - the first position.
   final bool important;
 
-  OverlayEntry overlayEntry;
+  /// Can be used to show the snackbar in custom overlay. By default the one that is
+  /// provided by [NFWidgets.navigatorKey], so provide it to [NFWidgets.init] if you want to use it.
+  final OverlayState? overlay;
 
-  /// True when snackbar is visible
-  bool _onScreen = false;
-  bool get onScreen => _onScreen;
+  /// Global key to manage the snackbar.
+  final GlobalKey<NFSnackbarEntryState> globalKey;
 
-  /// Create [OverlayEntry] for snackbar
-  void createSnackbar() {
-    _onScreen = true;
-    overlayEntry = OverlayEntry(
-      builder: (BuildContext context) => Container(
+  /// Whether the snackbar is currently shown.
+  bool get onScreen => _overlayEntry != null;
+
+  /// The overlay entry to instert to overlay.
+  /// 
+  /// To create the entry, call [createOverlayEntry].
+  OverlayEntry? _overlayEntry;
+
+  /// Creates next [overlayEntry] and shows it on the screen.
+  void _show() {
+    assert(!onScreen);
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Container(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: _NFSnackbarWrapper(settings: this, key: globalKey),
+          child: _NFSnackbarEntryWidget(entry: this, key: globalKey),
         ),
       ),
     );
+    final _overlay = overlay ?? NFWidgets.navigatorKey!.currentState!.overlay;
+    _overlay!.insert(_overlayEntry!);
   }
 
-  /// Removes [OverlayEntry]
-  void removeSnackbar() {
-    _onScreen = false;
-    overlayEntry.remove();
+  /// Removes [overlayEntry].
+  void _remove() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 }
 
-abstract class NFSnackbarControl {
-  /// A list to render the snackbars
-  static List<NFSnackbarSettings> snackbarsList = [];
+/// A controller for snackbars.
+/// 
+/// See also:
+/// * [NFSnackbar], a snackbar widget
+/// * [NFSnackbarEntry], which describes a snackbar entry and some settings for it
+abstract class NFSnackbarController {
+  /// Max length of [snackbarsQueue].
+  /// 
+  /// When queue exceeds this length, it's
+  static int maxQueueLength = 4; 
 
-  static void showSnackbar(NFSnackbarSettings settings) async {
-    assert(settings != null);
+  /// Queue of snackbars to render.
+  /// 
+  /// First snackbar is the nearest to be shown, last is farthest.
+  /// 
+  /// If contains [NFSnackbarEntry.important], it will be always displayed at the first
+  /// position.
+  static List<NFSnackbarEntry> snackbarsQueue = [];
 
-    if (settings.important && snackbarsList.length > 1) {
-      snackbarsList.insert(1, settings);
+  /// Shows the [snackbar] on screen.
+  static void showSnackbar(NFSnackbarEntry snackbar, { OverlayState? overlay }) async {
+    if (snackbar.important && snackbarsQueue.length > 1) {
+      snackbarsQueue.insert(1, snackbar);
     } else {
-      snackbarsList.add(settings);
+      snackbarsQueue.add(snackbar);
     }
 
-    if (snackbarsList.length == 1) {
-      _showSnackbar();
-    } else if (settings.important) {
-      for (int i = 0; i < snackbarsList.length; i++) {
-        if (snackbarsList[i].onScreen) {
-          _dismissSnackbar(index: i);
+    if (snackbarsQueue.length == 1) {
+      snackbar._show();
+    } else if (snackbar.important) {
+      for (int i = 0; i < snackbarsQueue.length; i++) {
+        if (snackbarsQueue[i].onScreen) {
+          _dismissSnackbar(snackbarsQueue[i]);
         }
       }
-      _showSnackbar();
+      snackbar._show();
     }
 
-    if (snackbarsList.length >= _kSnackbarMaxQueueLength) {
-      /// Reset when queue runs out of space
-      snackbarsList = [
-        snackbarsList[0],
-        snackbarsList[_kSnackbarMaxQueueLength - 2],
-        snackbarsList[_kSnackbarMaxQueueLength - 1]
-      ];
+    if (snackbarsQueue.length >= maxQueueLength && !snackbar.important) {
+      // Remove the farthest snackbar when queue length exceeds the max length.
+      snackbarsQueue.removeLast();
     }
   }
 
-  /// Method to be called after the current snack bar has went out of screen
-  static void _handleSnackbarDismissed() {
-    _dismissSnackbar(index: 0);
-    if (snackbarsList.isNotEmpty) {
-      _showSnackbar();
+  /// Method to be called after the current snack bar has went out of screen.
+  static void _handleSnackbarGone() {
+    _dismissSnackbar(snackbarsQueue[0]);
+    if (snackbarsQueue.isNotEmpty) {
+      snackbarsQueue[0]._show();
     }
   }
 
-  /// Creates next snackbar and shows it to screen
-  /// [index] can be used to justify what snackbar to show
-  static void _showSnackbar({ int index = 0 }) {
-    assert(!snackbarsList[index].onScreen);
-    snackbarsList[index].createSnackbar();
-    try {
-      NFWidgets.navigatorKey.currentState.overlay.insert(snackbarsList[index].overlayEntry);
-    } catch (ex) {
-      // Suppress exceptions (they usually caused by that some other widget in tree produces an exception).
-    }
-  }
-
-  /// Removes next snackbar from screen without animation
-  /// [index] can be used to justify what snackbar to hide
-  static void _dismissSnackbar({int index = 0}) {
-    snackbarsList[index].removeSnackbar();
-    snackbarsList.removeAt(index);
+  /// Removes next snackbar overlay entry from screen.
+  static void _dismissSnackbar(NFSnackbarEntry snackbar) {
+    snackbar._remove();
+    snackbarsQueue.remove(snackbar);
   }
 }
 
-/// Custom snackbar to display it in the [Overlay]
-class _NFSnackbarWrapper extends StatefulWidget {
-  _NFSnackbarWrapper({
-    Key key,
-    @required this.settings,
-  }) : assert(settings != null),
+class _NFSnackbarEntryWidget extends StatefulWidget {
+  _NFSnackbarEntryWidget({
+    Key? key,
+    required this.entry,
+  }) : assert(entry != null),
        super(key: key);
 
-  final NFSnackbarSettings settings;
+  final NFSnackbarEntry entry;
 
   @override
-  NFSnackbarWrapperState createState() => NFSnackbarWrapperState();
+  NFSnackbarEntryState createState() => NFSnackbarEntryState();
 }
 
-class NFSnackbarWrapperState extends State<_NFSnackbarWrapper>
-    with TickerProviderStateMixin {
-  Completer<bool> completer;
-  AnimationController opacityController;
-  AnimationController slideController;
-  AnimationController timeoutController;
+/// Displays the [NFSnackbarEntry].
+class NFSnackbarEntryState extends State<_NFSnackbarEntryWidget> with TickerProviderStateMixin {
+  late Timer _timer;
+  final Stopwatch _stopwatch = Stopwatch();
+  late SlidableController controller;
+  late AnimationController _fadeController;
   final Key dismissibleKey = UniqueKey();
+  bool _closing = false;
 
   @override
   void initState() {
     super.initState();
-    completer = Completer();
-
-    opacityController = AnimationController(
-      vsync: this,
-      duration: kNFSnackbarAnimationDuration,
-    );
-    slideController = AnimationController(
-      vsync: this,
-      duration: kNFSnackbarAnimationDuration,
-    );
-    timeoutController = AnimationController(
-      vsync: this,
-      duration: widget.settings.duration,
-    );
-
-    opacityController.forward();
-    slideController.forward();
-    timeoutController.value = 1;
-    timeoutController.reverse();
-    timeoutController.addStatusListener((status) {
-      if (status == AnimationStatus.dismissed) completer.complete(true);
-    });
-
-    _handleEnd();
+    resumeTimer();
+    _fadeController = AnimationController(vsync: this, duration: const Duration(milliseconds: 270));
+    controller = SlidableController(vsync: this, duration: const Duration(milliseconds: 270));
+    controller.value = 1.0;
+    controller.fling(velocity: -1);
+    controller.addStatusListener(_handleStatusChange);
+    _fadeController.forward();
   }
 
   @override
   void dispose() {
-    if (!completer.isCompleted) {
-      completer.complete(false);
-    }
-    opacityController.dispose();
-    slideController.dispose();
-    timeoutController.dispose();
+    stopTimer();
+    controller.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
-  void _handleEnd() async {
-    var res = await completer.future;
-    if (res) {
+  void _handleStatusChange(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
       close();
     }
   }
 
-  /// Will close snackbar with Animation
-  ///
-  /// If [notifyControl] is true, the [NFSnackbarControl._handleSnackbarDismissed] will be called internally after the closure
+  /// Closes snackbar with animation.
   Future<void> close() async {
-    completer = Completer();
-    slideController.addStatusListener((status) {
-      if (status == AnimationStatus.dismissed) {
-        completer.complete(true);
-      }
-    });
-    slideController.reverse();
-    opacityController.reverse();
-    final res = await completer.future;
-    if (res) {
-      NFSnackbarControl._handleSnackbarDismissed();
+    if (_closing)
+      return;
+    _closing = true;
+    _fadeController.reverse();
+    await controller.fling(velocity: 1);
+    NFSnackbarController._handleSnackbarGone();
+  }
+
+  /// Resumes close timer.
+  void resumeTimer() {
+    _stopwatch.start();
+    final milliseconds = widget.entry.duration.inMilliseconds - _stopwatch.elapsedMilliseconds;
+    if (milliseconds > 0) {
+      _timer = Timer(Duration(milliseconds: milliseconds), () {
+        close();
+      });
+    } else {
+      close();
     }
   }
 
-  /// Will stop snackbar timeout close timer
+  /// Stops close timer.
   void stopTimer() {
-    timeoutController.stop();
-  }
-
-  /// Will resume snackbar timeout close timer
-  void resumeTimer() {
-    timeoutController.reverse();
+    _stopwatch.stop();
+    _timer.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    final opacityAnimation = Tween(begin: 0.1, end: 1.0).animate(
-      CurvedAnimation(curve: Curves.easeOutCubic, parent: opacityController),
-    );
-    final slideAnimation =
-        Tween(begin: const Offset(0.0, 0.5), end: Offset.zero).animate(
-      CurvedAnimation(curve: Curves.easeOutCubic, parent: slideController),
-    );
+    final fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      curve: Interval(0.2, 1.0, curve: Curves.easeOutCubic),
+      reverseCurve: Interval(0.2, 1.0, curve: Curves.easeInCubic),
+      parent: _fadeController
+    ));
     return GestureDetector(
-      onPanDown: (_) {
-        stopTimer();
-      },
-      onPanEnd: (_) {
-        resumeTimer();
-      },
-      onPanCancel: () {
-        resumeTimer();
-      },
+      onPanDown: (_) => stopTimer(),
+      onTapUp: (_) => resumeTimer(),
       child: FadeTransition(
-        opacity: opacityAnimation,
-        child: SlideTransition(
-          position: slideAnimation,
-          child: IgnorePointer(
-            ignoring: slideController.status == AnimationStatus.reverse,
-            child: StatefulBuilder(
-              builder: (BuildContext context, setState) => NFDismissible( 
-                key: dismissibleKey,
-                movementDuration: kNFSnackbarDismissMovementDuration,
-                onDismissProgress: (_, value) => setState(() {
-                  if (value > 0.2) {
-                    opacityController.value = (1.0 - value) / 0.8;
-                  }
-                }),
-                direction: DismissDirection.down,
-                onDismissed: (_) => NFSnackbarControl._handleSnackbarDismissed(),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        widget.settings.child,
-                      ],
-                    ),
-                  ),
-                ),
+        opacity: fadeAnimation,
+        child: StatefulBuilder(
+          builder: (BuildContext context, setState) => Slidable(
+            controller: controller,
+            direction: SlideDirection.down,
+            start: 0.0,
+            end: 1.0,
+            key: dismissibleKey,
+            childBuilder: (animation, child) => AnimatedBuilder(
+              animation: animation,
+              builder: (context, child) => child!,
+              child: IgnorePointer(
+                ignoring: controller.status == AnimationStatus.reverse,
+                child: child,
               ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                widget.entry.child,
+              ],
             ),
           ),
         ),
@@ -276,62 +244,78 @@ class NFSnackbarWrapperState extends State<_NFSnackbarWrapper>
   }
 }
 
+
+/// Colored snackbar widget.
+/// 
+/// See also:
+/// * [NFSnackbarController], which allows to display snackbars
+/// * [NFSnackbarEntry], which describes a snackbar entry and some settings for it
 class NFSnackbar extends StatelessWidget {
   const NFSnackbar({
-    Key key,
-    this.message,
+    Key? key,
+    this.title,
     this.leading,
-    this.action,
+    this.trailing,
     this.color,
-    this.messagePadding = EdgeInsets.zero,
+    this.titlePadding = EdgeInsets.zero,
   }) : super(key: key);
   
-  final Widget leading;
-  final String message;
-  final Widget action;
-  final Color color;
-  final EdgeInsets messagePadding;
+  /// The primary content of the snakcbar.
+  final Widget? title;
+
+  /// A widget to display before the [title].
+  final Widget? leading;
+
+  /// A widget to display after the [title].
+  final Widget? trailing;
+  
+  /// Snackbar color. By default [ColorScheme.primary] is used.
+  final Color? color;
+
+  /// Padding to apply to [title].
+  final EdgeInsetsGeometry titlePadding;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: color ?? Theme.of(context).colorScheme.primary,
-      child: Container(
-        padding: const EdgeInsets.only(
-          left: 16.0,
-          right: 16.0,
-          top: 4.0,
-          bottom: 4.0,
-        ),
-        constraints: const BoxConstraints(minHeight: 48.0, maxHeight: 128.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            if (leading != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: leading,
-              ),
-            Expanded(
-              child: Padding(
-                padding: messagePadding,
-                child: Text(
-                  message,
-                  style: TextStyle(
-                    fontSize: 15.0,
-                    color: Theme.of(context).colorScheme.onError,
-                  ),
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Material(
+        color: color ?? theme.colorScheme.primary,
+        borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+        child: Container(
+          padding: const EdgeInsets.only(
+            left: 16.0,
+            right: 16.0,
+            top: 4.0,
+            bottom: 4.0,
+          ),
+          constraints: const BoxConstraints(minHeight: 48.0, maxHeight: 128.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              if (leading != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: leading,
+                ),
+              Expanded(
+                child: title == null
+                  ? const SizedBox()
+                  : Padding(
+                    padding: titlePadding,
+                    child: title!,
                 ),
               ),
-            ),
-            if (action != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: action,
-              )
-          ],
+              if (trailing != null)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: trailing,
+                )
+            ],
+          ),
         ),
       ),
     );

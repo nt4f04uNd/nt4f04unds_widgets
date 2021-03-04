@@ -66,7 +66,7 @@ class RouteTransitionSettings {
 
   final Duration transitionDuration;
   final Duration reverseTransitionDuration;
-  final RouteSettings settings;
+  final RouteSettings? settings;
   final bool opaque;
   final bool maintainState;
 
@@ -117,7 +117,7 @@ class RouteTransitionSettings {
   /// Function to get system Ui to be set when navigating to route.
   ///
   /// Defaults to function that returns [NFWidgets.defaultSystemUiStyle].
-  UIFunction checkSystemUi;
+  UIFunction? checkSystemUi;
 }
 
 /// Abstract class to create various route transitions
@@ -126,10 +126,10 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   final RouteTransitionSettings transitionSettings;
 
   @override
-  RoutePageBuilder pageBuilder;
+  late RoutePageBuilder pageBuilder;
 
   @override
-  RouteTransitionsBuilder transitionsBuilder;
+  late RouteTransitionsBuilder transitionsBuilder;
 
   /// Variable to disable the animation switch call if ui is already animating.
   ///
@@ -153,11 +153,11 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
   }
 
   RouteTransition({
-    @required this.route,
-    RouteTransitionSettings transitionSettings,
+    required this.route,
+    RouteTransitionSettings? transitionSettings,
   }) : transitionSettings = transitionSettings ?? RouteTransitionSettings(),
        super(
-         settings: transitionSettings.settings,
+         settings: transitionSettings!.settings,
          opaque: transitionSettings.opaque,
          maintainState: transitionSettings.maintainState,
          transitionDuration: transitionSettings.transitionDuration,
@@ -247,7 +247,7 @@ abstract class RouteTransition<T extends Widget> extends PageRouteBuilder<T> {
 
 class RouteAwareWidget extends StatefulWidget {
   RouteAwareWidget({
-    @required this.child,
+    required this.child,
     this.routeObservers,
     this.onPush,
     this.onPop,
@@ -256,11 +256,11 @@ class RouteAwareWidget extends StatefulWidget {
     this.logging = false,
   }) : assert(child != null);
   final Widget child;
-  final List<RouteObserver> routeObservers;
-  final Function onPush;
-  final Function onPop;
-  final Function onPushNext;
-  final Function onPopNext;
+  final List<RouteObserver>? routeObservers;
+  final Function? onPush;
+  final Function? onPop;
+  final Function? onPushNext;
+  final Function? onPopNext;
 
   /// Enables logging of push and pop events.
   final bool logging;
@@ -269,19 +269,19 @@ class RouteAwareWidget extends StatefulWidget {
 
 // Implement RouteAware in a widget's state and subscribe it to the RouteObserver.
 class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
-  List<RouteObserver> _routeObservers;
+  List<RouteObserver>? _routeObservers;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _routeObservers = widget.routeObservers ?? NFWidgets.routeObservers;
-    for (final observer in _routeObservers) {
-      observer.subscribe(this, ModalRoute.of(context));
+    for (final observer in _routeObservers!) {
+      observer.subscribe(this, ModalRoute.of(context)!);
     }
   }
 
   @override
   void dispose() {
-    for (final observer in _routeObservers) {
+    for (final observer in _routeObservers!) {
       observer.unsubscribe(this);
     }
     super.dispose();
@@ -290,28 +290,28 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   @override
   void didPush() {
     if (widget.logging) print("DID_PUSH");
-    if (widget.onPush != null) widget.onPush();
+    if (widget.onPush != null) widget.onPush!();
     // Current route was pushed onto navigator and is now topmost route.
   }
 
   @override
   void didPop() {
     if (widget.logging) print("DID_POP");
-    if (widget.onPop != null) widget.onPop();
+    if (widget.onPop != null) widget.onPop!();
     // Current route was pushed off the navigator.
   }
 
   @override
   void didPushNext() {
     if (widget.logging) print("DID_PUSH_NEXT");
-    if (widget.onPushNext != null) widget.onPushNext();
+    if (widget.onPushNext != null) widget.onPushNext!();
     // Covering route was pushed into the navigator.
   }
 
   @override
   void didPopNext() {
     if (widget.logging) print("DID_POP_NEXT");
-    if (widget.onPopNext != null) widget.onPopNext();
+    if (widget.onPopNext != null) widget.onPopNext!();
     // Covering route was popped off the navigator.
   }
 
@@ -322,11 +322,11 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
 /// [SlideTransition] class, but with [enabled] parameter
 class TurnableSlideTransition extends SlideTransition {
   TurnableSlideTransition(
-      {Key key,
-      @required Animation<Offset> position,
+      {Key? key,
+      required Animation<Offset> position,
       bool transformHitTests: true,
-      TextDirection textDirection,
-      Widget child,
+      TextDirection? textDirection,
+      Widget? child,
       this.enabled: true})
       : super(
           key: key,
@@ -351,6 +351,6 @@ class TurnableSlideTransition extends SlideTransition {
         child: child,
       );
     }
-    return child;
+    return child!;
   }
 }

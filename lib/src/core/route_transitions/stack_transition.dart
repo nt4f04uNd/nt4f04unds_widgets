@@ -16,7 +16,7 @@ class StackRouteTransitionSettings extends RouteTransitionSettings {
     this.exitEnd = const Offset(-0.2, 0.0),
     Duration transitionDuration = kNFRouteTransitionDuration,
     Duration reverseTransitionDuration = kNFRouteTransitionDuration,
-    RouteSettings settings,
+    RouteSettings? settings,
     bool opaque = true,
     bool maintainState = false,
     BoolCallback checkEntAnimationEnabled = defRouteTransitionBoolFunc,
@@ -27,7 +27,7 @@ class StackRouteTransitionSettings extends RouteTransitionSettings {
     Curve exitReverseCurve = Curves.easeInToLinear,
     bool entIgnore = false,
     bool exitIgnore = false,
-    UIFunction checkSystemUi,
+    UIFunction? checkSystemUi,
   }) : super(
           transitionDuration: transitionDuration,
           reverseTransitionDuration: reverseTransitionDuration,
@@ -75,7 +75,7 @@ class StackRouteTransition<T extends Widget> extends RouteTransition<T> {
   @override
   final StackRouteTransitionSettings transitionSettings;
 
-  StackRouteTransition({@required this.route, transitionSettings})
+  StackRouteTransition({required this.route, transitionSettings})
       : transitionSettings =
             transitionSettings ?? StackRouteTransitionSettings(),
         super(

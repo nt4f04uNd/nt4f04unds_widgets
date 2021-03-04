@@ -3,6 +3,8 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// @dart = 2.12
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -31,7 +33,7 @@ enum NFSpinnerSize {
 class NFSpinner extends StatelessWidget {
   /// Prefer using named constructors instead of this.
   const NFSpinner({
-    Key key,
+    Key? key,
     this.size = NFSpinnerSize.large,
     this.sizeValue = 30.0,
     this.strokeWidth = 4.0,
@@ -44,7 +46,7 @@ class NFSpinner extends StatelessWidget {
 
   /// Creates a material circular spinner.
   const NFSpinner.material({
-    Key key,
+    Key? key,
     this.size = NFSpinnerSize.large,
     this.sizeValue,
     this.strokeWidth,
@@ -65,7 +67,7 @@ class NFSpinner extends StatelessWidget {
 
   /// Creates a cupertino activity indicator.
   const NFSpinner.cupertino({
-    Key key,
+    Key? key,
     this.radius = 10.0,
     this.animating = true,
   })  : size = null,
@@ -80,7 +82,7 @@ class NFSpinner extends StatelessWidget {
   /// On Android it will show [NFSpinnerVariant.material].
   /// On iOS it will show [NFSpinnerVariant.cupertino].
   const NFSpinner.adaptive({
-    Key key,
+    Key? key,
     this.size = NFSpinnerSize.large,
     this.sizeValue = 30.0,
     this.strokeWidth = 4.0,
@@ -92,28 +94,31 @@ class NFSpinner extends StatelessWidget {
 
   /// Size variawnt to apply.
   /// Only for material spinner.
-  final NFSpinnerSize size;
+  final NFSpinnerSize? size;
 
   /// Actual size of the spinner.
+  /// 
   /// Set [size] to [NFSpinnerSize.custom] to use this.
+  /// 
   /// Only for material spinner.
-  final double sizeValue;
+  final double? sizeValue;
 
   /// Set [size] to [NFSpinnerSize.custom] to use this.
+  /// 
   /// Only for material spinner.
-  final double strokeWidth;
+  final double? strokeWidth;
 
   /// Only for cupertino spinner.
-  final double radius;
+  final double? radius;
 
   /// Only for cupertino spinner.
-  final bool animating;
+  final bool? animating;
 
   /// What spinner to show.
   final NFSpinnerVariant variant;
 
   /// If not specified, the primary color will be used instead.
-  final Color color;
+  final Color? color;
 
   Widget _material(context) {
     final theme = Theme.of(context);
@@ -126,8 +131,8 @@ class NFSpinner extends StatelessWidget {
       _size = pickSize(32.0, small: 28.0, tablet: 40.0);
       _strokeWidth = pickSize(4.0, small: 3.0, tablet: 5.0);
     } else {
-      _size = sizeValue;
-      _strokeWidth = strokeWidth;
+      _size = sizeValue!;
+      _strokeWidth = strokeWidth!;
     }
     return Center(
       child: SizedBox(
@@ -144,15 +149,12 @@ class NFSpinner extends StatelessWidget {
 
   Widget get _cupertino => Center(
         child: CupertinoActivityIndicator(
-          radius: radius,
-          animating: animating,
+          radius: radius!,
+          animating: animating!,
         ),
       );
 
   @override
-  // The [variant] is guaranteed to be non-null value by asserts above,
-  // so this will always return a value.c
-  // ignore: missing_return
   Widget build(BuildContext context) {
     switch (variant) {
       case NFSpinnerVariant.material:

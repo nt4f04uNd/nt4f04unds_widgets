@@ -19,8 +19,8 @@ class ZoomRouteTransition<T extends Widget> extends RouteTransition<T> {
   final RouteTransitionSettings transitionSettings;
 
   ZoomRouteTransition({
-    @required this.route,
-    RouteTransitionSettings transitionSettings,
+    required this.route,
+    RouteTransitionSettings? transitionSettings,
   })  : transitionSettings = transitionSettings ?? RouteTransitionSettings(),
         super(
           route: route,
@@ -54,7 +54,7 @@ class ZoomRouteTransition<T extends Widget> extends RouteTransition<T> {
 // is designed to match the Android 10 activity transition.
 class _ZoomPageTransition extends StatefulWidget {
   const _ZoomPageTransition({
-    Key key,
+    Key? key,
     this.transition,
     this.child,
   }) : super(key: key);
@@ -85,21 +85,21 @@ class _ZoomPageTransition extends StatefulWidget {
   static final FlippedTweenSequence _flippedScaleCurveSequence =
       FlippedTweenSequence(fastOutExtraSlowInTweenSequenceItems);
 
-  final RouteTransition transition;
-  final Widget child;
+  final RouteTransition? transition;
+  final Widget? child;
 
   @override
   _ZoomPageTransitionState createState() => _ZoomPageTransitionState();
 }
 
 class _ZoomPageTransitionState extends State<_ZoomPageTransition> {
-  AnimationStatus _currentAnimationStatus;
-  AnimationStatus _lastAnimationStatus;
+  late AnimationStatus _currentAnimationStatus;
+  late AnimationStatus _lastAnimationStatus;
 
   @override
   void initState() {
     super.initState();
-    widget.transition.animation
+    widget.transition!.animation!
         .addStatusListener((AnimationStatus animationStatus) {
       _lastAnimationStatus = _currentAnimationStatus;
       _currentAnimationStatus = animationStatus;
@@ -140,39 +140,39 @@ class _ZoomPageTransitionState extends State<_ZoomPageTransition> {
   @override
   Widget build(BuildContext context) {
     final Animation<double> _forwardScrimOpacityAnimation =
-        widget.transition.animation.drive(_ZoomPageTransition._scrimOpacityTween
+        widget.transition!.animation!.drive(_ZoomPageTransition._scrimOpacityTween
             .chain(CurveTween(curve: const Interval(0.2075, 0.4175))));
 
     final Animation<double> _forwardEndScreenScaleTransition =
-        widget.transition.animation.drive(Tween<double>(begin: 0.85, end: 1.00)
+        widget.transition!.animation!.drive(Tween<double>(begin: 0.85, end: 1.00)
             .chain(_ZoomPageTransition._scaleCurveSequence));
 
     final Animation<double> _forwardStartScreenScaleTransition = widget
-        .transition.secondaryAnimation
+        .transition!.secondaryAnimation!
         .drive(Tween<double>(begin: 1.00, end: 1.05)
             .chain(_ZoomPageTransition._scaleCurveSequence));
 
     final Animation<double> _forwardEndScreenFadeTransition =
-        widget.transition.animation.drive(Tween<double>(begin: 0.0, end: 1.00)
+        widget.transition!.animation!.drive(Tween<double>(begin: 0.0, end: 1.00)
             .chain(CurveTween(curve: const Interval(0.125, 0.250))));
 
     final Animation<double> _reverseEndScreenScaleTransition = widget
-        .transition.secondaryAnimation
+        .transition!.secondaryAnimation!
         .drive(Tween<double>(begin: 1.00, end: 1.10)
             .chain(_ZoomPageTransition._flippedScaleCurveSequence));
 
     final Animation<double> _reverseStartScreenScaleTransition =
-        widget.transition.animation.drive(Tween<double>(begin: 0.9, end: 1.0)
+        widget.transition!.animation!.drive(Tween<double>(begin: 0.9, end: 1.0)
             .chain(_ZoomPageTransition._flippedScaleCurveSequence));
 
     final Animation<double> _reverseStartScreenFadeTransition =
-        widget.transition.animation.drive(Tween<double>(begin: 0.0, end: 1.00)
+        widget.transition!.animation!.drive(Tween<double>(begin: 0.0, end: 1.00)
             .chain(CurveTween(curve: const Interval(1 - 0.2075, 1 - 0.0825))));
 
     return AnimatedBuilder(
-      animation: widget.transition.animation,
-      builder: (BuildContext context, Widget child) {
-        if (widget.transition.animation.status == AnimationStatus.forward ||
+      animation: widget.transition!.animation!,
+      builder: (BuildContext context, Widget? child) {
+        if (widget.transition!.animation!.status == AnimationStatus.forward ||
             _transitionWasInterrupted) {
           return Container(
             color:
@@ -185,7 +185,7 @@ class _ZoomPageTransitionState extends State<_ZoomPageTransition> {
               ),
             ),
           );
-        } else if (widget.transition.animation.status ==
+        } else if (widget.transition!.animation!.status ==
             AnimationStatus.reverse) {
           return ScaleTransition(
             scale: _reverseStartScreenScaleTransition,
@@ -195,28 +195,28 @@ class _ZoomPageTransitionState extends State<_ZoomPageTransition> {
             ),
           );
         }
-        return child;
+        return child!;
       },
       child: AnimatedBuilder(
-        animation: widget.transition.secondaryAnimation,
-        builder: (BuildContext context, Widget child) {
-          if (widget.transition.exitAnimationEnabled &&
-                  widget.transition.secondaryAnimation.status ==
+        animation: widget.transition!.secondaryAnimation!,
+        builder: (BuildContext context, Widget? child) {
+          if (widget.transition!.exitAnimationEnabled &&
+                  widget.transition!.secondaryAnimation!.status ==
                       AnimationStatus.forward ||
               _transitionWasInterrupted) {
             return ScaleTransition(
               scale: _forwardStartScreenScaleTransition,
               child: child,
             );
-          } else if (widget.transition.exitAnimationEnabled &&
-              widget.transition.secondaryAnimation.status ==
+          } else if (widget.transition!.exitAnimationEnabled &&
+              widget.transition!.secondaryAnimation!.status ==
                   AnimationStatus.reverse) {
             return ScaleTransition(
               scale: _reverseEndScreenScaleTransition,
               child: child,
             );
           }
-          return child;
+          return child!;
         },
         child: widget.child,
       ),

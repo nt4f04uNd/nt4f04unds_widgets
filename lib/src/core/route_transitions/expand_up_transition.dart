@@ -31,7 +31,7 @@ class ExpandUpRouteTransitionSettings extends RouteTransitionSettings {
     this.playMaterialExit = false,
     Duration transitionDuration = kNFRouteTransitionDuration,
     Duration reverseTransitionDuration = kNFRouteTransitionDuration,
-    RouteSettings settings,
+    RouteSettings? settings,
     bool opaque = true,
     bool maintainState = false,
     BoolCallback checkEntAnimationEnabled = defRouteTransitionBoolFunc,
@@ -42,7 +42,7 @@ class ExpandUpRouteTransitionSettings extends RouteTransitionSettings {
     Curve exitReverseCurve = Curves.easeInToLinear,
     bool entIgnore = false,
     bool exitIgnore = false,
-    UIFunction checkSystemUi,
+    UIFunction? checkSystemUi,
   }) : super(
           transitionDuration: transitionDuration,
           reverseTransitionDuration: reverseTransitionDuration,
@@ -84,8 +84,8 @@ class ExpandUpRouteTransition<T extends Widget> extends RouteTransition<T> {
   ExpandUpRouteTransitionSettings transitionSettings;
 
   ExpandUpRouteTransition({
-    @required this.route,
-    ExpandUpRouteTransitionSettings transitionSettings,
+    required this.route,
+    ExpandUpRouteTransitionSettings? transitionSettings,
   })  : this.transitionSettings =
             transitionSettings ?? ExpandUpRouteTransitionSettings(),
         super(
@@ -156,7 +156,7 @@ class ExpandUpRouteTransition<T extends Widget> extends RouteTransition<T> {
 
           return AnimatedBuilder(
             animation: animation,
-            builder: (BuildContext context, Widget child) {
+            builder: (BuildContext context, Widget? child) {
               return Container(
                 alignment: Alignment.bottomLeft,
                 child: ClipRect(
@@ -178,7 +178,7 @@ class ExpandUpRouteTransition<T extends Widget> extends RouteTransition<T> {
                       translation: primaryTranslationAnimation.value,
                       child: child,
                     ),
-                    builder: (BuildContext context, Widget child) {
+                    builder: (BuildContext context, Widget? child) {
                       return FractionalTranslation(
                         translation: secondaryTranslationAnimation.value,
                         child: materialWrappedChild,

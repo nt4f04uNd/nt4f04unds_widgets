@@ -26,35 +26,35 @@ class _Observer extends WidgetsBindingObserver {
 /// At the app start you should call [init] method. That is required for some of the
 /// widgets and functions in library to work properly.
 /// 
-/// You also should wrap your widget tree with [NFTheme].
+/// See also:
+/// * [NFTheme] in which you should wrap your widget tree
 class NFWidgets {
-  static _Observer _observer;
+  static _Observer? _observer;
 
   /// A key of you root navigator.
-  /// todo: remove
-  static GlobalKey<NavigatorState> navigatorKey;
+  static GlobalKey<NavigatorState>? navigatorKey;
 
   /// Route observers which are used inside route transitions.
-  static List<RouteObserver> routeObservers;
+  static List<RouteObserver>? routeObservers;
 
   /// Initializes some parameters for the package to work correctly.
   static void init({
-    @required GlobalKey<NavigatorState> navigatorKey,
-    @required List<RouteObserver> routeObservers,
+    required GlobalKey<NavigatorState> navigatorKey,
+    required List<RouteObserver> routeObservers,
   }) {
     NFWidgets.routeObservers = routeObservers;
     NFWidgets.navigatorKey = navigatorKey;
     updateScreenSize();
     if (_observer == null) {
       _observer = _Observer();
-      WidgetsBinding.instance.addObserver(_observer);
+      WidgetsBinding.instance!.addObserver(_observer!);
     }
   }
 
   /// Removes the [WidgetsBinding] observer.
   static void dispose() {
     if (_observer != null) {
-      WidgetsBinding.instance.removeObserver(_observer);
+      WidgetsBinding.instance!.removeObserver(_observer!);
       _observer = null;
     }
   }
@@ -66,7 +66,11 @@ class NFWidgets {
 /// wrap your app into this widget.
 class NFTheme extends InheritedWidget  {
   /// Creates inherited defaults widget.
-  NFTheme({ @required this.data, @required this.child });
+  NFTheme({
+    Key? key,
+    required this.data,
+    required this.child,
+  }) : super(child: child, key: key);
 
   /// Default library-wide values.
   final NFThemeData data;
@@ -75,7 +79,7 @@ class NFTheme extends InheritedWidget  {
   final Widget child;
 
   static NFThemeData of(BuildContext context) {
-    return context.findAncestorWidgetOfExactType<NFTheme>().data;
+    return context.findAncestorWidgetOfExactType<NFTheme>()!.data;
   }
 
   @override
@@ -88,13 +92,12 @@ class NFTheme extends InheritedWidget  {
 ///
 /// This is required for some of the widgets and functions in library, so you should
 /// wrap your app into [NFTheme] and pass this class into it.
-
 class NFThemeData {
   /// Creates defaults values.
   NFThemeData({
-    @required this.systemUiStyle,
-    SystemUiOverlayStyle modalSystemUiStyle,
-    SystemUiOverlayStyle bottomSheetSystemUiStyle,
+    required this.systemUiStyle,
+    SystemUiOverlayStyle? modalSystemUiStyle,
+    SystemUiOverlayStyle? bottomSheetSystemUiStyle,
     this.iconSize = NFConstants.iconSize,
     this.iconButtonSize = NFConstants.iconButtonSize,
   }) : _modalSystemUiStyle = modalSystemUiStyle,
@@ -106,8 +109,8 @@ class NFThemeData {
   /// or instead of [modalSystemUiStyle], [bottomSheetSystemUiStyle],
   /// if they were not specified.
   final SystemUiOverlayStyle systemUiStyle;
-  final SystemUiOverlayStyle _modalSystemUiStyle;
-  final SystemUiOverlayStyle _bottomSheetSystemUiStyle;
+  final SystemUiOverlayStyle? _modalSystemUiStyle;
+  final SystemUiOverlayStyle? _bottomSheetSystemUiStyle;
 
   /// Default icon size.
   final double iconSize;
@@ -130,14 +133,14 @@ class NFThemeData {
   /// Creates a copy of these defaults but with the given fields replaced with
   /// the new values.
   NFThemeData copyWith({
-    SystemUiOverlayStyle systemUiStyle,
-    SystemUiOverlayStyle modalSystemUiStyle,
-    SystemUiOverlayStyle bottomSheetSystemUiStyle,
+    SystemUiOverlayStyle? systemUiStyle,
+    SystemUiOverlayStyle? modalSystemUiStyle,
+    SystemUiOverlayStyle? bottomSheetSystemUiStyle,
   }) {
     return NFThemeData(
-      systemUiStyle: this.systemUiStyle ?? systemUiStyle,
-      modalSystemUiStyle: this.modalSystemUiStyle ?? modalSystemUiStyle,
-      bottomSheetSystemUiStyle: this.bottomSheetSystemUiStyle ?? bottomSheetSystemUiStyle,
+      systemUiStyle: systemUiStyle ?? this.systemUiStyle,
+      modalSystemUiStyle: modalSystemUiStyle ?? this.modalSystemUiStyle,
+      bottomSheetSystemUiStyle: bottomSheetSystemUiStyle ?? this.bottomSheetSystemUiStyle,
     );
   }
 }

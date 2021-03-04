@@ -21,27 +21,25 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 const double _kMinFlingVelocity = 700.0;
 const double _kMinFlingVelocityDelta = 400.0;
 const double _kFlingVelocityScale = 1.0 / 300.0;
-const double _kExpandThreshold = 0.4;
 
 /// The fling velocity to back to some state,
 /// for example when user releases the finger in some intermediate state
 const double _kBackToStateVelocity = 1.0;
 
+
 /// The direction in which a [Slidable] can be slid.
 enum SlideDirection {
-  /// The [Slidable] can be slid by dragging in the reverse of the
-  /// reading direction (e.g., from right to left in left-to-right languages).
-  endToStart,
+  /// The [Slidable] can be slid by dragging left only.
+  left,
 
-  /// The [Slidable] can be slid by dragging in the reading direction
-  /// (e.g., from left to right in left-to-right languages).
-  startToEnd,
+  /// The [Slidable] can be slid by dragging right only.
+  right,
 
   /// The [Slidable] can be slid by dragging up only.
-  upFromBottom,
+  up,
 
   /// The [Slidable] can be slid by dragging down only.
-  downFromTop,
+  down,
 
   /// The [Slidable] cannot be slid by dragging.
   none,
@@ -117,9 +115,9 @@ class Slidable extends StatefulWidget {
   const Slidable({
     Key? key,
     required this.child,
-    required this.direction,
-    required this.startOffset,
-    required this.endOffset,
+    this.direction = SlideDirection.up,
+    this.start = 1.0,
+    this.end = 0.0,
     this.controller,
     this.childBuilder,
     this.barrier,
@@ -135,10 +133,12 @@ class Slidable extends StatefulWidget {
     this.barrierIgnoringStrategy = const IgnoringStrategy(dismissed: true, reverse: true),
     this.catchIgnoringStrategy = const MovingIgnoringStrategy(),
     this.hitTestBehaviorStrategy = const HitTestBehaviorStrategy(),
-    this.draggedHitTestBehaviorStrategy = const HitTestBehaviorStrategy.opaque(),
-    this.slideThresholds = const <SlideDirection, double>{},
+    this.threshold = 0.4,
     this.dragStartBehavior = DragStartBehavior.start,
   }) : assert(springDescription == null || controller == null),
+       assert(start <= end && (direction == SlideDirection.right || direction == SlideDirection.down) ||
+              start >= end && (direction == SlideDirection.left || direction == SlideDirection.up), 
+              'start and end must correspond with direction'),
        super(key: key);
 
   static Widget _defaultBarrierBuilder(Animation<double> animation, Widget child) {
@@ -153,22 +153,19 @@ class Slidable extends StatefulWidget {
   /// {@macro flutter.widgets.child}
   final Widget child;
 
-  /// The direction in which the widget can be slid.
-  /// todo: more docs and for SlideDirection too
+  /// The direction in which the slide will be performed.
+  /// 
+  /// This sets the used slide axis and positive drag direction.
+  /// 
+  /// The negative drag direction is set automatically to the opposite.
+  /// For example for [SlideDirection.up], the opposite is [SlideDirection.down].
   final SlideDirection direction;
 
-  /// Defines the start offset in terms of `Offset(mainAxis, crossAxis)`.
-  ///
-  ///todo: macro
-  /// For example, the `Offset(-0.5, 0.3)` will mean the -0.5 offset for the main axis and 0.3 for cross axis.
-  /// The main axis for horizontal directions is X, for vertical is Y.
-  final Offset startOffset;
+  /// Defines the start position in terms of used [direction] axis in [FractionalOffset].
+  final double start;
 
-  /// Defines the end offset in terms of `Offset(mainAxis, crossAxis)`.
-  ///
-  /// For example , the `Offset(-0.5, 0.3)` will mean the -0.5 offset for the main axis and 0.3 for cross axis.
-  /// The main axis for horizontal directions is X, for vertical is Y.
-  final Offset endOffset;
+  /// Defines the end position in terms of used [direction] axis in [FractionalOffset].
+  final double end;
 
   /// A controller to use with this slidable.
   /// 
@@ -182,6 +179,7 @@ class Slidable extends StatefulWidget {
   /// The widget to show on `Offset.zero`, can be used for barriers.
   /// todo: better doc regarding barrier, onBarrierTap and ignoring strategy
   final Widget? barrier;
+  
   //todo: docs
   final _Builder barrierBuilder;
 
@@ -225,15 +223,10 @@ class Slidable extends StatefulWidget {
   /// then you won't be able to stop the slidable while it's animating forward.
   final MovingIgnoringStrategy catchIgnoringStrategy;
 
-  /// What [HitTestBehavior] to apply to the gesture detector when it's not dragged.
+  /// What [HitTestBehavior] to apply to the gesture detector.
   ///
   /// Defaults to [new HitTestBehaviorStrategy].
   final HitTestBehaviorStrategy hitTestBehaviorStrategy;
-
-  /// What [HitTestBehavior] to apply to the gesture detector when the slidable is dragged.
-  ///
-  /// Defaults to [new HitTestBehaviorStrategy.opaque].
-  final HitTestBehaviorStrategy draggedHitTestBehaviorStrategy;
 
   /// The offset threshold the item has to be dragged in order to be considered
   /// slid.
@@ -246,15 +239,11 @@ class Slidable extends StatefulWidget {
   /// Flinging is treated as being equivalent to dragging almost to 1.0, so
   /// flinging can slide an item past any threshold less than 1.0.
   ///
-  /// Setting a threshold of 1.0 (or greater) prevents a drag in the given
-  /// [SlideDirection] even if it would be allowed by the [direction]
-  /// property.
-  ///
   /// See also:
   ///
   ///  * [direction], which controls the directions in which the items can
   ///    be slid.
-  final Map<SlideDirection, double> slideThresholds;
+  final double threshold;
 
   /// todo: macro
   /// 
@@ -279,7 +268,17 @@ class Slidable extends StatefulWidget {
   SlidableState createState() => SlidableState();
 }
 
-enum _FlingGestureKind { none, forward, reverse }
+/// Describes the fling gesture type.
+enum _FlingGestureKind {
+  /// Pointer removed with no fling. 
+  none,
+
+  /// Flinged with positive velocity.
+  forward,
+
+  /// Flinged with negative velocity.
+  reverse,
+}
 
 // todo: AutomaticKeepAliveClientMixin ???
 class SlidableState extends State<Slidable> with TickerProviderStateMixin {
@@ -303,7 +302,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
 
   void _initController() {
     if (widget.controller == null) {
-      // todo: try to do it with SingleTickerProviderStateMixin (now it doesn allow to creat another ticker after disposing previos one)
+      // todo: try to do it with SingleTickerProviderStateMixin (now it doesn allow to creat another ticker after disposing previous one)
       _controller = SlidableController(
         vsync: this,
         springDescription: widget.springDescription,
@@ -318,11 +317,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
 
   void _evaluateStrategies() {
     _ignoringBarrier = widget.barrierIgnoringStrategy.evaluate(controller);
-    if (controller.dragged) {
-      _hitTestBehavior = widget.draggedHitTestBehaviorStrategy.ask(controller);
-    } else {
-      _hitTestBehavior = widget.hitTestBehaviorStrategy.ask(controller);
-    }
+    _hitTestBehavior = widget.hitTestBehaviorStrategy.ask(controller);
   }
 
   @override
@@ -334,8 +329,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
       oldWidget.controller?.removeStatusListener(_handleStatusChange);
       _initController();
     }
-    if (oldWidget.startOffset != widget.startOffset ||
-       oldWidget.endOffset != widget.endOffset) {
+    if (oldWidget.start != widget.start ||  oldWidget.end != widget.end) {
       _updateAnimation();
     }
     // We don't care about comparing the strategies to check wether they chagned,
@@ -354,63 +348,28 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
   SlidableController? _controller;
   SlidableController get controller => widget.controller ?? _controller!;
 
-  bool get _draggable => widget.direction != SlideDirection.none;
-
   late Animation<Offset> _animation;
   double _dragExtent = 0.0;
 
   late bool _ignoringBarrier;
   late HitTestBehavior _hitTestBehavior;
 
-  bool get _directionIsXAxis {
-    return widget.direction == SlideDirection.endToStart ||
-           widget.direction == SlideDirection.startToEnd;
+  bool get _draggable {
+    return widget.direction != SlideDirection.none;
   }
 
-  SlideDirection _extentToDirection(double extent) {
-    if (extent == 0.0)
-      return SlideDirection.none;
-    if (_directionIsXAxis) {
-      switch (Directionality.of(context)) {
-        case TextDirection.rtl:
-          return extent < 0 ? SlideDirection.startToEnd: SlideDirection.endToStart;
-        case TextDirection.ltr:
-          return extent > 0 ? SlideDirection.startToEnd : SlideDirection.endToStart;
-      }
-    }
-    return extent > 0 ? SlideDirection.downFromTop : SlideDirection.upFromBottom;
+  bool get _horizontal {
+    return widget.direction == SlideDirection.left || widget.direction == SlideDirection.right;
   }
-
-  SlideDirection get _slideDirection => _extentToDirection(_dragExtent);
 
   double get _overallDragAxisExtent {
     final Size size = context.size!;
-    return _directionIsXAxis ? size.width : size.height;
+    return _horizontal ? size.width : size.height;
   }
 
   void _handleDragStart(DragStartDetails details) {
     controller._dragged = true;
-    double sign = 1.0;
-    if (controller.status != AnimationStatus.dismissed) {
-      final TextDirection textDirection = Directionality.of(context);
-      if (widget.direction == SlideDirection.upFromBottom ||
-          textDirection == TextDirection.ltr && widget.direction == SlideDirection.endToStart || 
-          textDirection == TextDirection.rtl && widget.direction == SlideDirection.startToEnd) {
-        // this is quite vodoo
-        // todo: i guess this can be simplified (as well as _handleDragUpdate, _handleDragEnd, _extentToDirection and _describeFlingGesture)
-        sign = -1.0;
-      }
-      // wrong behaviour tests (for ltr)
-      // -0.5 0.0 upFromBottom
-      // 0.5 0.0 upFromBottom
-      // 0.0 -0.5 upFromBottom
-      // 0.0 0.5 upFromBottom
-      // -0.5 0.0 endToStart
-      // 0.5 0.0 endToStart
-      // 0.0 -0.5 endToStart
-      // 0.0 0.5 endToStart
-    }
-    _dragExtent = controller.value * _overallDragAxisExtent * sign;
+    _dragExtent = controller.value * _overallDragAxisExtent;
     if (controller.status == AnimationStatus.forward && !widget.catchIgnoringStrategy.forward ||
         controller.status == AnimationStatus.reverse && !widget.catchIgnoringStrategy.reverse) {
       controller.stop();
@@ -426,64 +385,42 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
 
     final double delta = details.primaryDelta!;
     switch (widget.direction) {
-      case SlideDirection.upFromBottom:
+      case SlideDirection.left:
         if (_dragExtent + delta < 0)
           _dragExtent += delta;
         break;
-
-      case SlideDirection.downFromTop:
+      case SlideDirection.right:
         if (_dragExtent + delta > 0)
           _dragExtent += delta;
         break;
-      case SlideDirection.endToStart:
-        switch (Directionality.of(context)) {
-          case TextDirection.rtl:
-            if (_dragExtent + delta > 0)
-              _dragExtent += delta;
-            break;
-          case TextDirection.ltr:
-            if (_dragExtent + delta < 0)
-              _dragExtent += delta;
-            break;
-        }
+      case SlideDirection.up:
+        if (_dragExtent + delta < 0)
+          _dragExtent += delta;
         break;
-
-      case SlideDirection.startToEnd:
-        switch (Directionality.of(context)) {
-          case TextDirection.rtl:
-            if (_dragExtent + delta < 0)
-              _dragExtent += delta;
-            break;
-          case TextDirection.ltr:
-            if (_dragExtent + delta > 0)
-              _dragExtent += delta;
-            break;
-        }
+      case SlideDirection.down:
+        if (_dragExtent + delta > 0)
+          _dragExtent += delta;
         break;
-
-      case SlideDirection.none:
-        // todo: in dismissible.dart here's _dragExtent = 0, but why?
-        // setting it to 0 doesn't seem ok, but i need to be 100% sure it's not to do anything here
+      default:
+        assert(false);
         break;
     }
+
+
     if (!controller.isAnimating) {
       controller.value = _dragExtent.abs() / _overallDragAxisExtent;
     }
   }
 
   void _updateAnimation() {
-    double startX = widget.startOffset.dx;
-    double startY = widget.startOffset.dy;
-    double endX = widget.endOffset.dx;
-    double endY = widget.endOffset.dy;
     late Offset begin;
     late Offset end;
-    if (_directionIsXAxis) {
-      begin = Offset(startX, startY);
-      end = Offset(endX, endY);
+    if (_horizontal) {
+      begin = Offset(widget.start, 0.0);
+      end = Offset(widget.end, 0.0);
     } else {
-      begin = Offset(startY, startX);
-      end = Offset(endY, endX);
+      begin = Offset(0.0, widget.start);
+      end = Offset(0.0, widget.end);
     }
     _animation = controller.drive(Tween<Offset>(
       begin: begin,
@@ -502,20 +439,22 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
     }
     final double vx = velocity.pixelsPerSecond.dx;
     final double vy = velocity.pixelsPerSecond.dy;
-    SlideDirection flingDirection;
     // Verify that the fling is in the generally right direction and fast enough.
-    if (_directionIsXAxis) {
+    if (_horizontal) {
       if (vx.abs() - vy.abs() < _kMinFlingVelocityDelta || vx.abs() < _kMinFlingVelocity)
         return _FlingGestureKind.none;
       assert(vx != 0.0);
-      flingDirection = _extentToDirection(vx);
     } else {
       if (vy.abs() - vx.abs() < _kMinFlingVelocityDelta || vy.abs() < _kMinFlingVelocity)
         return _FlingGestureKind.none;
       assert(vy != 0.0);
-      flingDirection = _extentToDirection(vy);
     }
-    if (flingDirection == _slideDirection) return _FlingGestureKind.forward;
+    final double v = _horizontal ? vx : vy;
+    final SlideDirection direction = widget.direction;
+    if (v.sign > 0.0 && (direction == SlideDirection.right || direction == SlideDirection.down) ||
+        v.sign < 0.0 && (direction == SlideDirection.left || direction == SlideDirection.up)) {
+      return _FlingGestureKind.forward;
+    }
     return _FlingGestureKind.reverse;
   }
 
@@ -523,7 +462,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
     if (!controller.isActive || controller.isAnimating) return;
 
     controller._dragged = false;
-    final double flingVelocity = _directionIsXAxis
+    final double flingVelocity = _horizontal
         ? details.velocity.pixelsPerSecond.dx
         : details.velocity.pixelsPerSecond.dy;
     late final bool closing;
@@ -532,7 +471,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
       case _FlingGestureKind.forward:
         assert(_dragExtent != 0.0);
         assert(!controller.isDismissed);
-        if ((widget.slideThresholds[_slideDirection] ?? _kExpandThreshold) >= 1.0) {
+        if (widget.threshold >= 1.0) {
           controller.fling(velocity: -_kBackToStateVelocity);
           closing = false;
           break;
@@ -551,7 +490,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
       case _FlingGestureKind.none:
         if (!controller.isDismissed) {
           // we already know it's not completed, we check that above
-          if (controller.value > (widget.slideThresholds[_slideDirection] ?? _kExpandThreshold)) {
+          if (controller.value > widget.threshold) {
             controller.fling(velocity: _kBackToStateVelocity);
             closing = true;
           } else {
@@ -571,25 +510,28 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    assert(!_directionIsXAxis || debugCheckHasDirectionality(context));
+    assert(!_horizontal || debugCheckHasDirectionality(context));
 
     final Size size = MediaQuery.of(context).size;
-    final Widget? barrier = widget.barrier != null ? widget.barrierBuilder(controller, widget.barrier!) : null;
-    final Widget child = Container(
-      width: size.width,
-      height: size.height,
-      child: widget.childBuilder == null ? widget.child : widget.childBuilder!(controller, widget.child),
-    );
-    final Widget wrappedChild = widget.disableSlideTransition ? child : SlideTransition(position: _animation, child: child);
+    final Widget? barrier = widget.barrier != null
+      ? widget.barrierBuilder(controller, widget.barrier!)
+      : null;
+    // final Widget child = Container(
+    //   width: size.width,
+    //   height: size.height,
+    //   child: widget.childBuilder == null ? widget.child : widget.childBuilder!(controller, widget.child),
+    // );
+    final Widget child = widget.childBuilder == null ? widget.child : widget.childBuilder!(controller, widget.child);
+    final Widget wrappedChild = widget.disableSlideTransition
+      ? child
+      : SlideTransition(position: _animation, child: child);
 
     return RepaintBoundary(
       child: RawGestureDetector(
         behavior: _hitTestBehavior,
         gestures: <Type, GestureRecognizerFactory>{
-          if (_draggable && _directionIsXAxis)
-            NFHorizontalDragGestureRecognizer:
-                GestureRecognizerFactoryWithHandlers<
-                    NFHorizontalDragGestureRecognizer>(
+          if (_draggable && _horizontal)
+            NFHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFHorizontalDragGestureRecognizer>(
               () => NFHorizontalDragGestureRecognizer(),
               (NFHorizontalDragGestureRecognizer instance) => instance
                 ..onStart = _handleDragStart
@@ -598,10 +540,8 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
                 ..dragStartBehavior = widget.dragStartBehavior
                 ..shouldGiveUp = widget.shouldGiveUpGesture,
             ),
-          if (_draggable && !_directionIsXAxis)
-            NFVerticalDragGestureRecognizer:
-                GestureRecognizerFactoryWithHandlers<
-                    NFVerticalDragGestureRecognizer>(
+          if (_draggable && !_horizontal)
+            NFVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFVerticalDragGestureRecognizer>(
               () => NFVerticalDragGestureRecognizer(),
               (NFVerticalDragGestureRecognizer instance) => instance
                 ..onStart = _handleDragStart
@@ -628,7 +568,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
                 wrappedChild,
               ];
               return _hitTestBehavior == HitTestBehavior.translucent
-                  // todo(nt4f04und): remove/update this when https://github.com/flutter/flutter/issues/75099 is resolved
+                  // todo: remove/update this when https://github.com/flutter/flutter/issues/75099 is resolved
                   ? StackWithAllChildrenReceiveEvents(children: children)
                   : Stack(children: children);
             }(),

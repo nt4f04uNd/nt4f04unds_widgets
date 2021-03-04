@@ -16,7 +16,7 @@ class FadeInRouteTransitionSettings extends RouteTransitionSettings {
     this.exitEnd = const Offset(-0.2, 0.0),
     Duration transitionDuration = kNFRouteTransitionDuration,
     Duration reverseTransitionDuration = kNFRouteTransitionDuration,
-    RouteSettings settings,
+    RouteSettings? settings,
     bool opaque = true,
     bool maintainState = false,
     BoolCallback checkEntAnimationEnabled = defRouteTransitionBoolFunc,
@@ -27,7 +27,7 @@ class FadeInRouteTransitionSettings extends RouteTransitionSettings {
     Curve exitReverseCurve = Curves.easeInToLinear,
     bool entIgnore = false,
     bool exitIgnore = false,
-    UIFunction checkSystemUi,
+    UIFunction? checkSystemUi,
   }) : super(
           transitionDuration: transitionDuration,
           reverseTransitionDuration: reverseTransitionDuration,
@@ -76,8 +76,8 @@ class FadeInRouteTransition<T extends Widget> extends RouteTransition<T> {
   final FadeInRouteTransitionSettings transitionSettings;
 
   FadeInRouteTransition({
-    @required this.route,
-    FadeInRouteTransitionSettings transitionSettings,
+    required this.route,
+    FadeInRouteTransitionSettings? transitionSettings,
   })  : transitionSettings =
             transitionSettings ?? FadeInRouteTransitionSettings(),
         super(

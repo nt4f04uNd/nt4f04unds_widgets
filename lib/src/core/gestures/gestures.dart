@@ -10,7 +10,7 @@ import 'package:flutter/gestures.dart';
 
 /// All content inside this widget will only take one touch event.
 class SingleTouchRecognizerWidget extends StatelessWidget {
-  final Widget child;
+  final Widget? child;
   SingleTouchRecognizerWidget({this.child});
 
   @override

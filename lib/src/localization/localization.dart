@@ -75,7 +75,7 @@ class _NFLocalizationsDelegate extends LocalizationsDelegate<NFLocalizations> {
 
   @override
   bool isSupported(Locale locale) {
-    return NFConstants.supportedLocales.contains(locale.languageCode);
+    return NFConstants.supportedLocales.contains(locale);
   }
 
   @override

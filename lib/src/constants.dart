@@ -3,6 +3,8 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import 'package:flutter/material.dart';
+
 class NFConstants {
   /// Default route transition duration used across the package.
   @Deprecated('I reconsidered there should not exist any library-wide duration constants.')
@@ -18,5 +20,9 @@ class NFConstants {
   /// Default icon button size i prefer to use.
   static const double iconButtonSize = 36.0;
 
-  static const List<String> supportedLocales = ['en', 'ru'];
+  /// Locales that library supports
+  static const List<Locale> supportedLocales = [
+    Locale('en', 'US'),
+    Locale('ru', 'RU'),
+  ];
 }

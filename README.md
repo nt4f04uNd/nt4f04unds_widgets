@@ -1,31 +1,30 @@
 # nt4f04und's widgets
 
-### Manifest
+### manifest
 
-A library for personal use.
+a library for personal use
 
-The comments are poor, the code is horrible.
+the comments are poor, the code is horrible
 
-I cannot (and don't want to) guarantee you the safety of your ass during its usage.
+i cannot (and don't want to) guarantee you the safety of your ass during its usage
 
-**It's mine.**
+**it's mine**
 
-#### [Pub dev package](https://pub.dev/packages/nt4f04unds_widgets)
+#### [pub dev package](https://pub.dev/packages/nt4f04unds_widgets)
 
-### Setup
+### setup
 
-Call the `NFWidgets.init`:
 
 ```dart
 final RouteObserver<Route> routeObserver = RouteObserver();
 
 class App extends StatefulWidget {
   App({Key key}) : super(key: key);
+  
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   _AppState createState() => _AppState();
-
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 }
 
 class _AppState extends State<App> {
@@ -47,7 +46,7 @@ class _AppState extends State<App> {
         color: Colors.black,
         navigatorKey: App.navigatorKey,
         theme: Constants.AppTheme.theme,
-        supportedLocales: Constants.Config.supportedLocales.map<Locale>((e) => Locale(e, e.toUpperCase())),
+        supportedLocales: Constants.Config.supportedLocales,
         localizationsDelegates: const [
           NFLocalizations.delegate,
           // ... other locales
@@ -62,3 +61,9 @@ class _AppState extends State<App> {
 
 ```
 
+### naming conventions
+
+names have `NF` prefix if:
+
+* they could be easily messed up with some names from flutter - `NFSnackbarController`
+* i just preferred them to have this prefix - `NFCopyButton`
