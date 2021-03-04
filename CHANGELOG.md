@@ -1,4 +1,4 @@
-## [1.0.4] - TBD
+## [1.1.0] - TBD
 
 * null safety migration
 * improved docs
