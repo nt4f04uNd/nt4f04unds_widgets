@@ -3,8 +3,6 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// @dart = 2.12
-
 import 'dart:async';
 
 import 'package:intl/intl.dart';
@@ -16,8 +14,7 @@ import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'gen/messages_all.dart';
 
 class NFLocalizations {
-  static const LocalizationsDelegate<NFLocalizations> delegate =
-      _NFLocalizationsDelegate();
+  static const LocalizationsDelegate<NFLocalizations> delegate = _NFLocalizationsDelegate();
 
   static Future<NFLocalizations> load(Locale locale) async {
     final systemLocale = await findSystemLocale();

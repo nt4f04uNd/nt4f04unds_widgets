@@ -19,13 +19,12 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ru';
 
-  final Map<String, dynamic> messages = _notInlinedMessages(_notInlinedMessages);
+  final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "accept" : MessageLookupByLibrary.simpleMessage("Принять"),
     "cancel" : MessageLookupByLibrary.simpleMessage("Отмена"),
     "close" : MessageLookupByLibrary.simpleMessage("Закрыть"),
     "copied" : MessageLookupByLibrary.simpleMessage("Скопировано"),
-    "warning" : MessageLookupByLibrary.simpleMessage("Предупреждение"),
-    "whatDoesItMean" : MessageLookupByLibrary.simpleMessage("Что это значит?")
+    "warning" : MessageLookupByLibrary.simpleMessage("Предупреждение")
   };
 }

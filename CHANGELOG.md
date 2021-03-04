@@ -1,8 +1,10 @@
 ## [1.1.0] - TBD
 
 * null safety migration
-* improved docs
-* refactor
+* revied and refactored each widget, improved docs
+* added NFSpinner
+* removed NFDissmisible
+* 
  
 ## [1.0.3] - january 25, 2021
 
