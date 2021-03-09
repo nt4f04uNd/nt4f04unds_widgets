@@ -17,9 +17,8 @@ const defaultAlertContentPadding = EdgeInsets.fromLTRB(26.0, 0.0, 26.0, 3.0);
 class NFShowFunctions {
   /// Empty constructor will allow enheritance.
   NFShowFunctions();
-  NFShowFunctions._internal();
-  static final NFShowFunctions _instance = NFShowFunctions._internal();
-  static NFShowFunctions get instance => _instance;
+  NFShowFunctions._();
+  static final NFShowFunctions instance = NFShowFunctions._();
 
   //****************** Enhanced Flutter functions *****************************************************
 

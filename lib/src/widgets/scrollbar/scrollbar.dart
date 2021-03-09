@@ -139,7 +139,7 @@ class _NFScrollbarState extends State<NFScrollbar> with SingleTickerProviderStat
       }
 
       _scrollbarPainter.update(notification.metrics, notification.metrics.axisDirection);
-      _fadeoutTimer!.cancel();
+      _fadeoutTimer?.cancel();
       _fadeoutTimer = Timer(kScrollbarTimeToFade, () {
         _fadeoutAnimationController.reverse();
         _fadeoutTimer = null;

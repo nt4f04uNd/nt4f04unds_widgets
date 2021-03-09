@@ -239,12 +239,8 @@ class _Slidable3State extends State<_Slidable3> with SingleTickerProviderStateMi
                 end: 0.0,
                 controller: controller,
                 onBarrierTap: controller.close,
-                barrierIgnoringStrategy: const IgnoringStrategy(
-                  dismissed: true,
-                ),
-                hitTestBehaviorStrategy: HitTestBehaviorStrategy.opaque(
-                  dismissed: HitTestBehavior.translucent,
-                ),
+                barrierIgnoringStrategy: const IgnoringStrategy(dismissed: true),
+                hitTestBehaviorStrategy: const HitTestBehaviorStrategy.opaque(dismissed: HitTestBehavior.translucent),
                 child: Container(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,

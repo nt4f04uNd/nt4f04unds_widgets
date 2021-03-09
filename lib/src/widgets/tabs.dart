@@ -666,7 +666,7 @@ class _NFTabBarState extends State<NFTabBar> {
 
     final List<Widget> wrappedTabs = [];
     for (int i = 0; i < widget.tabs.length; i += 1) {
-      wrappedTabs[i] = Center(
+      wrappedTabs.add(Center(
         heightFactor: 1.0,
         child: Padding(
           padding: widget.labelPadding ??
@@ -677,7 +677,7 @@ class _NFTabBarState extends State<NFTabBar> {
             child: widget.tabs[i],
           ),
         ),
-      );
+      ));
     }
 
     // If the controller was provided by DefaultTabController and we're part

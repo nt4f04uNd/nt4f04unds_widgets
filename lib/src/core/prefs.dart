@@ -16,19 +16,23 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 ///     Pref<bool>(key: 'dev_mode', defaultValue: false);
 /// ```
 class Pref<T> {
-  Pref({ required this.key, required this.defaultValue }) : assert(key != null) {
-    // Call this to check current pref value and set it to default, if it's null.
+  Pref({ required this.key, this.defaultValue }) : assert(key != null) {
+    // Call this to check current pref value and set it to default.
     get();
   }
 
   final String key;
-  final T defaultValue;
+  final T? defaultValue;
+
+  /// Deletes the value persistent from storage.
+  Future<bool> delete() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.remove(key);
+  }
 
   /// Sets pref [value].
-  /// 
-  /// Without any [value] given will set the pref to the [defaultValue].
-  Future<bool> set([ T? value ]) async {
-    value ??= defaultValue;
+  Future<bool> set(T value) async {
+    assert(value != null);
     final prefs = await SharedPreferences.getInstance();
 
     final type = typeOf<T>();
@@ -70,8 +74,8 @@ class Pref<T> {
 
     // Reset pref value to default value if defaultValue is not null
     if (res == null && defaultValue != null) {
-      res = defaultValue;
-      set();
+      res = defaultValue!;
+      set(res);
     }
 
     return res;
