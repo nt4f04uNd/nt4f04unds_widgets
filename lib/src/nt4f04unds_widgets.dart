@@ -66,7 +66,7 @@ class NFWidgets {
 /// wrap your app into this widget.
 class NFTheme extends InheritedWidget  {
   /// Creates inherited defaults widget.
-  NFTheme({
+  const NFTheme({
     Key? key,
     required this.data,
     required this.child,
@@ -94,7 +94,7 @@ class NFTheme extends InheritedWidget  {
 /// wrap your app into [NFTheme] and pass this class into it.
 class NFThemeData {
   /// Creates defaults values.
-  NFThemeData({
+  const NFThemeData({
     required this.systemUiStyle,
     SystemUiOverlayStyle? modalSystemUiStyle,
     SystemUiOverlayStyle? bottomSheetSystemUiStyle,
