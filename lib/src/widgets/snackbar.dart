@@ -211,32 +211,30 @@ class NFSnackbarEntryState extends State<_NFSnackbarEntryWidget> with TickerProv
       reverseCurve: Interval(0.2, 1.0, curve: Curves.easeInCubic),
       parent: _fadeController
     ));
-    return GestureDetector(
-      onPanDown: (_) => stopTimer(),
-      onTapUp: (_) => resumeTimer(),
-      child: FadeTransition(
-        opacity: fadeAnimation,
-        child: StatefulBuilder(
-          builder: (BuildContext context, setState) => Slidable(
-            controller: controller,
-            direction: SlideDirection.down,
-            start: 0.0,
-            end: 1.0,
-            key: dismissibleKey,
-            childBuilder: (animation, child) => AnimatedBuilder(
-              animation: animation,
-              builder: (context, child) => child!,
-              child: IgnorePointer(
-                ignoring: controller.status == AnimationStatus.reverse,
-                child: child,
-              ),
+    return FadeTransition(
+      opacity: fadeAnimation,
+      child: StatefulBuilder(
+        builder: (BuildContext context, setState) => Slidable(
+          controller: controller,
+          direction: SlideDirection.down,
+          start: 0.0,
+          end: 1.0,
+          onDragStart: (_) => stopTimer(),
+          onDragEnd: (_, __) => resumeTimer(),
+          key: dismissibleKey,
+          childBuilder: (animation, child) => AnimatedBuilder(
+            animation: animation,
+            builder: (context, child) => child!,
+            child: IgnorePointer(
+              ignoring: controller.status == AnimationStatus.reverse,
+              child: child,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                widget.entry.child,
-              ],
-            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              widget.entry.child,
+            ],
           ),
         ),
       ),
