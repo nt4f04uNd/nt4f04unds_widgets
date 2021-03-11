@@ -48,9 +48,9 @@ T pickSize<T>(T standart, { T? small, T? tablet }) {
     case ScreenSize.standart:
       return standart;
     case ScreenSize.small:
-      return small!;
+      return small as T;
     case ScreenSize.tablet:
-      return tablet!;
+      return tablet as T;
   }
 }
 
