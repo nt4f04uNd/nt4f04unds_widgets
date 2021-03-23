@@ -1,3 +1,13 @@
+## [1.1.0] - march 23, 2021
+
+* null safety migration
+* revied and refactored all widgets and APIs
+* improved docs
+* added some examples
+* added NFSpinner
+* removed NFDissmisible, NFLabelledSlider, StackTransition
+* other stuff
+ 
 ## [1.0.3] - january 25, 2021
 
 * multiple route observers support

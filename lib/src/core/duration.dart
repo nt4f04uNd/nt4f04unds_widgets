@@ -3,15 +3,13 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-extension NFFormatDurationExtension on Duration {
-  /// Returns the formatted time string in format <M>:<S>.
-  ///
-  /// * Minutes can go from 0 to 99.
-  /// * Seconds from 0 to 59.
-  String getFormattedDuration() {
-    int minutes = inMinutes;
-    // Seconds in 0-59 format
-    int seconds = inSeconds % 60;
-    return '${minutes.toString().length < 2 ? 0 : ''}$minutes:${seconds.toString().length < 2 ? 0 : ''}$seconds';
-  }
+/// Returns the formatted time string in format <M>:<S>.
+///
+/// * Minutes can go from 0 to 99.
+/// * Seconds from 0 to 59.
+String formatDuration(Duration duration) {
+  int minutes = duration.inMinutes;
+  // Seconds in 0-59 format
+  int seconds = duration.inSeconds % 60;
+  return '${minutes.toString().length < 2 ? 0 : ''}$minutes:${seconds.toString().length < 2 ? 0 : ''}$seconds';
 }

@@ -25,7 +25,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "cancel" : MessageLookupByLibrary.simpleMessage("Cancel"),
     "close" : MessageLookupByLibrary.simpleMessage("Close"),
     "copied" : MessageLookupByLibrary.simpleMessage("Copied"),
-    "warning" : MessageLookupByLibrary.simpleMessage("Warning"),
-    "whatDoesItMean" : MessageLookupByLibrary.simpleMessage("What does it mean?")
+    "warning" : MessageLookupByLibrary.simpleMessage("Warning")
   };
 }

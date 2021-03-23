@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2020-12-14T22:22:54.389468",
+  "@@last_modified": "2021-03-05T02:57:25.483204",
   "warning": "Warning",
   "@warning": {
     "type": "text",
@@ -22,11 +22,6 @@
   },
   "copied": "Copied",
   "@copied": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "whatDoesItMean": "What does it mean?",
-  "@whatDoesItMean": {
     "type": "text",
     "placeholders": {}
   }

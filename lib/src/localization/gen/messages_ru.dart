@@ -25,7 +25,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "cancel" : MessageLookupByLibrary.simpleMessage("Отмена"),
     "close" : MessageLookupByLibrary.simpleMessage("Закрыть"),
     "copied" : MessageLookupByLibrary.simpleMessage("Скопировано"),
-    "warning" : MessageLookupByLibrary.simpleMessage("Предупреждение"),
-    "whatDoesItMean" : MessageLookupByLibrary.simpleMessage("Что это значит?")
+    "warning" : MessageLookupByLibrary.simpleMessage("Предупреждение")
   };
 }

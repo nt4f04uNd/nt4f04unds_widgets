@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
+
 /// Possible appearance variants for [NFButton].
 enum NFButtonVariant { raised, flat }
 
@@ -15,11 +16,11 @@ const kNFButtonVariant = NFButtonVariant.flat;
 
 enum _NFButtonFlavor { accept, cancel, close }
 
-/// todo: Migrage to new buttons from flutter when they add splash customization
+/// todo: remove this
 /// Temporarily [ColorScheme.onSecondary] used for default text color
 class NFButton extends StatelessWidget {
   const NFButton({
-    Key key,
+    Key? key,
     this.text,
     this.textStyle,
     this.color,
@@ -36,8 +37,8 @@ class NFButton extends StatelessWidget {
   /// Applies a specific flavour to button to restyle it later.
   /// Primarily needed to get localizations, because they require build context.
   NFButton._createFlavor({
-    @required _NFButtonFlavor flavour,
-    Key key,
+    required _NFButtonFlavor flavour,
+    Key? key,
     this.text,
     this.textStyle,
     this.color,
@@ -52,40 +53,39 @@ class NFButton extends StatelessWidget {
         super(key: key);
 
   /// Text to show inside button
-  final String text;
-  final TextStyle textStyle;
-  final Color color;
-  final Color splashColor;
+  final String? text;
+  final TextStyle? textStyle;
+  final Color? color;
+  final Color? splashColor;
 
   /// Loading shows loading inside button
   final bool loading;
 
   /// Control the appearance of the button.
   final NFButtonVariant variant;
-  final EdgeInsets padding;
+  final EdgeInsetsGeometry padding;
   final double borderRadius;
 
   /// The returned value will be passed to [Navigator.maybePop()] method call
-  final Function onPressed;
+  final Function? onPressed;
 
   /// Applies additional specific style.
-  final _NFButtonFlavor _flavour;
+  final _NFButtonFlavor? _flavour;
 
   /// Specifies whether the button will have margins or not.
   final MaterialTapTargetSize materialTapTargetSize;
   factory NFButton.accept({
-    Key key,
-    String text,
-    TextStyle textStyle,
-    Color color,
-    Color splashColor,
+    Key? key,
+    String? text,
+    TextStyle? textStyle,
+    Color? color,
+    Color? splashColor,
     bool loading = false,
-    Function onPressed,
+    Function? onPressed,
     NFButtonVariant variant = kNFButtonVariant,
     EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 15.0),
     double borderRadius = 15.0,
-    MaterialTapTargetSize materialTapTargetSize =
-        MaterialTapTargetSize.shrinkWrap,
+    MaterialTapTargetSize materialTapTargetSize = MaterialTapTargetSize.shrinkWrap,
   }) {
     return NFButton._createFlavor(
       flavour: _NFButtonFlavor.accept,
@@ -109,18 +109,17 @@ class NFButton extends StatelessWidget {
   }
 
   factory NFButton.cancel({
-    Key key,
-    String text,
-    TextStyle textStyle,
-    Color color,
-    Color splashColor,
+    Key? key,
+    String? text,
+    TextStyle? textStyle,
+    Color? color,
+    Color? splashColor,
     bool loading = false,
-    Function onPressed,
+    Function? onPressed,
     NFButtonVariant variant = kNFButtonVariant,
     EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 15.0),
     double borderRadius = 15.0,
-    MaterialTapTargetSize materialTapTargetSize =
-        MaterialTapTargetSize.shrinkWrap,
+    MaterialTapTargetSize materialTapTargetSize = MaterialTapTargetSize.shrinkWrap,
   }) {
     return NFButton._createFlavor(
       flavour: _NFButtonFlavor.cancel,
@@ -143,18 +142,17 @@ class NFButton extends StatelessWidget {
     );
   }
   factory NFButton.close({
-    Key key,
-    String text,
-    TextStyle textStyle,
-    Color color,
-    Color splashColor,
+    Key? key,
+    String? text,
+    TextStyle? textStyle,
+    Color? color,
+    Color? splashColor,
     bool loading = false,
-    Function onPressed,
+    Function? onPressed,
     NFButtonVariant variant = kNFButtonVariant,
     EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 15.0),
     double borderRadius = 15.0,
-    MaterialTapTargetSize materialTapTargetSize =
-        MaterialTapTargetSize.shrinkWrap,
+    MaterialTapTargetSize materialTapTargetSize = MaterialTapTargetSize.shrinkWrap,
   }) {
     return NFButton._createFlavor(
       flavour: _NFButtonFlavor.close,
@@ -193,11 +191,9 @@ class NFButton extends StatelessWidget {
   }
 
   Future<void> _handleOnPressed(BuildContext context) async {
-    if (onPressed != null) {
-      final res = await onPressed();
-      if (_flavour != null) {
-        Navigator.of(context).maybePop(await onPressed());
-      }
+    final res = await onPressed?.call();
+    if (_flavour != null) {
+      Navigator.of(context).maybePop(res);
     }
   }
 
@@ -262,9 +258,6 @@ class NFButton extends StatelessWidget {
             child: _buildChild(context),
           ),
         );
-      default:
-        assert(false);
-        return null;
     }
   }
 
@@ -279,10 +272,10 @@ class NFButton extends StatelessWidget {
   }
 }
 
-/// Button to go back from page
+/// Button to go back from page.
 class NFBackButton extends StatelessWidget {
   const NFBackButton({
-    Key key,
+    Key? key,
     this.icon,
     this.size = NFConstants.iconButtonSize,
     this.iconSize = NFConstants.iconSize,
@@ -290,33 +283,46 @@ class NFBackButton extends StatelessWidget {
   }) : super(key: key);
 
   /// A custom icon for back button
-  final IconData icon;
-  final double size;
-  final double iconSize;
-  final Function onPressed;
+  final IconData? icon;
+
+  /// Button size. Defaults to [NFThemeData.iconButtonSize].
+  final double? size;
+
+  /// Icon size. Defaults to [NFThemeData.iconSize].
+  final double? iconSize;
+
+  /// Callback that will be called on button press that will override default
+  /// pop callback.
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
+    final nftheme = NFTheme.of(context);
     return NFIconButton(
       icon: Icon(
         icon ?? Icons.arrow_back_rounded,
       ),
-      size: size,
-      iconSize: iconSize,
+      size: size ?? nftheme.iconButtonSize,
+      iconSize: iconSize ?? nftheme.iconSize,
       onPressed: onPressed ?? () => Navigator.of(context).pop(),
     );
   }
 }
 
+/// Creates an icon copy button, which, when preseed,
+/// will copy [text] to clipboard.
 class NFCopyButton extends StatelessWidget {
   const NFCopyButton({
-    Key key,
+    Key? key,
+    this.text,
     this.size = 44.0,
-    @required this.text,
   }) : super(key: key);
 
+  /// Text that will be copied when button is pressed.
+  final String? text;
+
+  /// Button size.
   final double size;
-  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -330,11 +336,11 @@ class NFCopyButton extends StatelessWidget {
               Clipboard.setData(
                 ClipboardData(text: text),
               );
-              NFSnackbarControl.showSnackbar(
-                NFSnackbarSettings(
+              NFSnackbarController.showSnackbar(
+                NFSnackbarEntry(
                   child: NFSnackbar(
-                    message: l10n.copied,
-                    messagePadding: const EdgeInsets.only(left: 8.0),
+                    title: Text(l10n.copied),
+                    titlePadding: const EdgeInsets.only(left: 8.0),
                     leading: Icon(
                       Icons.content_copy_rounded,
                       color: Theme.of(context).colorScheme.onPrimary,
@@ -347,88 +353,69 @@ class NFCopyButton extends StatelessWidget {
   }
 }
 
-/// An information button.
-/// On click creates an alert with information
-class NFInfoButton extends StatelessWidget {
-  const NFInfoButton({
-    Key key,
-    this.size = 44.0,
-    @required this.info,
-    this.infoAlertTitle,
-  }) : super(key: key);
-
-  final double size;
-  final String info;
-
-  /// Text displayed as a title of an info window
-  final String infoAlertTitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = NFLocalizations.of(context);
-    return NFIconButton(
-      icon: const Icon(Icons.info_outline_rounded),
-      size: size,
-      onPressed: info == null
-          ? null
-          : () {
-              NFShowFunctions.instance.showAlert(
-                context,
-                title: Text(infoAlertTitle ?? l10n.whatDoesItMean),
-                content: Text(info),
-              );
-            },
-    );
-  }
-}
-
-/// A default icon button, but that can be toggled on and off with [enabled],
-/// and it's color will change with animation.
-///
-/// When [enabled] is `false`, [unselectedColor] will be applied.
-///
-/// Also, if [onPressed] was not specified, the [disabledColor] will be applied.
-class NFAnimatedIconButton extends StatefulWidget {
-  NFAnimatedIconButton({
-    Key key,
-    @required this.icon,
-    @required this.onPressed,
-    this.iconSize = NFConstants.iconSize,
-    this.size = NFConstants.iconButtonSize,
-    this.enabled = true,
-    this.duration = NFConstants.colorAnimationDuration,
+/// An icon button, that can be toggled visually on and off with [enabled],
+/// for example to repesent some logical state, like `on / off`.
+/// 
+/// Color changes will be implicitly animated.
+class AnimatedIconButton extends StatefulWidget {
+  AnimatedIconButton({
+    Key? key,
+    required this.onPressed,
+    required this.icon,
+    this.duration = const Duration(milliseconds: 500),
+    this.size,
+    this.iconSize,
+    this.active = true,
     this.color,
-    this.unselectedColor,
+    this.inactiveColor,
     this.disabledColor,
   }) : super(key: key);
+
+  /// An icon to use.
   final Widget icon;
 
-  /// Button will have a disabled color if none was specified.
-  final Function onPressed;
-  final double iconSize;
-  final double size;
+  /// Callback that will be called on button press.
+  ///
+  /// If `null`, [disabledColor] is applied.
+  final VoidCallback? onPressed;
 
-  /// Can be used to set a disabled color for button, when `false`.
-  /// This won't prevent taps on button, it's more like a state indicator of something.
-  /// By default it is `true`.
-  final bool enabled;
+  /// The duration used to animate color changes.
+  /// 
+  /// By default 500 milliseconds.
   final Duration duration;
 
+  /// Button size. Defaults to [NFThemeData.iconButtonSize].
+  final double? size;
+  
+  /// Icon size. Defaults to [NFThemeData.iconSize].
+  final double? iconSize;
+
+  /// When given `false`, button will appear visually toggled off with [inactiveColor] applied.
+  /// This won't prevent taps on button.
+  final bool active;
+
+  /// Default icon color.
+  /// 
   /// If none specified, theme icon color is used.
-  final Color color;
+  final Color? color;
 
+  /// Inactive icon color which is applied with [active] set to `false`.
+  /// 
   /// If none specified, [ThemeData.unselectedWidgetColor] color is used.
-  final Color unselectedColor;
+  final Color? inactiveColor;
 
+  /// Color to use when [onPressed] is `null`.
+  /// 
   /// If none specified, [ThemeData.disabledColor] color is used.
-  final Color disabledColor;
+  final Color? disabledColor;
+  
   @override
-  NFAnimatedIconButtonState createState() => NFAnimatedIconButtonState();
+  AnimatedIconButtonState createState() => AnimatedIconButtonState();
 }
 
-class NFAnimatedIconButtonState extends State<NFAnimatedIconButton>
-    with SingleTickerProviderStateMixin {
-  AnimationController controller;
+class AnimatedIconButtonState extends State<AnimatedIconButton> with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+
   @override
   void initState() {
     super.initState();
@@ -436,8 +423,20 @@ class NFAnimatedIconButtonState extends State<NFAnimatedIconButton>
       vsync: this,
       duration: widget.duration,
     );
-    if (widget.enabled && widget.onPressed != null) {
+    if (widget.active && widget.onPressed != null) {
       controller.value = 1.0;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedIconButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.active != widget.active || oldWidget.onPressed != widget.onPressed) {
+      if (widget.active && widget.onPressed != null) {
+        controller.forward();
+      } else {
+        controller.reverse();
+      }
     }
   }
 
@@ -449,30 +448,19 @@ class NFAnimatedIconButtonState extends State<NFAnimatedIconButton>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.enabled && widget.onPressed != null) {
-      if (controller.status == AnimationStatus.dismissed ||
-          controller.status == AnimationStatus.reverse) {
-        controller.forward();
-      }
-    } else {
-      if (controller.status == AnimationStatus.completed ||
-          controller.status == AnimationStatus.forward) {
-        controller.reverse();
-      }
-    }
+    final nftheme = NFTheme.of(context);
     final colorAnimation = ColorTween(
-      begin: widget.unselectedColor ?? Theme.of(context).unselectedWidgetColor,
+      begin: widget.inactiveColor ?? Theme.of(context).unselectedWidgetColor,
       end: widget.color ?? Theme.of(context).iconTheme.color,
     ).animate(NFDefaultAnimation(parent: controller));
     return AnimatedBuilder(
       animation: controller,
-      builder: (BuildContext context, Widget child) => NFIconButton(
+      builder: (BuildContext context, Widget? child) => NFIconButton(
         icon: widget.icon,
-        iconSize: widget.iconSize,
-        size: widget.size,
-        color: colorAnimation.value,
-        // Passing empty closure to prevent dimming that's done by default.
         onPressed: widget.onPressed,
+        iconSize: widget.iconSize ?? nftheme.iconSize,
+        size: widget.size ?? nftheme.iconButtonSize,
+        color: colorAnimation.value,
         disabledColor: widget.disabledColor,
       ),
     );

@@ -10,5 +10,6 @@ cd ..
 call flutter pub run intl_translation:extract_to_arb --output-dir=lib/src/localization/arb lib/src/localization/localization.dart
 
 call flutter pub run intl_translation:generate_from_arb --output-dir=lib/src/localization/gen --no-use-deferred-loading ^
-lib/src/localization/arb/intl_en.arb lib/src/localization/arb/intl_ru.arb lib/src/localization/arb/intl_messages.arb ^
+lib/src/localization/arb/intl_en.arb ^
+lib/src/localization/arb/intl_ru.arb ^
 lib/src/localization/localization.dart

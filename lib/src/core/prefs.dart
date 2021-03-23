@@ -3,7 +3,6 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
       
@@ -14,25 +13,24 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// static final Pref<bool> devModeBool =
 ///     Pref<bool>(key: 'dev_mode', defaultValue: false);
 /// ```
-///
-/// Even if default value is null, you should specify it explicitly and give a pref variable `Nullable` postfix.
-/// In case with previous example, that would be `devModeBoolNullable`.
 class Pref<T> {
-  Pref({
-    @required this.key,
-    @required this.defaultValue,
-  }) : assert(key != null) {
-    /// Call this to check current pref value and set it to default, if it's null
+  Pref({ required this.key, this.defaultValue }) {
+    // Call this to check current pref value and set it to default.
     get();
   }
 
   final String key;
-  final T defaultValue;
+  final T? defaultValue;
+
+  /// Deletes the value persistent from storage.
+  Future<bool> delete() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.remove(key);
+  }
 
   /// Sets pref [value].
-  /// Without any [value] given will set the pref to its [defaultValue].
-  Future<bool> set([T value]) async {
-    value ??= defaultValue;
+  Future<bool> set(T value) async {
+    assert(value != null);
     final prefs = await SharedPreferences.getInstance();
 
     final type = typeOf<T>();
@@ -47,10 +45,11 @@ class Pref<T> {
     } else if (type == typeOf<List<String>>()) {
       return prefs.setStringList(key, value as List<String>);
     }
-    throw Exception("Pref.get: Wrong type of pref generic: T = $type");
+    throw Exception('Pref.get: Wrong type of pref generic: T = $type');
   }
 
   /// Gets pref value.
+  /// 
   /// If the current value is `null`, will return [defaultValue] and call [setPref] to reset the pref to the [defaultValue].
   Future<T> get() async {
     final prefs = await SharedPreferences.getInstance();
@@ -68,13 +67,13 @@ class Pref<T> {
     } else if (type == typeOf<List<String>>()) {
       res = prefs.getStringList(key) as T;
     } else {
-      throw Exception("Pref.get: Wrong type of pref generic: T = $type");
+      throw Exception('Pref.get: Wrong type of pref generic: T = $type');
     }
 
     // Reset pref value to default value if defaultValue is not null
     if (res == null && defaultValue != null) {
-      res = defaultValue;
-      set();
+      res = defaultValue!;
+      set(res);
     }
 
     return res;

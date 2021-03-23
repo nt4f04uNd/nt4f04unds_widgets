@@ -14,8 +14,7 @@ import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'gen/messages_all.dart';
 
 class NFLocalizations {
-  static const LocalizationsDelegate<NFLocalizations> delegate =
-      _NFLocalizationsDelegate();
+  static const LocalizationsDelegate<NFLocalizations> delegate = _NFLocalizationsDelegate();
 
   static Future<NFLocalizations> load(Locale locale) async {
     final systemLocale = await findSystemLocale();
@@ -29,7 +28,7 @@ class NFLocalizations {
   }
 
   static NFLocalizations of(BuildContext context) {
-    return Localizations.of<NFLocalizations>(context, NFLocalizations);
+    return Localizations.of<NFLocalizations>(context, NFLocalizations)!;
   }
 
   String get warning {
@@ -66,13 +65,6 @@ class NFLocalizations {
       name: 'copied',
     );
   }
-
-  String get whatDoesItMean {
-    return Intl.message(
-      'What does it mean?',
-      name: 'whatDoesItMean',
-    );
-  }
 }
 
 class _NFLocalizationsDelegate extends LocalizationsDelegate<NFLocalizations> {
@@ -80,7 +72,7 @@ class _NFLocalizationsDelegate extends LocalizationsDelegate<NFLocalizations> {
 
   @override
   bool isSupported(Locale locale) {
-    return NFConstants.supportedLocales.contains(locale.languageCode);
+    return NFConstants.supportedLocales.contains(locale);
   }
 
   @override

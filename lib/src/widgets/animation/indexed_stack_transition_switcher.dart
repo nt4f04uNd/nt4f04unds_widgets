@@ -3,21 +3,21 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// todo: remove this when this issue gets resolved https://github.com/flutter/flutter/issues/56662
+
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 
 /// Based on the [PageTransitionSwitcher] from the `animations` package, this widget
 /// allows you to transition between an array of widgets using entry and exit
 /// animations whilst maintaining their state.
-///
-/// todo: remove this when this issue gets resolved https://github.com/flutter/flutter/issues/56662
 class IndexedTransitionSwitcher extends StatefulWidget {
   /// Creates an [IndexedTransitionSwitcher].
   const IndexedTransitionSwitcher({
-    Key key,
-    @required this.index,
-    @required this.children,
-    @required this.transitionBuilder,
+    Key? key,
+    required this.index,
+    required this.children,
+    required this.transitionBuilder,
     this.reverse = false,
     this.duration = const Duration(milliseconds: 300),
   }) : super(key: key);
@@ -33,8 +33,7 @@ class IndexedTransitionSwitcher extends StatefulWidget {
   /// When the index changes, the new child will animate in with the primary
   /// animation, and the old widget will animate out with the secondary
   /// animation.
-  final Widget Function(Widget child, Animation<double> primaryAnimation,
-      Animation<double> secondaryAnimation) transitionBuilder;
+  final Widget Function(Widget child, Animation<double> primaryAnimation, Animation<double> secondaryAnimation) transitionBuilder;
 
   /// The duration of the transition.
   final Duration duration;
@@ -51,9 +50,8 @@ class IndexedTransitionSwitcher extends StatefulWidget {
       _IndexedTransitionSwitcherState();
 }
 
-class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher>
-    with TickerProviderStateMixin {
-  List<_ChildEntry> _childEntries;
+class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher> with TickerProviderStateMixin {
+  late List<_ChildEntry> _childEntries;
 
   @override
   void initState() {
@@ -71,10 +69,8 @@ class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher>
     super.didUpdateWidget(oldWidget);
     // Transition if the index has changed
     if (widget.index != oldWidget.index) {
-      _ChildEntry newChild =
-          _childEntries.where((entry) => entry.index == widget.index).first;
-      _ChildEntry oldChild =
-          _childEntries.where((entry) => entry.index == oldWidget.index).first;
+      _ChildEntry newChild = _childEntries.where((entry) => entry.index == widget.index).first;
+      _ChildEntry oldChild = _childEntries.where((entry) => entry.index == oldWidget.index).first;
       // Animate the children
       if (widget.reverse) {
         // Animate in the new child
@@ -104,8 +100,7 @@ class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher>
       // Reorder the stack and set onStage to true for the new child
       _childEntries.remove(newChild);
       _childEntries.remove(oldChild);
-      _childEntries
-          .addAll(widget.reverse ? [newChild, oldChild] : [oldChild, newChild]);
+      _childEntries.addAll(widget.reverse ? [newChild, oldChild] : [oldChild, newChild]);
       newChild.onStage = true;
     }
   }
@@ -127,8 +122,7 @@ class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher>
         index: index,
         primaryController: primaryController,
         secondaryController: secondaryController,
-        transitionChild: widget.transitionBuilder(
-            child, primaryController, secondaryController),
+        transitionChild: widget.transitionBuilder(child, primaryController, secondaryController),
         onStage: widget.index == index);
   }
 
@@ -158,12 +152,12 @@ class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher>
 /// Internal representation of a child.
 class _ChildEntry {
   _ChildEntry({
-    @required this.index,
-    @required this.key,
-    @required this.primaryController,
-    @required this.secondaryController,
-    @required this.transitionChild,
-    @required this.onStage,
+    required this.index,
+    required this.key,
+    required this.primaryController,
+    required this.secondaryController,
+    required this.transitionChild,
+    required this.onStage,
   });
 
   /// The child index.

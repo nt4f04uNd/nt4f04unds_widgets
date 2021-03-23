@@ -5,20 +5,18 @@
 
 /// Module for not essential to user UI widgets, like scroll or gesture behaviors
 
-export 'route_transitions/route_transitions.dart';
 export 'splash/splash.dart';
+export 'routes/routes.dart';
 export 'gestures/gestures.dart';
 export 'animation_strategy.dart';
 export 'animation.dart';
-export 'dismissible.dart';
 export 'duration.dart';
-export 'lifecycle.dart';
 export 'prefs.dart';
-export 'screen.dart';
+export 'screen_size.dart';
 export 'scroll_physics.dart';
 export 'selection.dart';
 export 'show_functions.dart';
 export 'slidable.dart';
 export 'stack.dart';
-export 'system_ui_animations.dart';
+export 'system_ui_style_controller.dart';
 export 'types.dart';

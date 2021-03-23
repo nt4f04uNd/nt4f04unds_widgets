@@ -18,8 +18,8 @@ const Duration _kCancelDuration = Duration(milliseconds: 250);
 /// The fade out start interval, when the cancel wasn't called.
 const double _kFadeOutIntervalStart = 0.7;
 
-RectCallback _getClipCallback(
-    RenderBox referenceBox, bool containedInkWell, RectCallback rectCallback) {
+RectCallback? _getClipCallback(
+    RenderBox referenceBox, bool containedInkWell, RectCallback? rectCallback) {
   if (rectCallback != null) {
     assert(containedInkWell);
     return rectCallback;
@@ -29,7 +29,7 @@ RectCallback _getClipCallback(
 }
 
 double _getTargetRadius(RenderBox referenceBox, bool containedInkWell,
-    RectCallback rectCallback, Offset position) {
+    RectCallback? rectCallback, Offset position) {
   final Size size =
       rectCallback != null ? rectCallback().size : referenceBox.size;
   final double d1 = size.bottomRight(Offset.zero).distance;
@@ -41,21 +41,21 @@ double _getTargetRadius(RenderBox referenceBox, bool containedInkWell,
 class _NFIconButtonInkRippleFactory extends InteractiveInkFeatureFactory {
   const _NFIconButtonInkRippleFactory({this.radius});
 
-  final double radius;
+  final double? radius;
 
   @override
   InteractiveInkFeature create({
-    @required MaterialInkController controller,
-    @required RenderBox referenceBox,
-    @required Offset position,
-    @required Color color,
-    @required TextDirection textDirection,
+    required MaterialInkController controller,
+    required RenderBox referenceBox,
+    required Offset position,
+    required Color color,
+    required TextDirection textDirection,
     bool containedInkWell = false,
-    RectCallback rectCallback,
-    BorderRadius borderRadius,
-    ShapeBorder customBorder,
-    double radius,
-    VoidCallback onRemoved,
+    RectCallback? rectCallback,
+    BorderRadius? borderRadius,
+    ShapeBorder? customBorder,
+    double? radius,
+    VoidCallback? onRemoved,
   }) {
     return NFIconButtonInkRipple(
       controller: controller,
@@ -112,17 +112,17 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
   ///
   /// When the ripple is removed, [onRemoved] will be called.
   NFIconButtonInkRipple({
-    @required MaterialInkController controller,
-    @required RenderBox referenceBox,
-    @required Offset position,
-    @required Color color,
-    @required TextDirection textDirection,
+    required MaterialInkController controller,
+    required RenderBox referenceBox,
+    required Offset position,
+    required Color color,
+    required TextDirection textDirection,
     bool containedInkWell = false,
-    RectCallback rectCallback,
-    BorderRadius borderRadius,
-    ShapeBorder customBorder,
-    double radius,
-    VoidCallback onRemoved,
+    RectCallback? rectCallback,
+    BorderRadius? borderRadius,
+    ShapeBorder? customBorder,
+    double? radius,
+    VoidCallback? onRemoved,
   })  : assert(color != null),
         assert(position != null),
         assert(textDirection != null),
@@ -178,31 +178,29 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
 
   final Offset _position;
   final BorderRadius _borderRadius;
-  final ShapeBorder _customBorder;
+  final ShapeBorder? _customBorder;
   final double _targetRadius;
-  final RectCallback _clipCallback;
+  final RectCallback? _clipCallback;
   final TextDirection _textDirection;
 
   bool isCancelled = false;
 
-  Animation<double> _radius;
-  AnimationController _radiusController;
+  late Animation<double> _radius;
+  late AnimationController _radiusController;
 
-  Animation<int> _fadeIn;
-  AnimationController _fadeInController;
+  late Animation<int> _fadeIn;
+  late AnimationController _fadeInController;
 
-  AnimationController _fadeOutController;
+  late AnimationController _fadeOutController;
 
   /// Used to specify this type of ink splash for an [InkWell], [InkResponse]
   /// or material [Theme].
-  static InteractiveInkFeatureFactory splashFactory({double radius}) {
+  static InteractiveInkFeatureFactory splashFactory({double? radius}) {
     return _NFIconButtonInkRippleFactory(radius: radius);
   }
 
-  static final Animatable<double> _easeCurveTween =
-      CurveTween(curve: Curves.ease);
-  static final Animatable<double> _fadeOutIntervalTween =
-      CurveTween(curve: const Interval(_kFadeOutIntervalStart, 1.0));
+  static final Animatable<double> _easeCurveTween = CurveTween(curve: Curves.ease);
+  static final Animatable<double> _fadeOutIntervalTween = CurveTween(curve: const Interval(_kFadeOutIntervalStart, 1.0));
 
   @override
   void confirm() {
@@ -279,8 +277,8 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
       _position,
       referenceBox.size.center(Offset.zero),
       Curves.ease.transform(_radiusController.value),
-    );
-    final Offset originOffset = MatrixUtils.getAsTranslation(transform);
+    )!;
+    final Offset? originOffset = MatrixUtils.getAsTranslation(transform);
     canvas.save();
     if (originOffset == null) {
       canvas.transform(transform.storage);

@@ -6,72 +6,82 @@
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 
-/// An interface for other animation strategies. You can imagine that this class sort of
-/// tells someone what to do when depending on the current animation status.
+
+/// Describes what to do when depending on the current animation status.
+/// An interface for other animation strategies.
+@immutable
 abstract class AnimationStrategy<T> implements MovingAnimationStrategy<T> {
-  const AnimationStrategy({
-    this.dismissed,
-    this.completed,
-    this.forward,
-    this.reverse,
-  })  : assert(dismissed != null),
-        assert(forward != null),
-        assert(reverse != null),
-        assert(completed != null);
+  const AnimationStrategy({ 
+    required this.dismissed,
+    required this.forward,
+    required this.completed,
+    required this.reverse,
+  });
 
   final T dismissed;
-  final T completed;
   final T forward;
+  final T completed;
   final T reverse;
 
-  /// Asks for an "answer" what to do based on current status.
-  T ask(Animation animation) {
-    return askStatus(animation.status);
+  /// Decides what to do based on current animation status.
+  T ask(Animation<Object> animation) {
+    return decide(animation.status);
   }
 
-  /// Asks for an "answer" what to do based on current status.
-  T askStatus(AnimationStatus status) {
+  /// Decides what to do based on [status].
+  T decide(AnimationStatus status) {
     switch (status) {
-      case AnimationStatus.completed:
-        return completed;
-      case AnimationStatus.forward:
-        return forward;
       case AnimationStatus.dismissed:
         return dismissed;
+      case AnimationStatus.forward:
+        return forward;
+      case AnimationStatus.completed:
+        return completed;
       case AnimationStatus.reverse:
         return reverse;
-      default:
-        assert(status != null);
-        return null;
     }
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType)
+      return false;
+    return other is AnimationStrategy 
+        && other.dismissed == dismissed
+        && other.forward == forward
+        && other.completed == completed
+        && other.reverse == reverse;
+  }
+
+  @override
+  int get hashCode => hashValues(dismissed, forward, completed, reverse);
 }
 
-/// An interface for other animation strategies. You can imagine that this class sort of
-/// tells someone what to do when animation status is either [AnimationStatus.forward], or [AnimationStatus.reverse].
+/// Describes what to do when depending on the current animation status, that's either [AnimationStatus.forward], or [AnimationStatus.reverse].
+/// An interface for other animation strategies.
+@immutable
 abstract class MovingAnimationStrategy<T> {
-  const MovingAnimationStrategy({
-    this.forward,
-    this.reverse,
-  })  : assert(forward != null),
-        assert(reverse != null);
+  const MovingAnimationStrategy({ 
+    required this.forward,
+    required this.reverse,
+  });
 
   final T forward;
   final T reverse;
 
-  /// Asks for an "answer" what to do based on current [animation] status.
+  /// Decides what to do based on current animation status.
   ///
   /// Will return null if the status is not moving, which is
   /// [AnimationStatus.dismissed], or [AnimationStatus.completed].
-  T ask(Animation animation) {
-    return askStatus(animation.status);
+  T? ask(Animation<Object> animation) {
+    return decide(animation.status);
   }
 
-  /// Asks for an "answer" what to do based on current [status].
+  /// Decides what to do based on [status].
   ///
   /// Will return null if the status is not moving, which is
   /// [AnimationStatus.dismissed], or [AnimationStatus.completed].
-  T askStatus(AnimationStatus status) {
+  T? decide(AnimationStatus status) {
     switch (status) {
       case AnimationStatus.forward:
         return forward;
@@ -81,45 +91,42 @@ abstract class MovingAnimationStrategy<T> {
         return null;
     }
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType)
+      return false;
+    return other is AnimationStrategy 
+        && other.forward == forward
+        && other.reverse == reverse;
+  }
+
+  @override
+  int get hashCode => hashValues(forward, reverse);
 }
 
-/// Describes when the [HitTestBehavior] should be applied, depending on [AnimationStatus].
+/// Describes what [HitTestBehavior] should be applied, depending on [AnimationStatus].
 class HitTestBehaviorStrategy extends AnimationStrategy<HitTestBehavior> {
   const HitTestBehaviorStrategy({
     HitTestBehavior dismissed = HitTestBehavior.deferToChild,
     HitTestBehavior forward = HitTestBehavior.deferToChild,
     HitTestBehavior reverse = HitTestBehavior.deferToChild,
     HitTestBehavior completed = HitTestBehavior.deferToChild,
-  }) : super(
-          dismissed: dismissed,
-          forward: forward,
-          reverse: reverse,
-          completed: completed,
-        );
+  }) : super(dismissed: dismissed, forward: forward, reverse: reverse, completed: completed);
 
   const HitTestBehaviorStrategy.translucent({
     HitTestBehavior dismissed = HitTestBehavior.translucent,
     HitTestBehavior forward = HitTestBehavior.translucent,
     HitTestBehavior reverse = HitTestBehavior.translucent,
     HitTestBehavior completed = HitTestBehavior.translucent,
-  }) : super(
-          dismissed: dismissed,
-          forward: forward,
-          reverse: reverse,
-          completed: completed,
-        );
+  }) : super(dismissed: dismissed, forward: forward, reverse: reverse, completed: completed);
 
   const HitTestBehaviorStrategy.opaque({
     HitTestBehavior dismissed = HitTestBehavior.opaque,
     HitTestBehavior forward = HitTestBehavior.opaque,
     HitTestBehavior reverse = HitTestBehavior.opaque,
     HitTestBehavior completed = HitTestBehavior.opaque,
-  }) : super(
-          dismissed: dismissed,
-          forward: forward,
-          reverse: reverse,
-          completed: completed,
-        );
+  }) : super(dismissed: dismissed, forward: forward, reverse: reverse, completed: completed);
 }
 
 /// Describes when the [IgnoringPointer] should be applied, depending on [AnimationStatus].
@@ -129,33 +136,22 @@ class IgnoringStrategy extends AnimationStrategy<bool> {
     bool forward = false,
     bool reverse = false,
     bool completed = false,
-  }) : super(
-          dismissed: dismissed,
-          forward: forward,
-          reverse: reverse,
-          completed: completed,
-        );
+  }) : super(dismissed: dismissed, forward: forward, reverse: reverse, completed: completed);
 
   /// Ignore in any [AnimationStatus].
-  const IgnoringStrategy.all()
-      : super(
-          dismissed: true,
-          forward: true,
-          reverse: true,
-          completed: true,
-        );
+  const IgnoringStrategy.all() : super(dismissed: true, forward: true, reverse: true, completed: true);
 
   /// Will evaluate to a single bool condition from the [animation] status.
-  bool evaluate(Animation animation) {
+  bool evaluate(Animation<Object> animation) {
     return evaluateStatus(animation.status);
   }
 
   /// Will evaluate to a single bool condition from the [status].
   bool evaluateStatus(AnimationStatus status) {
     return dismissed && status == AnimationStatus.dismissed ||
-        forward && status == AnimationStatus.forward ||
-        reverse && status == AnimationStatus.reverse ||
-        completed && status == AnimationStatus.completed;
+           forward && status == AnimationStatus.forward ||
+           reverse && status == AnimationStatus.reverse ||
+           completed && status == AnimationStatus.completed;
   }
 }
 
@@ -173,13 +169,13 @@ class MovingIgnoringStrategy extends MovingAnimationStrategy<bool> {
   const MovingIgnoringStrategy.all() : super(forward: true, reverse: true);
 
   /// Will evaluate to a single bool condition from the [animation] status.
-  bool evaluate(Animation animation) {
+  bool evaluate(Animation<Object> animation) {
     return evaluateStatus(animation.status);
   }
 
   /// Will evaluate to a single bool condition from the [status].
   bool evaluateStatus(AnimationStatus status) {
     return forward && status == AnimationStatus.forward ||
-        reverse && status == AnimationStatus.reverse;
+           reverse && status == AnimationStatus.reverse;
   }
 }

@@ -5,12 +5,11 @@
 
 import 'package:flutter/cupertino.dart';
 
-/// Default scroll behavior, but doesn't have glow effect on overscroll.
-class NFScrollBehaviorGlowless extends ScrollBehavior {
-  const NFScrollBehaviorGlowless();
+/// Doesn't have glow effect on overscroll.
+class GlowlessScrollBehavior extends ScrollBehavior {
+  const GlowlessScrollBehavior();
   @override
-  Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
+  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
     return child;
   }
 }

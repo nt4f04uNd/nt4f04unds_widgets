@@ -7,3 +7,11 @@
 ///
 /// See why to have this function here https://github.com/dart-lang/language/issues/1326
 Type typeOf<X>() => X;
+
+/// Signature for function that returns a boolean.
+typedef BoolCallback = bool Function();
+
+/// A [BoolCallback] that returns true.
+/// 
+/// Can be used for contant values.
+bool trueCallback() => true;
