@@ -4,7 +4,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'main.dart';
 
 class SlidableExamples extends StatelessWidget {
-  const SlidableExamples({Key key}) : super(key: key);
+  const SlidableExamples({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +35,14 @@ class SlidableExamples extends StatelessWidget {
 }
 
 class _Slidable1 extends StatefulWidget {
-  _Slidable1({Key key}) : super(key: key);
+  _Slidable1({Key? key}) : super(key: key);
 
   @override
   _Slidable1State createState() => _Slidable1State();
 }
 
 class _Slidable1State extends State<_Slidable1> with SingleTickerProviderStateMixin {
-  SlidableController controller;
+  late SlidableController controller;
   @override
   void initState() {
     super.initState();
@@ -137,14 +137,14 @@ class _Slidable1State extends State<_Slidable1> with SingleTickerProviderStateMi
 
 
 class _Slidable2 extends StatefulWidget {
-  _Slidable2({Key key}) : super(key: key);
+  _Slidable2({Key? key}) : super(key: key);
 
   @override
   _Slidable2State createState() => _Slidable2State();
 }
 
 class _Slidable2State extends State<_Slidable2> with SingleTickerProviderStateMixin {
-  SlidableController controller;
+  late SlidableController controller;
   @override
   void initState() {
     super.initState();
@@ -190,14 +190,14 @@ class _Slidable2State extends State<_Slidable2> with SingleTickerProviderStateMi
 
 
 class _Slidable3 extends StatefulWidget {
-  _Slidable3({Key key}) : super(key: key);
+  _Slidable3({Key? key}) : super(key: key);
 
   @override
   _Slidable3State createState() => _Slidable3State();
 }
 
 class _Slidable3State extends State<_Slidable3> with SingleTickerProviderStateMixin {
-  SlidableController controller;
+  late SlidableController controller;
   @override
   void initState() {
     super.initState();

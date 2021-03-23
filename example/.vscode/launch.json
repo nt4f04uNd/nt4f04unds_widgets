@@ -9,20 +9,29 @@
          "type": "dart",
          "request": "launch",
          "program": "lib/main.dart",
-         "flutterMode": "profile"
+         "flutterMode": "profile",
+         "args": [
+            "--no-sound-null-safety" // todo: remove this stuff when sound null safety is in place
+         ]
       },
       {
          "name": "Flutter Release",
          "type": "dart",
          "request": "launch",
          "program": "lib/main.dart",
-         "flutterMode": "release"
+         "flutterMode": "release",
+         "args": [
+            "--no-sound-null-safety"
+         ]
       },
       {
          "name": "Flutter Dev",
          "type": "dart",
          "request": "launch",
-         "program": "lib/main.dart"
+         "program": "lib/main.dart",
+         "args": [
+            "--no-sound-null-safety"
+         ]
       },
       {
          "name": "Flutter Dev (fast-start)",
@@ -30,7 +39,8 @@
          "request": "launch",
          "program": "lib/main.dart",
          "args": [
-            "--fast-start"
+            "--fast-start",
+            "--no-sound-null-safety"
          ]
       },
    ]

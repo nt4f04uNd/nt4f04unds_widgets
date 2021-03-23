@@ -3,8 +3,6 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// @dart = 2.12
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -28,8 +26,7 @@ class SelectionController<T> extends Listenable
     required AnimationController animationController,
     Set<T>? data,
   }) : _animationController = animationController,
-       data = data ?? {},
-       assert(animationController != null) {
+       data = data ?? {} {
     animationController.addStatusListener(_handleStatusChange);
   }
 

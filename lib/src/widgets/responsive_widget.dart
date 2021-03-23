@@ -3,7 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// @dart = 2.12
+// todo: maybe allow custrom transition builders
 
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +11,6 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// When pressed, animates down like a button, and then animates back up, 
 /// when user unpresses it.
-/// 
-/// todo: maybe allow custrom transition builders
 class ResponsiveWidget extends StatefulWidget {
   ResponsiveWidget({
     Key? key,

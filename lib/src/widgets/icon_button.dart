@@ -8,8 +8,6 @@
 
 // todo: propose changes to the icon button in the framework and delete this. blocked by splash fidelity issue https://github.com/flutter/flutter/issues/73163
 
-// @dart = 2.12
-
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';

@@ -3,8 +3,6 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// @dart = 2.12
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -27,9 +25,21 @@ abstract class SystemUiStyleController {
   static StreamController<SystemUiOverlayStyle> _streamController = StreamController.broadcast();
 
   /// Represents the actual UI that is now drawn on the screen.
-  ///
-  /// Updated when [setSystemUiOverlay] or [animateSystemUiOverlay] is called.
-  static SystemUiOverlayStyle? get actualUi => _ui;
+  /// 
+  /// Equals to `null` on app start, must be not null when used.
+  /// To set to non-null value it use [setSystemUiOverlay] or [animateSystemUiOverlay] `from` parameter.
+  static SystemUiOverlayStyle? get actualUi {
+    assert(() {
+      if (_ui == null) {
+        throw Exception(
+          "`from` happaned to be null. Could not imply it from `actualUi`, because it's null. \n"
+          "Specify `from` it directly, or either call `setSystemUiOverlay` to set `actualUi` so controller would know the current ui to animate from it."
+        );
+      }
+      return true;
+   }());
+    return _ui;
+  }
 
   /// This value is the UI that the current animation, if it exists, leads to
   /// or (led to, if it's ended).
@@ -61,7 +71,7 @@ abstract class SystemUiStyleController {
   /// * provide [from]
   /// * before once call [setSystemUiOverlay]
   /// 
-  /// Otherwise, we won't know from which color we should perform the animation.
+  /// Otherwise, we won't know from which color we should perform the animation, so method will throw.
   ///
   /// The returned future will complete after the animation ends.
   ///
@@ -81,9 +91,7 @@ abstract class SystemUiStyleController {
     Curve? curve,
     Duration? duration,
   }) {
-    assert(to != null);
-    from ??= _ui;
-    assert(from != null);
+    from ??= actualUi;
     _from = from!;
     _to = to;
     curve ??= SystemUiStyleController.curve;
@@ -147,7 +155,6 @@ class SystemUiOverlayStyleTween extends Tween<SystemUiOverlayStyle> {
     final a = begin;
     final b = end;
     assert(a != null || b != null);
-    assert(t != null);
     if (a == null) {
       return b!;
     }

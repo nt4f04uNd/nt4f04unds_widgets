@@ -8,8 +8,6 @@
 
 // todo: propose changes to the icon text selection in the framework and delete this
 
-// @dart = 2.12
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';

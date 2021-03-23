@@ -3,8 +3,6 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// @dart = 2.12
-
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart' hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
 import 'package:flutter/material.dart' as flutter show showGeneralDialog, showBottomSheet, showModalBottomSheet;
@@ -70,13 +68,13 @@ class NFShowFunctions {
     double borderRadius = 8.0,
     SystemUiOverlayStyle? ui,
   }) async {
-    assert(title != null);
-
     ui ??= NFTheme.of(context).modalSystemUiStyle;
-    final lastUi = SystemUiStyleController.lastUi;
-
-    // Animate ui on open.
-    SystemUiStyleController.animateSystemUiOverlay(to: ui);
+    SystemUiOverlayStyle? lastUi;
+    if (ui != null) {
+      lastUi = SystemUiStyleController.lastUi;
+      // Animate ui on open.
+      SystemUiStyleController.animateSystemUiOverlay(to: ui);
+    }
 
     acceptButton ??= NFButton.accept(splashColor: buttonSplashColor);
     if (!hideCancelButton) {
@@ -85,7 +83,7 @@ class NFShowFunctions {
 
     return flutter.showGeneralDialog<T>(
       barrierColor: Colors.black54,
-      transitionDuration: NFConstants.routeTransitionDuration,
+      transitionDuration: const Duration(milliseconds: 300),
       barrierDismissible: true,
       barrierLabel: 'NFAlertDialog',
       context: context,
@@ -111,15 +109,9 @@ class NFShowFunctions {
         );
       },
       pageBuilder: (context, animation, secondaryAnimation) {
-        return RouteAwareWidget(
-          onPopNext: () {
-            // Animate ui when the route on top pops.
-            SystemUiStyleController.animateSystemUiOverlay(to: ui!);
-          },
-          onPop: () {
-            // Animate ui after sheet been closed.
-            SystemUiStyleController.animateSystemUiOverlay(to: lastUi!);
-          },
+        return _UiHelper(
+          ui: ui,
+          lastUi: lastUi,
           child: SafeArea(
             child: AlertDialog(
               backgroundColor: Theme.of(context).colorScheme.surface,
@@ -229,20 +221,17 @@ class NFShowFunctions {
     Clip? clipBehavior,
   }) {
     ui ??= NFTheme.of(context).bottomSheetSystemUiStyle;
-    final lastUi = SystemUiStyleController.lastUi;
-    // Animate ui on open.
-    SystemUiStyleController.animateSystemUiOverlay(to: ui);
+    SystemUiOverlayStyle? lastUi;
+    if (ui != null) {
+      lastUi = SystemUiStyleController.lastUi;
+      // Animate ui on open.
+      SystemUiStyleController.animateSystemUiOverlay(to: ui);
+    }
     return flutter.showBottomSheet<T>(
       context: context,
-      builder: (context) => RouteAwareWidget(
-        onPopNext: () {
-          // Animate ui when the route on top pops.
-          SystemUiStyleController.animateSystemUiOverlay(to: ui!);
-        },
-        onPop: () {
-          // Animate ui after sheet been closed.
-          SystemUiStyleController.animateSystemUiOverlay(to: lastUi!);
-        },
+      builder: (context) => _UiHelper(
+        ui: ui,
+        lastUi: lastUi,
         child: builder(context),
       ),
       backgroundColor: backgroundColor,
@@ -271,20 +260,17 @@ class NFShowFunctions {
     RouteSettings? routeSettings,
   }) {
     ui ??= NFTheme.of(context).bottomSheetSystemUiStyle;
-    final lastUi = SystemUiStyleController.lastUi;
-    // Animate ui on open.
-    SystemUiStyleController.animateSystemUiOverlay(to: ui);
+    SystemUiOverlayStyle? lastUi;
+    if (ui != null) {
+      lastUi = SystemUiStyleController.lastUi;
+      // Animate ui on open.
+      SystemUiStyleController.animateSystemUiOverlay(to: ui);
+    }
     return flutter.showModalBottomSheet<T>(
       context: context,
-      builder: (context) => RouteAwareWidget(
-        onPopNext: () {
-          // Animate ui when the route on top pops.
-          SystemUiStyleController.animateSystemUiOverlay(to: ui!);
-        },
-        onPop: () {
-          // Animate ui after sheet been closed.
-          SystemUiStyleController.animateSystemUiOverlay(to: lastUi!);
-        },
+      builder: (context) => _UiHelper(
+        ui: ui,
+        lastUi: lastUi,
         child: builder(context),
       ),
       backgroundColor: backgroundColor,
@@ -297,6 +283,39 @@ class NFShowFunctions {
       isDismissible: isDismissible,
       enableDrag: enableDrag,
       routeSettings: routeSettings,
+    );
+  }
+}
+
+/// Helper that wraps widget into [RouteAwareWidget] and handles ui animations.
+class _UiHelper extends StatelessWidget {
+  const _UiHelper({
+    Key? key,
+    required this.ui,
+    required this.lastUi,
+    required this.child,
+  }) : super(key: key);
+
+  final SystemUiOverlayStyle? ui;
+  final SystemUiOverlayStyle? lastUi;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return RouteAwareWidget(
+      onPopNext: () {
+        if (ui != null) {
+          // Animate ui when the route on top pops.
+          SystemUiStyleController.animateSystemUiOverlay(to: ui!);
+        }
+      },
+      onPop: () {
+        if (lastUi != null) {
+          // Animate ui after sheet been closed.
+          SystemUiStyleController.animateSystemUiOverlay(to: lastUi!);
+        }
+      },
+      child: child
     );
   }
 }

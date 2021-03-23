@@ -3,8 +3,6 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// @dart = 2.12
-
 import 'package:flutter/material.dart';
 
 /// A widget that based on some given [valueIncreased] condition will perform either:

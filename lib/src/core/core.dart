@@ -5,8 +5,8 @@
 
 /// Module for not essential to user UI widgets, like scroll or gesture behaviors
 
-export 'route_transitions/route_transitions.dart';
 export 'splash/splash.dart';
+export 'routes/routes.dart';
 export 'gestures/gestures.dart';
 export 'animation_strategy.dart';
 export 'animation.dart';

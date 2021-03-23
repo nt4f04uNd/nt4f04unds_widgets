@@ -3,9 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// todo: either improve this stuff, or remove
-
-// @dart = 2.12
+// TODO: remove all of this stuff as https://github.com/flutter/flutter/issues/78125 is resolved
 
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';

@@ -84,8 +84,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
     PointerDeviceKind? kind,
     this.dragStartBehavior = DragStartBehavior.start,
     this.velocityTrackerBuilder = _defaultBuilder,
-  })  : assert(dragStartBehavior != null),
-        super(debugOwner: debugOwner, kind: kind);
+  }) : super(debugOwner: debugOwner, kind: kind);
 
   /// Called on each pointer move event (even before the drag was accepted).
   ///
@@ -300,7 +299,6 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
     if (!event.synthesized &&
         (event is PointerDownEvent || event is PointerMoveEvent)) {
       final VelocityTracker tracker = _velocityTrackers[event.pointer]!;
-      assert(tracker != null);
       tracker.addPosition(event.timeStamp, event.localPosition);
     }
 
@@ -469,7 +467,6 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
     if (onEnd == null) return;
 
     final VelocityTracker tracker = _velocityTrackers[pointer]!;
-    assert(tracker != null);
 
     DragEndDetails details;
     String Function() debugReport;

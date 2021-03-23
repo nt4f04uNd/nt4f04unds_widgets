@@ -6,8 +6,6 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// @dart = 2.12
-
 import 'scrollbar.dart';
 
 import 'dart:async';

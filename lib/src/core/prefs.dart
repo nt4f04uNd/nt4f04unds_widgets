@@ -3,8 +3,6 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// @dart = 2.12
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
       
@@ -16,7 +14,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 ///     Pref<bool>(key: 'dev_mode', defaultValue: false);
 /// ```
 class Pref<T> {
-  Pref({ required this.key, this.defaultValue }) : assert(key != null) {
+  Pref({ required this.key, this.defaultValue }) {
     // Call this to check current pref value and set it to default.
     get();
   }

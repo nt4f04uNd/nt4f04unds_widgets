@@ -5,8 +5,6 @@
 
 // todo: remove this when this issue gets resolved https://github.com/flutter/flutter/issues/56662
 
-// @dart = 2.12
-
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 

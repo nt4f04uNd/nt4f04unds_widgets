@@ -79,7 +79,8 @@ class NFTheme extends InheritedWidget  {
   final Widget child;
 
   static NFThemeData of(BuildContext context) {
-    return context.findAncestorWidgetOfExactType<NFTheme>()!.data;
+    final widget = context.getElementForInheritedWidgetOfExactType<NFTheme>()?.widget as NFTheme;
+    return widget.data;
   }
 
   @override
@@ -92,12 +93,14 @@ class NFTheme extends InheritedWidget  {
 ///
 /// This is required for some of the widgets and functions in library, so you should
 /// wrap your app into [NFTheme] and pass this class into it.
+@immutable
 class NFThemeData {
   /// Creates defaults values.
   const NFThemeData({
-    required this.systemUiStyle,
+    this.systemUiStyle,
     SystemUiOverlayStyle? modalSystemUiStyle,
     SystemUiOverlayStyle? bottomSheetSystemUiStyle,
+    this.alwaysApplyUiStyle = true,
     this.iconSize = NFConstants.iconSize,
     this.iconButtonSize = NFConstants.iconButtonSize,
   }) : _modalSystemUiStyle = modalSystemUiStyle,
@@ -105,14 +108,23 @@ class NFThemeData {
 
   /// Default style of the system ui.
   ///
-  /// For example, used within [RouteTransitions],
-  /// or instead of [modalSystemUiStyle], [bottomSheetSystemUiStyle],
-  /// if they were not specified.
-  final SystemUiOverlayStyle systemUiStyle;
+  /// If specified, used to apply sustem ui when route is pushed/popped.
+  ///
+  /// Used:
+  /// * instead of [modalSystemUiStyle], [bottomSheetSystemUiStyle], if they were not specified
+  /// * as default value for system [RouteTransition.uiStyle], if [alwaysApplyUiStyle] is `true`.
+  final SystemUiOverlayStyle? systemUiStyle;
   final SystemUiOverlayStyle? _modalSystemUiStyle;
   final SystemUiOverlayStyle? _bottomSheetSystemUiStyle;
 
+  /// If [RouteTransition.uiStyle] is not specified, by default UI transition just won't happen.
+  /// 
+  /// If this is set to true, it forces the route transition to use [systemUiStyle] as a default values and thus
+  /// route transitions will always apply some UI style.
+  final bool alwaysApplyUiStyle;
+
   /// Default icon size.
+  /// todo: remove when https://github.com/flutter/flutter/issues/77801 is resolved.
   final double iconSize;
 
   /// Default icon button size.
@@ -122,13 +134,13 @@ class NFThemeData {
   ///
   /// Used in [NFShowFunctions.showAlert] and [NFShowFunctions.showDialog].
   /// If not specified, the [defaultSystemUiStyle] is used instead.
-  SystemUiOverlayStyle get modalSystemUiStyle => _modalSystemUiStyle ?? systemUiStyle;
+  SystemUiOverlayStyle? get modalSystemUiStyle => _modalSystemUiStyle ?? systemUiStyle;
 
   /// Default style of the system ui with bottom sheets.
   ///
   /// [NFShowFunctions.showBottomSheet] and [NFShowFunctions.showModalBottomSheet]
   /// If not specified, the [defaultSystemUiStyle] is used instead.
-  SystemUiOverlayStyle get bottomSheetSystemUiStyle => _bottomSheetSystemUiStyle ?? systemUiStyle;
+  SystemUiOverlayStyle? get bottomSheetSystemUiStyle => _bottomSheetSystemUiStyle ?? systemUiStyle;
 
   /// Creates a copy of these defaults but with the given fields replaced with
   /// the new values.
@@ -136,11 +148,17 @@ class NFThemeData {
     SystemUiOverlayStyle? systemUiStyle,
     SystemUiOverlayStyle? modalSystemUiStyle,
     SystemUiOverlayStyle? bottomSheetSystemUiStyle,
+    bool? alwaysApplyUiStyle,
+    double? iconSize,
+    double? iconButtonSize,
   }) {
     return NFThemeData(
       systemUiStyle: systemUiStyle ?? this.systemUiStyle,
       modalSystemUiStyle: modalSystemUiStyle ?? this.modalSystemUiStyle,
       bottomSheetSystemUiStyle: bottomSheetSystemUiStyle ?? this.bottomSheetSystemUiStyle,
+      alwaysApplyUiStyle: alwaysApplyUiStyle ?? this.alwaysApplyUiStyle,
+      iconSize: iconSize ?? this.iconSize,
+      iconButtonSize: iconButtonSize ?? this.iconButtonSize,
     );
   }
 }

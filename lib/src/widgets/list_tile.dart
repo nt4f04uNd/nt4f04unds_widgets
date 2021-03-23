@@ -5,8 +5,6 @@
 
 // todo: delete when i delete NFListTileInkRipple (when https://github.com/flutter/flutter/issues/73163 is resolved)
 
-// @dart = 2.12
-
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 

@@ -5,8 +5,6 @@
 
 // todo: review
 
-// @dart = 2.12
-
 import 'package:flutter/material.dart';
 
 /// Creates a setting item with [title], [description] and [content] sections.
