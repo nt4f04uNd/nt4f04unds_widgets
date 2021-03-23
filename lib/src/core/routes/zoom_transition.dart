@@ -1,9 +1,6 @@
 /*---------------------------------------------------------------------------------------------
 *  Copyright (c) nt4f04und. All rights reserved.
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
-*
-*  Copyright (c) The Flutter Authors.
-*  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
 import 'route_transitions.dart';
@@ -34,7 +31,7 @@ class ZoomPage<T> extends Page<T> {
   }
 }
 
-/// Route transition that uses [FadeUpwardsPageTransitionsBuilder] from the flutter.
+/// Route transition that uses [ZoomPageTransitionsBuilder] from the flutter.
 class ZoomRouteTransition<T> extends RouteTransition<T> {
   /// Creates route transition.
   ZoomRouteTransition({

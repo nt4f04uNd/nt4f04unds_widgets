@@ -5,7 +5,8 @@
 * improved docs
 * added some examples
 * added NFSpinner
-* removed NFDissmisible, NFLabelledSlider
+* removed NFDissmisible, NFLabelledSlider, StackTransition
+* other stuff
  
 ## [1.0.3] - january 25, 2021
 

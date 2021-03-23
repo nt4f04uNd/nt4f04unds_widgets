@@ -33,7 +33,7 @@ class _AppState extends State<App> {
     super.initState();
     NFWidgets.init(
       routeObservers: [routeObserver],
-      navigatorKey: App.navigatorKey,
+      navigatorKey: App.navigatorKey, // can omit if you don't use snackbars
     );
   }
 
@@ -52,8 +52,6 @@ class _AppState extends State<App> {
           // ... other locales
         ],
         navigatorObservers: [routeObserver],
-        onGenerateInitialRoutes: (routeName) => RouteControl.handleOnGenerateInitialRoutes(routeName, context),
-        onGenerateRoute: (settings) => RouteControl.handleOnGenerateRoutes(settings),
       ),
     );
   }

@@ -31,7 +31,10 @@ class _Observer extends WidgetsBindingObserver {
 class NFWidgets {
   static _Observer? _observer;
 
-  /// A key of you root navigator.
+  /// A key of the root navigator.
+  /// 
+  /// Used in [NFSnackbarController] to obtain the root overlay to display snackbars.
+  /// Can be omitted, if snackbars aren't used.
   static GlobalKey<NavigatorState>? navigatorKey;
 
   /// Route observers which are used inside route transitions.
@@ -39,8 +42,8 @@ class NFWidgets {
 
   /// Initializes some parameters for the package to work correctly.
   static void init({
-    required GlobalKey<NavigatorState> navigatorKey,
     required List<RouteObserver> routeObservers,
+    GlobalKey<NavigatorState>? navigatorKey,
   }) {
     NFWidgets.routeObservers = routeObservers;
     NFWidgets.navigatorKey = navigatorKey;
