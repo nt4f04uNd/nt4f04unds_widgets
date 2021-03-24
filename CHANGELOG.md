@@ -1,3 +1,7 @@
+## [1.1.1] - march 24, 2021
+
+* added Enum class for creating enhanced enums
+
 ## [1.1.0] - march 23, 2021
 
 * null safety migration

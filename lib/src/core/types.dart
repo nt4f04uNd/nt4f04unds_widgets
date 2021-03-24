@@ -15,3 +15,15 @@ typedef BoolCallback = bool Function();
 /// 
 /// Can be used for contant values.
 bool trueCallback() => true;
+
+/// Class for creating enhanced enums.
+abstract class Enum<T> {
+  const Enum(this._value);
+  final T _value;
+
+  /// Returns enum value.
+  T get value => _value;
+
+  @override
+  String toString() => '$runtimeType.$value';
+}
