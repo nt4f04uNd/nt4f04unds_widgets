@@ -1,3 +1,8 @@
+## [1.1.2] - march 30, 2021
+
+* fixed bug with Slidable couldn't be dragged in some conditions
+* error improvements
+
 ## [1.1.1] - march 24, 2021
 
 * added Enum class for creating enhanced enums

@@ -31,13 +31,13 @@ abstract class SystemUiStyleController {
   static SystemUiOverlayStyle? get actualUi {
     assert(() {
       if (_ui == null) {
-        throw Exception(
+        throw StateError(
           "`from` happaned to be null. Could not imply it from `actualUi`, because it's null. \n"
           "Specify `from` it directly, or either call `setSystemUiOverlay` to set `actualUi` so controller would know the current ui to animate from it."
         );
       }
       return true;
-   }());
+    }());
     return _ui;
   }
 

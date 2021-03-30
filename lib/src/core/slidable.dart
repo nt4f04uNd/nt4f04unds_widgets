@@ -367,7 +367,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
 
   void _handleDragStart(DragStartDetails details) {
     controller._dragged = true;
-    _dragExtent = controller.value * _overallDragAxisExtent;
+    _dragExtent = controller.value * _overallDragAxisExtent * _dragExtent.sign;
     if (controller.status == AnimationStatus.forward && !widget.catchIgnoringStrategy.forward ||
         controller.status == AnimationStatus.reverse && !widget.catchIgnoringStrategy.reverse) {
       controller.stop();
@@ -377,7 +377,9 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    if (!controller.isActive || controller.isAnimating) return;
+    if (!controller.isActive || controller.isAnimating)
+      return;
+
     widget.onDragUpdate?.call(details);
     controller.notifyDragEventListeners(SlidableDragUpdate(details: details));
 
@@ -403,7 +405,6 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
         assert(false);
         break;
     }
-
 
     if (!controller.isAnimating) {
       controller.value = _dragExtent.abs() / _overallDragAxisExtent;
@@ -457,7 +458,8 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
   }
 
   Future<void> _handleDragEnd(DragEndDetails details) async {
-    if (!controller.isActive || controller.isAnimating) return;
+    if (!controller.isActive || controller.isAnimating)
+      return;
 
     controller._dragged = false;
     final double flingVelocity = _horizontal

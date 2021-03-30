@@ -45,7 +45,7 @@ class Pref<T> {
     } else if (type == typeOf<List<String>>()) {
       return prefs.setStringList(key, value as List<String>);
     }
-    throw Exception('Pref.get: Wrong type of pref generic: T = $type');
+    throw ArgumentError('Pref.get: Wrong type of pref generic: T = $type');
   }
 
   /// Gets pref value.
@@ -67,7 +67,7 @@ class Pref<T> {
     } else if (type == typeOf<List<String>>()) {
       res = prefs.getStringList(key) as T;
     } else {
-      throw Exception('Pref.get: Wrong type of pref generic: T = $type');
+      throw ArgumentError('Pref.get: Wrong type of pref generic: T = $type');
     }
 
     // Reset pref value to default value if defaultValue is not null
