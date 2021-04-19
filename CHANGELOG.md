@@ -1,3 +1,9 @@
+## [1.1.3] - april 19, 2021
+
+* fixed Slidable sometimes jumped or didn't react on drags
+* removed NFDefaultAnimation, as it didn't bring much benefit
+* other fixes and stuff
+
 ## [1.1.2] - march 30, 2021
 
 * fixed bug with Slidable couldn't be dragged in some conditions

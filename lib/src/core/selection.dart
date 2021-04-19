@@ -27,23 +27,7 @@ class SelectionController<T> extends Listenable
     Set<T>? data,
   }) : _animationController = animationController,
        data = data ?? {} {
-    animationController.addStatusListener(_handleStatusChange);
-  }
-
-  void _handleStatusChange(AnimationStatus status) {
-    switch (status) {
-      case AnimationStatus.forward:
-        _wasEverSelected = true;
-        break;
-      case AnimationStatus.completed:
-        break;
-      case AnimationStatus.reverse:
-        break;
-      case AnimationStatus.dismissed:
-        this.data.clear();
-        break;
-    }
-    super.notifyStatusListeners(status);
+    animationController.addStatusListener(notifyStatusListeners);
   }
 
   AnimationController _animationController;
@@ -51,9 +35,9 @@ class SelectionController<T> extends Listenable
   AnimationController get animationController => _animationController;
   set animationController(AnimationController value) {
     if (value != _animationController) {
-      _animationController.removeStatusListener(_handleStatusChange);
+      _animationController.removeStatusListener(notifyStatusListeners);
       _animationController = value;
-      _animationController.addStatusListener(_handleStatusChange);
+      _animationController.addStatusListener(notifyStatusListeners);
     }
   }
 
@@ -86,45 +70,47 @@ class SelectionController<T> extends Listenable
   /// Convenient for tab bar count animation updates, for example.
   bool get lengthReduced => data.length < _prevLength;
 
-  /// Adds an item to selection set and notifies click listeners
-  /// (latter only in case if selection status won't change).
-  void selectItem(T item) {
+  /// Adds an item to selection set and notifies click listeners.
+  /// 
+  /// Returns a [TickerFuture] from the [AnimationController.forward].
+  Future<void> selectItem(T item) {
     if (notInSelection) {
       data.clear();
     }
     _prevLength = data.length;
     data.add(item);
-
-    if (notInSelection && data.length > 0) {
-      animationController.forward();
-    } else if (data.length > 1) {
-      notifyListeners();
-    }
+    notifyListeners();
+    return animationController.forward();
   }
 
-  /// Removes an item to selection set and notifies click listeners
-  /// (latter only in case if selection status won't change).
-  void unselectItem(T item) {
+  /// Removes an item to selection set and notifies click listeners.
+  /// 
+  /// Returns a [TickerFuture] from the [AnimationController.reverse],
+  /// which is triggered when the unselected item was last.
+  Future<void> unselectItem(T item) async {
     _prevLength = data.length;
-    notifyListeners();
     data.remove(item);
-
+    notifyListeners();
     if (inSelection && data.length == 0) {
-      animationController.reverse();
-    } else {
-      notifyListeners();
+      return animationController.reverse();
     }
   }
 
   /// Clears the set and performs the unselect animation.
-  void close() {
+  /// 
+  /// Returns a [TickerFuture] from the [AnimationController.reverse].
+  Future<void> close() {
     _prevLength = data.length;
-    animationController.reverse();
+    data.clear();
+    notifyListeners();
+    return animationController.reverse();
   }
 
   @override
   void dispose() {
-    super.dispose();
+    clearStatusListeners();
+    clearListeners();
     animationController.dispose();
+    super.dispose();
   }
 }

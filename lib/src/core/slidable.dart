@@ -134,7 +134,8 @@ class Slidable extends StatefulWidget {
     this.threshold = 0.4,
     this.dragStartBehavior = DragStartBehavior.start,
   }) : assert(springDescription == null || controller == null),
-       assert(start <= end && (direction == SlideDirection.right || direction == SlideDirection.down) ||
+       assert(direction == SlideDirection.none ||
+              start <= end && (direction == SlideDirection.right || direction == SlideDirection.down) ||
               start >= end && (direction == SlideDirection.left || direction == SlideDirection.up), 
               'start and end must correspond with direction'),
        super(key: key);
@@ -367,7 +368,11 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
 
   void _handleDragStart(DragStartDetails details) {
     controller._dragged = true;
-    _dragExtent = controller.value * _overallDragAxisExtent * _dragExtent.sign;
+    _dragExtent = controller.value * _overallDragAxisExtent;
+    if (widget.direction == SlideDirection.up ||
+        widget.direction == SlideDirection.left) {
+      _dragExtent *= -1.0;
+    }
     if (controller.status == AnimationStatus.forward && !widget.catchIgnoringStrategy.forward ||
         controller.status == AnimationStatus.reverse && !widget.catchIgnoringStrategy.reverse) {
       controller.stop();
@@ -512,16 +517,12 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     assert(!_horizontal || debugCheckHasDirectionality(context));
 
-    final Size size = MediaQuery.of(context).size;
     final Widget? barrier = widget.barrier != null
       ? widget.barrierBuilder(controller, widget.barrier!)
       : null;
-    // final Widget child = Container(
-    //   width: size.width,
-    //   height: size.height,
-    //   child: widget.childBuilder == null ? widget.child : widget.childBuilder!(controller, widget.child),
-    // );
-    final Widget child = widget.childBuilder == null ? widget.child : widget.childBuilder!(controller, widget.child);
+    final Widget child = widget.childBuilder == null
+      ? widget.child
+      : widget.childBuilder!(controller, widget.child);
     final Widget wrappedChild = widget.disableSlideTransition
       ? child
       : SlideTransition(position: _animation, child: child);

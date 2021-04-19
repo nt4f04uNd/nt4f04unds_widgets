@@ -25,11 +25,11 @@ class SelectionAppBar extends AppBar {
     /// Actions to show in selection
     required List<Widget> actionsSelection,
     required VoidCallback? onMenuPressed,
+    Widget? leading,
     /// Go to selection animation
     Curve curve = Curves.easeOutCubic,
     /// Back from selection animation
     Curve reverseCurve = Curves.easeInCubic,
-    bool automaticallyImplyLeading = true,
     Widget? flexibleSpace,
     PreferredSizeWidget? bottom,
     double elevation = 2.0,
@@ -49,7 +49,7 @@ class SelectionAppBar extends AppBar {
     double bottomOpacity = 1.0,
   }) : super(
         key: key,
-        leading: Builder(
+        leading: leading != null ? leading : Builder(
           builder: (BuildContext context) {
             return AnimatedMenuCloseButton(
               animation: selectionController.animationController,
@@ -82,7 +82,7 @@ class SelectionAppBar extends AppBar {
             ),
           ),
         ],
-        automaticallyImplyLeading: automaticallyImplyLeading,
+        automaticallyImplyLeading: false,
         flexibleSpace: flexibleSpace,
         bottom: bottom,
         elevation: selectionController.inSelection ? elevationSelection : elevation,
@@ -115,6 +115,7 @@ class SelectionAppBar extends AppBar {
 
 /// Wraps [AnimatedIcon] with menu / close animations and listens to [animation] statuses
 /// to animate the button accordingly:
+///
 /// * forward or completed - [AnimatedIcons.menu_close]
 /// * reverse or dismissed - [AnimatedIcons.close_menu]
 ///

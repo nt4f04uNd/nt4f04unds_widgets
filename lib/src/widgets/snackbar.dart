@@ -57,14 +57,17 @@ class NFSnackbarEntry {
     );
     late final OverlayState _overlay;
     if (overlay == null) {
+      final overlayFromKey = NFWidgets.navigatorKey?.currentState?.overlay;
       assert(() {
-        final overlayFromKey = NFWidgets.navigatorKey?.currentState?.overlay;
         if (overlayFromKey == null) {
-          throw ArgumentError("Either provide `NFWidgets.navigatorKey` to get the root navigator overlay, or pass an `overlay` directly");
+          throw ArgumentError(
+            "Either provide `NFWidgets.navigatorKey` to get the root navigator overlay, "
+            "or pass an `overlay` directly"
+          );
         }
-        _overlay = overlayFromKey;
         return true;
       }());
+      _overlay = overlayFromKey!;
     } else {
       _overlay = overlay!;
     }

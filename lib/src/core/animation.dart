@@ -22,21 +22,3 @@ class PersistentTickerProvider extends TickerProvider {
     return _ticker!;
   }
 }
-
-
-/// Creates a usual for me curved animation which is:
-///
-/// Curve [Curves.easeOutCubic]
-///
-/// Reverse curve [Curves.easeInCubic]
-class NFDefaultAnimation extends CurvedAnimation {
-  NFDefaultAnimation({
-    Curve curve = Curves.easeOutCubic,
-    Curve reverseCurve = Curves.easeInCubic,
-    required Animation<double> parent,
-  }) : super(
-        curve: curve,
-        reverseCurve: reverseCurve,
-        parent: parent
-      );
-}

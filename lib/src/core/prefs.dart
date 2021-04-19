@@ -13,6 +13,13 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// static final Pref<bool> devModeBool =
 ///     Pref<bool>(key: 'dev_mode', defaultValue: false);
 /// ```
+/// 
+/// TODO: Pref<bool?> is not supported, document that
+/// that will work
+/// static final Pref<bool?> devModeBool = Pref<bool>(key: 'dev_mode', defaultValue: null);
+///
+/// but this will not
+/// static final Pref<bool?> devModeBool = Pref<bool?>(key: 'dev_mode', defaultValue: null);
 class Pref<T> {
   Pref({ required this.key, this.defaultValue }) {
     // Call this to check current pref value and set it to default.

@@ -6,7 +6,6 @@
 import 'dart:async';
 
 import 'package:intl/intl.dart';
-import 'package:intl/intl_standalone.dart';
 import 'package:flutter/material.dart';
 import 'package:multiple_localization/multiple_localization.dart';
 import 'package:nt4f04unds_widgets/src/constants.dart';
@@ -14,16 +13,15 @@ import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'gen/messages_all.dart';
 
 class NFLocalizations {
+  NFLocalizations._(this.localeName);
   static const LocalizationsDelegate<NFLocalizations> delegate = _NFLocalizationsDelegate();
+  final String localeName;
 
   static Future<NFLocalizations> load(Locale locale) async {
-    final systemLocale = await findSystemLocale();
-    Intl.systemLocale = systemLocale;
     return MultipleLocalizations.load(
       initializeMessages,
       locale,
-      (locale) => NFLocalizations(),
-      setDefaultLocale: Intl.systemLocale != Intl.defaultLocale,
+      (locale) => NFLocalizations._(locale),
     );
   }
 
@@ -35,6 +33,7 @@ class NFLocalizations {
     return Intl.message(
       'Warning',
       name: 'warning',
+      locale: localeName,
     );
   }
 
@@ -42,6 +41,7 @@ class NFLocalizations {
     return Intl.message(
       'Close',
       name: 'close',
+      locale: localeName,
     );
   }
 
@@ -49,6 +49,7 @@ class NFLocalizations {
     return Intl.message(
       'Accept',
       name: 'accept',
+      locale: localeName,
     );
   }
 
@@ -56,6 +57,7 @@ class NFLocalizations {
     return Intl.message(
       'Cancel',
       name: 'cancel',
+      locale: localeName,
     );
   }
 
@@ -63,6 +65,7 @@ class NFLocalizations {
     return Intl.message(
       'Copied',
       name: 'copied',
+      locale: localeName,
     );
   }
 }

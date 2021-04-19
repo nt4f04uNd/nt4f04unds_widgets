@@ -275,7 +275,11 @@ class NFDraggableScrollbar extends StatefulWidget {
 
   static Widget defaultLabelTransitionBuilder(BuildContext context, Animation<double> animation, Widget child) {
     return FadeTransition(
-      opacity: NFDefaultAnimation(parent: animation),
+      opacity: CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      ),
       child: child,
     );
   }
@@ -413,7 +417,11 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
     });
     
     final Widget? label = widget.labelBuilder?.call(context, barProgress, _barPadHeight);
-    final barAnimation = NFDefaultAnimation(parent: barController);
+    final barAnimation = CurvedAnimation(
+      parent: barController,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
 
     return !widget.shouldAppear
         ? widget.child

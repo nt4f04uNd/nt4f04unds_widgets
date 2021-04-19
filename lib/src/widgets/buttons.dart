@@ -452,7 +452,11 @@ class AnimatedIconButtonState extends State<AnimatedIconButton> with SingleTicke
     final colorAnimation = ColorTween(
       begin: widget.inactiveColor ?? Theme.of(context).unselectedWidgetColor,
       end: widget.color ?? Theme.of(context).iconTheme.color,
-    ).animate(NFDefaultAnimation(parent: controller));
+    ).animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    ));
     return AnimatedBuilder(
       animation: controller,
       builder: (BuildContext context, Widget? child) => NFIconButton(
