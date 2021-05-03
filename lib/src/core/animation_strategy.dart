@@ -24,7 +24,7 @@ abstract class AnimationStrategy<T> implements MovingAnimationStrategy<T> {
   final T reverse;
 
   /// Decides what to do based on current animation status.
-  T ask(Animation<Object> animation) {
+  T ask(Animation animation) {
     return decide(animation.status);
   }
 
@@ -73,7 +73,7 @@ abstract class MovingAnimationStrategy<T> {
   ///
   /// Will return null if the status is not moving, which is
   /// [AnimationStatus.dismissed], or [AnimationStatus.completed].
-  T? ask(Animation<Object> animation) {
+  T? ask(Animation animation) {
     return decide(animation.status);
   }
 
@@ -142,7 +142,7 @@ class IgnoringStrategy extends AnimationStrategy<bool> {
   const IgnoringStrategy.all() : super(dismissed: true, forward: true, reverse: true, completed: true);
 
   /// Will evaluate to a single bool condition from the [animation] status.
-  bool evaluate(Animation<Object> animation) {
+  bool evaluate(Animation animation) {
     return evaluateStatus(animation.status);
   }
 
@@ -169,7 +169,7 @@ class MovingIgnoringStrategy extends MovingAnimationStrategy<bool> {
   const MovingIgnoringStrategy.all() : super(forward: true, reverse: true);
 
   /// Will evaluate to a single bool condition from the [animation] status.
-  bool evaluate(Animation<Object> animation) {
+  bool evaluate(Animation animation) {
     return evaluateStatus(animation.status);
   }
 

@@ -21,8 +21,7 @@ const Duration _kCancelDuration = Duration(milliseconds: 250);
 // The fade out start interval, when the cancel wasn't called
 const double _kFadeOutIntervalStart = 0.4;
 
-RectCallback? _getClipCallback(
-    RenderBox referenceBox, bool containedInkWell, RectCallback? rectCallback) {
+RectCallback? _getClipCallback(RenderBox referenceBox, bool containedInkWell, RectCallback? rectCallback) {
   if (rectCallback != null) {
     assert(containedInkWell);
     return rectCallback;
@@ -192,8 +191,7 @@ class NFListTileInkRipple extends InteractiveInkFeature {
 
   /// Used to specify this type of ink splash for an [InkWell], [InkResponse]
   /// or material [Theme].
-  static const InteractiveInkFeatureFactory splashFactory =
-      _NFListTileInkRippleFactory();
+  static const InteractiveInkFeatureFactory splashFactory = _NFListTileInkRippleFactory();
 
   static final Animatable<double> _easeCurveTween = CurveTween(curve: Curves.easeOutCubic);
   static final Animatable<double> _fadeOutIntervalTween = CurveTween(
@@ -271,10 +269,11 @@ class NFListTileInkRipple extends InteractiveInkFeature {
                 .value;
 
     final Paint paint = Paint()..color = color.withAlpha(alpha);
+    final Size size = _clipCallback?.call().size ?? referenceBox.size;
     // Splash moves to the center of the reference box.
     final Offset center = Offset.lerp(
       _position,
-      referenceBox.size.center(Offset.zero),
+      size.center(Offset.zero),
       Curves.ease.transform(_radiusController.value),
     )!;
     paintInkCircle(

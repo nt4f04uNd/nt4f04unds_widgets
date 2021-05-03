@@ -89,7 +89,14 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   /// Called on each pointer move event (even before the drag was accepted).
   ///
   /// Return `false` to give up the pointer.
+  /// 
+  /// Mixing this with [shouldEagerlyWin] that returns `true` may have unexpected results -
+  /// pointer will be dropped, and there will be 0, until user removes current pointer.
+  /// TODO: test that
   ShouldGiveUpCallback? shouldGiveUp;
+
+  /// Return `true` from this callback to eagrly declare this recognizer as winner.
+  ShouldGiveUpCallback? shouldEagerlyWin;
 
   static VelocityTracker _defaultBuilder(PointerEvent event) =>
       VelocityTracker.withKind(event.kind);
@@ -308,8 +315,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
         return;
       }
       if (event.buttons != _initialButtons) {
-        _giveUpPointer(event.pointer);
-        return;
+        resolve(GestureDisposition.accepted);
       }
       if (_state == _DragState.accepted) {
         _checkUpdate(
@@ -320,6 +326,9 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
           localPosition: event.localPosition,
         );
       } else {
+        if (shouldEagerlyWin != null && shouldEagerlyWin!(event)) {
+          resolve(GestureDisposition.accepted);
+        }
         _pendingDragOffset += OffsetPair(local: event.localDelta, global: event.delta);
         _lastPendingEventTimestamp = event.timeStamp;
         _lastTransform = event.transform;

@@ -19,21 +19,16 @@ class SelectionAppBar extends AppBar {
     Key? key,
     required SelectionController selectionController,
     required Widget title,
-    /// Title to show in selection
     required Widget titleSelection,
     required List<Widget> actions,
-    /// Actions to show in selection
     required List<Widget> actionsSelection,
     required VoidCallback? onMenuPressed,
     Widget? leading,
-    /// Go to selection animation
     Curve curve = Curves.easeOutCubic,
-    /// Back from selection animation
     Curve reverseCurve = Curves.easeInCubic,
     Widget? flexibleSpace,
     PreferredSizeWidget? bottom,
     double elevation = 2.0,
-    /// Elevation in selection
     double elevationSelection = 2.0,
     ShapeBorder? shape,
     Color? backgroundColor,
@@ -47,6 +42,7 @@ class SelectionAppBar extends AppBar {
     double titleSpacing = NavigationToolbar.kMiddleSpacing,
     double toolbarOpacity = 1.0,
     double bottomOpacity = 1.0,
+    double? toolbarHeight,
   }) : super(
         key: key,
         leading: leading != null ? leading : Builder(
@@ -98,6 +94,7 @@ class SelectionAppBar extends AppBar {
         titleSpacing: titleSpacing,
         toolbarOpacity: toolbarOpacity,
         bottomOpacity: bottomOpacity,
+        toolbarHeight: toolbarHeight,
       );
 
   static Widget _defaultSelectionActionsBuilder(Widget child, Animation<double> animation,) {

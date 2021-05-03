@@ -8,8 +8,8 @@
 /// * Minutes can go from 0 to 99.
 /// * Seconds from 0 to 59.
 String formatDuration(Duration duration) {
-  int minutes = duration.inMinutes;
+  final minutes = duration.inMinutes;
   // Seconds in 0-59 format
-  int seconds = duration.inSeconds % 60;
+  final seconds = duration.inSeconds % 60;
   return '${minutes.toString().length < 2 ? 0 : ''}$minutes:${seconds.toString().length < 2 ? 0 : ''}$seconds';
 }

@@ -26,9 +26,9 @@ abstract class SystemUiStyleController {
 
   /// Represents the actual UI that is now drawn on the screen.
   /// 
-  /// Equals to `null` on app start, must be not null when used.
-  /// To set to non-null value it use [setSystemUiOverlay] or [animateSystemUiOverlay] `from` parameter.
-  static SystemUiOverlayStyle? get actualUi {
+  /// Before using this property, it's required to call [setSystemUiOverlay] or
+  /// [animateSystemUiOverlay] with `from` parameter at least once.
+  static SystemUiOverlayStyle get actualUi {
     assert(() {
       if (_ui == null) {
         throw StateError(
@@ -38,12 +38,12 @@ abstract class SystemUiStyleController {
       }
       return true;
     }());
-    return _ui;
+    return _ui!;
   }
 
   /// This value is the UI that the current animation, if it exists, leads to
   /// or (led to, if it's ended).
-  static SystemUiOverlayStyle? get lastUi => _to ?? actualUi;
+  static SystemUiOverlayStyle get lastUi => _to ?? actualUi;
 
   /// The stream notifying of the [actualUi] changes.
   static Stream<SystemUiOverlayStyle> get onUiChange => _streamController.stream;
@@ -92,7 +92,7 @@ abstract class SystemUiStyleController {
     Duration? duration,
   }) {
     from ??= actualUi;
-    _from = from!;
+    _from = from;
     _to = to;
     curve ??= SystemUiStyleController.curve;
     duration ??= SystemUiStyleController.duration;

@@ -1,19 +1,26 @@
-## [1.1.3] - april 19, 2021
+## 1.1.4
+
+* added `MeasureSize` for debug
+* now app bar theme supports [toolbarHeight](https://github.com/flutter/flutter/pull/80467), therefore removed NFRoute and NFAppBar and moved preferred app bar height constant to NFConstants
+* made `SystemUiStyleController.actualUi` non-nullable
+* other fixes
+
+* ## 1.1.3
 
 * fixed Slidable sometimes jumped or didn't react on drags
 * removed NFDefaultAnimation, as it didn't bring much benefit
 * other fixes and stuff
 
-## [1.1.2] - march 30, 2021
+## 1.1.2
 
 * fixed bug with Slidable couldn't be dragged in some conditions
 * error improvements
 
-## [1.1.1] - march 24, 2021
+## 1.1.1
 
 * added Enum class for creating enhanced enums
 
-## [1.1.0] - march 23, 2021
+## 1.1.0
 
 * null safety migration
 * revied and refactored all widgets and APIs
@@ -23,14 +30,14 @@
 * removed NFDissmisible, NFLabelledSlider, StackTransition
 * other stuff
  
-## [1.0.3] - january 25, 2021
+## 1.0.3
 
 * multiple route observers support
 * some fixes
 * basic text selection menu
 * deleted switcher
 
-## [1.0.2] - november 25, 2020
+## 1.0.2
 
 * updated namings
 * rewritten scrollbar
@@ -40,11 +47,11 @@
 * some fixes
 * other stuff
 
-## [1.0.1] - november 09, 2020
+## 1.0.1
 
 * restructured
 * generated docs
  
-## [1.0.0] - november 09, 2020
+## 1.0.0
 
 * initial release
