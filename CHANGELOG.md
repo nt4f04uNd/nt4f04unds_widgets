@@ -1,3 +1,7 @@
+## 1.1.5
+
+* added AnimationStatusBuilder and AnimationStrategyBuilder
+
 ## 1.1.4
 
 * added `MeasureSize` for debug
