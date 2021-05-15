@@ -625,8 +625,17 @@ class SlidableController extends AnimationController with _DragEventListenersMix
   /// a gesture to be closed and currently is animating to this state.
   bool get closed => isDismissed || !_dragged && status == AnimationStatus.reverse;
 
-  // todo: remove if https://github.com/flutter/flutter/pull/76017 gets merged
   SpringDescription? springDescription;
+
+  static SlidableController of<T>(BuildContext context) {
+    return (context.getElementForInheritedWidgetOfExactType<SlidableControllerProvider<T>>()?.widget
+      as SlidableControllerProvider<T>).controller;
+  }
+
+  static SlidableController? maybeOf<T>(BuildContext context) {
+    return (context.getElementForInheritedWidgetOfExactType<SlidableControllerProvider<T>>()?.widget
+      as SlidableControllerProvider<T>?)?.controller;
+  }
 
   @override
   TickerFuture fling({ double velocity = 1.0, SpringDescription? springDescription, AnimationBehavior? animationBehavior }) {
@@ -647,6 +656,10 @@ class SlidableController extends AnimationController with _DragEventListenersMix
 /// Provides access to the [SlidableController].
 /// 
 /// Type parameter [T] is used to distunguish different types of controllers.
+///
+/// See also:
+/// * [SlidableController.of]
+/// * [SlidableController.maybeOf]
 class SlidableControllerProvider<T> extends InheritedWidget {
   const SlidableControllerProvider({
     Key? key,
@@ -656,10 +669,6 @@ class SlidableControllerProvider<T> extends InheritedWidget {
 
   final Widget child;
   final SlidableController controller;
-
-  static SlidableControllerProvider<T>? of<T>(BuildContext context) {
-    return context.getElementForInheritedWidgetOfExactType<SlidableControllerProvider<T>>()?.widget as SlidableControllerProvider<T>?;
-  }
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {

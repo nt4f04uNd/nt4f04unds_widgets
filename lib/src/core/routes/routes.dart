@@ -4,5 +4,5 @@
 *--------------------------------------------------------------------------------------------*/
 
 export 'back_button_listener.dart';
-export 'dimissible_route.dart';
+export 'dismissible_route.dart';
 export 'route_transitions.dart';
