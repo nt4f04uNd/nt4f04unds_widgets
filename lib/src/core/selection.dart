@@ -73,10 +73,9 @@ class SelectionController<T> extends Listenable
   /// Adds an item to selection set and notifies click listeners.
   /// 
   /// Returns a [TickerFuture] from the [AnimationController.forward].
-  Future<void> selectItem(T item) {
-    if (notInSelection) {
+  TickerFuture selectItem(T item) {
+    if (notInSelection)
       data.clear();
-    }
     _prevLength = data.length;
     data.add(item);
     notifyListeners();
@@ -87,19 +86,18 @@ class SelectionController<T> extends Listenable
   /// 
   /// Returns a [TickerFuture] from the [AnimationController.reverse],
   /// which is triggered when the unselected item was last.
-  Future<void> unselectItem(T item) async {
+  TickerFuture? unselectItem(T item) {
     _prevLength = data.length;
     data.remove(item);
     notifyListeners();
-    if (inSelection && data.length == 0) {
+    if (inSelection && data.length == 0)
       return animationController.reverse();
-    }
   }
 
   /// Clears the set and performs the unselect animation.
   /// 
   /// Returns a [TickerFuture] from the [AnimationController.reverse].
-  Future<void> close() {
+  TickerFuture close() {
     _prevLength = data.length;
     data.clear();
     notifyListeners();
