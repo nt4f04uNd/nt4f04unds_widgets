@@ -604,7 +604,6 @@ class SlidableController extends AnimationController with _DragEventListenersMix
          debugLabel: debugLabel,
          lowerBound: lowerBound,
          upperBound: upperBound,
-        //  springDescription: springDescription,
          animationBehavior: animationBehavior,
          vsync: vsync,
        );

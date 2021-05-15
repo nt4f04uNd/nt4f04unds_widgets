@@ -26,8 +26,8 @@ class DismissibleRoute extends StatefulWidget {
   );
 
   /// Returns controller of the nearest dismissible route.
-  static SlidableController controllerOf(BuildContext context) {
-    return SlidableController.of<DismissibleRoute>(context);
+  static SlidableController? controllerOf(BuildContext context) {
+    return SlidableController.maybeOf<DismissibleRoute>(context);
   }
 
   /// Route that will be dismissible.

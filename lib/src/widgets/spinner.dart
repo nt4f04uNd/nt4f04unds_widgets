@@ -27,6 +27,7 @@ enum NFSpinnerSize {
   custom,
 }
 
+@Deprecated('Uses deprecated screen size API')
 /// Just a regular spinner widget.
 class NFSpinner extends StatelessWidget {
   /// Prefer using named constructors instead of this.
