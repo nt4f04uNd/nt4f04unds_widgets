@@ -518,7 +518,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
     assert(!_horizontal || debugCheckHasDirectionality(context));
 
     final Widget? barrier = widget.barrier != null
-      ? widget.barrierBuilder(controller, widget.barrier!)
+      ? widget.barrierBuilder(controller, RepaintBoundary(child: widget.barrier!))
       : null;
     final Widget child = widget.childBuilder == null
       ? widget.child
@@ -527,53 +527,53 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
       ? child
       : SlideTransition(position: _animation, child: child);
 
-    return RepaintBoundary(
-      child: RawGestureDetector(
-        behavior: _hitTestBehavior,
-        gestures: <Type, GestureRecognizerFactory>{
-          if (_draggable && _horizontal)
-            NFHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFHorizontalDragGestureRecognizer>(
-              () => NFHorizontalDragGestureRecognizer(),
-              (NFHorizontalDragGestureRecognizer instance) => instance
-                ..onStart = _handleDragStart
-                ..onUpdate = _handleDragUpdate
-                ..onEnd = _handleDragEnd
-                ..dragStartBehavior = widget.dragStartBehavior
-                ..shouldGiveUp = widget.shouldGiveUpGesture,
-            ),
-          if (_draggable && !_horizontal)
-            NFVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFVerticalDragGestureRecognizer>(
-              () => NFVerticalDragGestureRecognizer(),
-              (NFVerticalDragGestureRecognizer instance) => instance
-                ..onStart = _handleDragStart
-                ..onUpdate = _handleDragUpdate
-                ..onEnd = _handleDragEnd
-                ..dragStartBehavior = widget.dragStartBehavior
-                ..shouldGiveUp = widget.shouldGiveUpGesture,
-            ),
-        },
-        child: barrier == null
-          ? wrappedChild
-          : () {
-              final List<Widget> children = [
-                IgnorePointer(
-                  ignoring: _ignoringBarrier,
-                  child: widget.onBarrierTap == null
-                    ? barrier
-                    : GestureDetector(
-                        onTap: widget.onBarrierTap,
-                        behavior: HitTestBehavior.opaque,
-                        child: barrier,
-                      ),
-                ),
-                wrappedChild,
-              ];
-              return _hitTestBehavior == HitTestBehavior.translucent
-                  // todo: remove/update this when https://github.com/flutter/flutter/issues/75099 is resolved
-                  ? StackWithAllChildrenReceiveEvents(children: children)
-                  : Stack(children: children);
-            }(),
-      ),
+    return RawGestureDetector(
+      behavior: _hitTestBehavior,
+      gestures: <Type, GestureRecognizerFactory>{
+        if (_draggable && _horizontal)
+          NFHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFHorizontalDragGestureRecognizer>(
+            () => NFHorizontalDragGestureRecognizer(),
+            (NFHorizontalDragGestureRecognizer instance) => instance
+              ..onStart = _handleDragStart
+              ..onUpdate = _handleDragUpdate
+              ..onEnd = _handleDragEnd
+              ..dragStartBehavior = widget.dragStartBehavior
+              ..shouldGiveUp = widget.shouldGiveUpGesture,
+          ),
+        if (_draggable && !_horizontal)
+          NFVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFVerticalDragGestureRecognizer>(
+            () => NFVerticalDragGestureRecognizer(),
+            (NFVerticalDragGestureRecognizer instance) => instance
+              ..onStart = _handleDragStart
+              ..onUpdate = _handleDragUpdate
+              ..onEnd = _handleDragEnd
+              ..dragStartBehavior = widget.dragStartBehavior
+              ..shouldGiveUp = widget.shouldGiveUpGesture,
+          ),
+      },
+      child: barrier == null
+        ? wrappedChild
+        : () {
+            final List<Widget> children = [
+              IgnorePointer(
+                ignoring: _ignoringBarrier,
+                child: widget.onBarrierTap == null
+                  ? barrier
+                  : GestureDetector(
+                      onTap: widget.onBarrierTap,
+                      behavior: HitTestBehavior.opaque,
+                      child: barrier,
+                    ),
+              ),
+              RepaintBoundary(
+                child: wrappedChild,
+              ),
+            ];
+            return _hitTestBehavior == HitTestBehavior.translucent
+                // todo: remove/update this when https://github.com/flutter/flutter/issues/75099 is resolved
+                ? StackWithAllChildrenReceiveEvents(children: children)
+                : Stack(children: children);
+          }(),
     );
   }
 }

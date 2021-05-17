@@ -59,6 +59,31 @@ abstract class NFPrefs {
   }
 }
 
+/// Shortcut for accessing prefs.
+SharedPreferences get _prefs {
+  assert(NFPrefs.prefs != null, "To use prefs, call NFPrefs.initialize first");
+  return NFPrefs.prefs!;
+}
+
+abstract class PrefBase<G, S extends G> {
+  const PrefBase(this.key);
+  // TODO: same as below - asseret S is not nullable when const functions are in place
+
+  /// A unique pref key.
+  final String key;
+
+  /// Gets pref value.
+  G get();
+
+  /// Sets pref [value].
+  Future<bool> set(S value);
+
+  /// Deletes the value from persistent storage.
+  Future<bool> delete() async {
+    return _prefs.remove(key);
+  }
+}
+
 /// Class representing a single shared pref.
 ///
 /// Usage example:
@@ -66,8 +91,18 @@ abstract class NFPrefs {
 /// ```dart
 /// static final devModeBool = Pref.bool(key: 'dev_mode', defaultValue: false);
 /// ```
-abstract class Pref<T> extends NullablePref<T> {
+abstract class Pref<T> extends PrefBase<T, T> {
   const Pref(String key, this.defaultValue) : super(key);
+    // TODO: enable this assert when const functions are in place
+    // : assert(
+    //     !isNullable<T>(),
+    //     () {
+    //       final type = T.toString();
+    //       final nonNulalbleType = type.substring(0, type.length - 1);
+    //       return 'Generics on Prefs always must be non-nullable.\n'
+    //       'Instead of $type provide $nonNulalbleType';
+    //     }(),
+    //   );
 
   /// Fallback value, returned from get, when there's no
   /// actual value stored.
@@ -97,38 +132,8 @@ abstract class Pref<T> extends NullablePref<T> {
 /// ```dart
 /// static final count = NullablePref.int(key: 'count');
 /// ```
-abstract class NullablePref<T> {
-  const NullablePref(this.key);
-  // TODO: enable this assert when const functions are in place
-    // : assert(
-    //     !isNullable<T>(),
-    //     () {
-    //       final type = T.toString();
-    //       final nonNulalbleType = type.substring(0, type.length - 1);
-    //       return 'Generics on Prefs always must be non-nullable.\n'
-    //       'Instead of $type provide $nonNulalbleType';
-    //     }(),
-    //   );
-
-  /// A unique pref key.
-  final String key;
-
-  /// Gets pref value.
-  T? get();
-
-  /// Sets pref [value].
-  Future<bool> set(T value);
-
-  /// Deletes the value from persistent storage.
-  Future<bool> delete() async {
-    return _prefs.remove(key);
-  }
-
-  /// Shortcut for accessing prefs.
-  SharedPreferences get _prefs {
-    assert(NFPrefs.prefs != null, "To use prefs, call NFPrefs.initialize first");
-    return NFPrefs.prefs!;
-  }
+abstract class NullablePref<T> extends PrefBase<T?, T> {
+  const NullablePref(String key) : super(key);
 }
 
 //*************** Primitives ******************
@@ -389,24 +394,14 @@ class NullableEnumPref<T> extends NullablePref<T> {
 
 //*************** Decorators ******************
 
-class PrefNotifier<T> extends NullablePrefNotifier<T> {
-  PrefNotifier(Pref<T> pref) : super(pref);
+abstract class PrefNotifierBase<G, S extends G> with ChangeNotifier implements PrefBase<G, S>, ValueListenable<G> {
+  PrefNotifierBase(this._pref);
+  final PrefBase<G, S> _pref;
 
   @override
-  T get value => super.value!;
-
-  @override
-  T get() => super.get()!;
-}
-
-class NullablePrefNotifier<T> with ChangeNotifier implements NullablePref<T>, ValueListenable<T?> {
-  NullablePrefNotifier(this._pref);
-  final NullablePref<T> _pref;
-
-  @override
-  T? get value => get();
-  T? _value;
-  void _setValue(T? newValue) {
+  G get value => _value ??= _pref.get();
+  G? _value;
+  void _setValue(G newValue) {
     if (_value == newValue)
       return;
     _value = newValue;
@@ -417,10 +412,10 @@ class NullablePrefNotifier<T> with ChangeNotifier implements NullablePref<T>, Va
   String get key => _pref.key;
 
   @override
-  T? get() => _pref.get();
+  G get() => value;
 
   @override
-  Future<bool> set(T newValue) {
+  Future<bool> set(S newValue) {
     final res = _pref.set(newValue);
     _setValue(newValue);
     return res;
@@ -429,10 +424,15 @@ class NullablePrefNotifier<T> with ChangeNotifier implements NullablePref<T>, Va
   @override
   Future<bool> delete() {
     final res = _pref.delete();
-    _setValue(null);
+    _setValue(null as G);
     return res;
   }
+}
 
-  @override
-  SharedPreferences get _prefs => _pref._prefs;
+class PrefNotifier<T> extends PrefNotifierBase<T, T> {
+  PrefNotifier(Pref<T> pref) : super(pref);
+}
+
+class NullablePrefNotifier<T> extends PrefNotifierBase<T?, T> {
+  NullablePrefNotifier(NullablePref<T> pref) : super(pref);
 }
