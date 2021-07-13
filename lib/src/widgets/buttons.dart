@@ -327,6 +327,7 @@ class NFCopyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = NFLocalizations.of(context);
+    final color = Theme.of(context).colorScheme.onPrimary;
     return NFIconButton(
       icon: const Icon(Icons.content_copy_rounded),
       size: size,
@@ -339,11 +340,14 @@ class NFCopyButton extends StatelessWidget {
               NFSnackbarController.showSnackbar(
                 NFSnackbarEntry(
                   child: NFSnackbar(
-                    title: Text(l10n.copied),
+                    title: Text(
+                      l10n.copied,
+                      style: TextStyle(color: color),
+                    ),
                     titlePadding: const EdgeInsets.only(left: 8.0),
                     leading: Icon(
                       Icons.content_copy_rounded,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: color,
                     ),
                   ),
                 ),
@@ -356,7 +360,7 @@ class NFCopyButton extends StatelessWidget {
 /// An icon button, that can be toggled visually on and off with [enabled],
 /// for example to repesent some logical state, like `on / off`.
 /// 
-/// Color changes will be implicitly animated.
+/// On and off toggle will have a color animation.
 class AnimatedIconButton extends StatefulWidget {
   AnimatedIconButton({
     Key? key,
@@ -369,6 +373,7 @@ class AnimatedIconButton extends StatefulWidget {
     this.color,
     this.inactiveColor,
     this.disabledColor,
+    this.tooltip,
   }) : super(key: key);
 
   /// An icon to use.
@@ -379,7 +384,7 @@ class AnimatedIconButton extends StatefulWidget {
   /// If `null`, [disabledColor] is applied.
   final VoidCallback? onPressed;
 
-  /// The duration used to animate color changes.
+  /// The toogle animation duration used.
   /// 
   /// By default 500 milliseconds.
   final Duration duration;
@@ -409,6 +414,9 @@ class AnimatedIconButton extends StatefulWidget {
   /// If none specified, [ThemeData.disabledColor] color is used.
   final Color? disabledColor;
   
+  /// Text that describes the action that will occur when the button is pressed.
+  final String? tooltip;
+
   @override
   AnimatedIconButtonState createState() => AnimatedIconButtonState();
 }
@@ -448,10 +456,13 @@ class AnimatedIconButtonState extends State<AnimatedIconButton> with SingleTicke
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final nftheme = NFTheme.of(context);
     final colorAnimation = ColorTween(
-      begin: widget.inactiveColor ?? Theme.of(context).unselectedWidgetColor,
-      end: widget.color ?? Theme.of(context).iconTheme.color,
+      begin: widget.onPressed != null
+        ? widget.inactiveColor ?? theme.unselectedWidgetColor
+        : widget.disabledColor ?? theme.disabledColor,
+      end: widget.color ?? theme.iconTheme.color,
     ).animate(CurvedAnimation(
       parent: controller,
       curve: Curves.easeOutCubic,
@@ -465,7 +476,8 @@ class AnimatedIconButtonState extends State<AnimatedIconButton> with SingleTicke
         iconSize: widget.iconSize ?? nftheme.iconSize,
         size: widget.size ?? nftheme.iconButtonSize,
         color: colorAnimation.value,
-        disabledColor: widget.disabledColor,
+        disabledColor: colorAnimation.value,
+        tooltip: widget.tooltip,
       ),
     );
   }

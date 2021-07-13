@@ -70,6 +70,9 @@ class DismissibleRouteState extends State<DismissibleRoute> with TickerProviderS
   late AnimationController _boxDecorationController;
   late Animation<Decoration> _boxDecorationAnimation;
 
+  // ignore: invalid_use_of_protected_member
+  AnimationController get _routeAnimationController => widget.route.controller!;
+
   @override
   void initState() {
     super.initState();
@@ -100,21 +103,40 @@ class DismissibleRouteState extends State<DismissibleRoute> with TickerProviderS
       curve: Curves.easeOutCubic,
       parent: _boxDecorationController
     ));
+    _routeAnimationController.addStatusListener(_handleAnimationStatus);
   }
 
   @override
   void dispose() {
+    _routeAnimationController.removeStatusListener(_handleAnimationStatus);
     _controller.dispose();
     _boxDecorationController.dispose();
     super.dispose();
   }
 
+  /// Used to disable dismiss gesture while pop animation is being performed.
+  bool _popAnimating = false;
+  void _handleAnimationStatus(AnimationStatus status) {
+    if (status == AnimationStatus.reverse) {
+      if (!_popAnimating) {
+        setState(() {
+          _popAnimating = true;
+        });
+      }
+    } else {
+      if (_popAnimating) {
+        setState(() {
+          _popAnimating = false;
+        });
+      }
+    }
+  }
+
   void _handleSlideChange(double value) {
     final status = widget.route.animation!.status;
     if (_beenDismissed && value == 1.0 && (status == AnimationStatus.completed || status == AnimationStatus.forward)) {
-      // ignore: invalid_use_of_protected_member
-      widget.route.controller!.reverseDuration = const Duration(milliseconds: 1);
       // TODO: milliseconds: 1 is a workaround for the https://github.com/flutter/flutter/issues/78750 . remove it when it's resolved
+      _routeAnimationController.reverseDuration = const Duration(milliseconds: 1);
       Navigator.of(context).pop();
     }
 
@@ -131,7 +153,7 @@ class DismissibleRouteState extends State<DismissibleRoute> with TickerProviderS
       controller: _controller,
       child: Slidable(
         controller: _controller,
-        direction: widget.dismissDirection,
+        direction: _popAnimating ? SlideDirection.none : widget.dismissDirection,
         start: 0.0,
         end: 1.0,
         barrierIgnoringStrategy: const IgnoringStrategy(dismissed: true, reverse: true),

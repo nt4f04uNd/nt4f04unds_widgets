@@ -12,14 +12,18 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 class NFSnackbarEntry {
   NFSnackbarEntry({
     required this.child,
+    this.resizeToAvoidBottomInset = false,
     this.duration = const Duration(seconds: 4),
     this.important = false,
     this.overlay,
     GlobalKey<NFSnackbarEntryState>? globalKey,
   }) : globalKey = globalKey ?? GlobalKey<NFSnackbarEntryState>();
 
-  /// Main widget to display as a snackbar
+  /// The widget to display as a snackbar.
   final Widget child;
+
+  /// Analogue of [Scaffold.resizeToAvoidBottomInset].
+  final bool resizeToAvoidBottomInset;
 
   /// How long the snackbar will be shown
   final Duration duration;
@@ -224,30 +228,30 @@ class NFSnackbarEntryState extends State<_NFSnackbarEntryWidget> with TickerProv
       reverseCurve: Interval(0.2, 1.0, curve: Curves.easeInCubic),
       parent: _fadeController
     ));
-    return FadeTransition(
-      opacity: fadeAnimation,
-      child: StatefulBuilder(
-        builder: (BuildContext context, setState) => Slidable(
-          controller: controller,
-          direction: SlideDirection.down,
-          start: 0.0,
-          end: 1.0,
-          onDragStart: (_) => stopTimer(),
-          onDragEnd: (_, __) => resumeTimer(),
-          key: dismissibleKey,
-          childBuilder: (animation, child) => AnimatedBuilder(
-            animation: animation,
-            builder: (context, child) => child!,
-            child: IgnorePointer(
-              ignoring: controller.status == AnimationStatus.reverse,
-              child: child,
+    return Padding(
+      padding: widget.entry.resizeToAvoidBottomInset
+        ? EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)
+        : EdgeInsets.zero,
+      child: FadeTransition(
+        opacity: fadeAnimation,
+        child: StatefulBuilder(
+          builder: (BuildContext context, setState) => Slidable(
+            controller: controller,
+            direction: SlideDirection.down,
+            start: 0.0,
+            end: 1.0,
+            onDragStart: (_) => stopTimer(),
+            onDragEnd: (_, __) => resumeTimer(),
+            key: dismissibleKey,
+            child: widget.entry.child,
+            childBuilder: (animation, child) => AnimatedBuilder(
+              animation: animation,
+              builder: (context, child) => child!,
+              child: IgnorePointer(
+                ignoring: controller.status == AnimationStatus.reverse,
+                child: child,
+              ),
             ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              widget.entry.child,
-            ],
           ),
         ),
       ),
@@ -268,6 +272,12 @@ class NFSnackbar extends StatelessWidget {
     this.leading,
     this.trailing,
     this.color,
+    this.padding = const EdgeInsets.only(
+      left: 16.0,
+      right: 16.0,
+      top: 10.0,
+      bottom: 10.0,
+    ),
     this.titlePadding = EdgeInsets.zero,
   }) : super(key: key);
   
@@ -283,6 +293,9 @@ class NFSnackbar extends StatelessWidget {
   /// Snackbar color. By default [ColorScheme.primary] is used.
   final Color? color;
 
+  /// Padding of the entire snackbar.
+  final EdgeInsetsGeometry padding;
+
   /// Padding to apply to [title].
   final EdgeInsetsGeometry titlePadding;
 
@@ -295,12 +308,7 @@ class NFSnackbar extends StatelessWidget {
         color: color ?? theme.colorScheme.primary,
         borderRadius: const BorderRadius.all(Radius.circular(10.0)),
         child: Container(
-          padding: const EdgeInsets.only(
-            left: 16.0,
-            right: 16.0,
-            top: 4.0,
-            bottom: 4.0,
-          ),
+          padding: padding,
           constraints: const BoxConstraints(minHeight: 48.0, maxHeight: 128.0),
           child: Row(
             mainAxisSize: MainAxisSize.max,

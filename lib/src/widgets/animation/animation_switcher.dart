@@ -13,6 +13,7 @@ class AnimationSwitcher extends StatelessWidget {
     required this.animation,
     required this.child1,
     required this.child2,
+    this.alignment = AlignmentDirectional.topStart,
     this.builder1 = defaultBuilder,
     this.builder2 = defaultBuilder,
   })  : assert(child1 != null),
@@ -21,6 +22,7 @@ class AnimationSwitcher extends StatelessWidget {
         super(key: key);
 
   final Animation<double> animation;
+  final AlignmentGeometry alignment;
   final Widget child1;
   final Widget child2;
   final AnimatedSwitcherTransitionBuilder builder1;
@@ -39,6 +41,7 @@ class AnimationSwitcher extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) => Stack(
+        alignment: alignment,
         children: [
           IgnorePointer(
             ignoring: const IgnoringStrategy(forward: true, completed: true).ask(animation),
