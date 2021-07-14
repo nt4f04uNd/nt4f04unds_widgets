@@ -1,6 +1,12 @@
 ## 1.1.5
 
 * added AnimationStatusBuilder and AnimationStrategyBuilder
+* overhauled Pref API
+* added explicit `environment` Flutter SDK constraint
+* deprecated ScreenSize API
+* improved RepaintBoundary for Slidable
+* changed SelectionController return values to TickerFuture
+* DismissibleRoute now exposes its controller via SlidableControllerProvider
 
 ## 1.1.4
 
