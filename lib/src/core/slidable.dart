@@ -518,7 +518,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
     assert(!_horizontal || debugCheckHasDirectionality(context));
 
     final Widget? barrier = widget.barrier != null
-      ? widget.barrierBuilder(controller, widget.barrier!)
+      ? widget.barrierBuilder(controller, RepaintBoundary(child: widget.barrier!))
       : null;
     final Widget child = widget.childBuilder == null
       ? widget.child
@@ -527,53 +527,53 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
       ? child
       : SlideTransition(position: _animation, child: child);
 
-    return RepaintBoundary(
-      child: RawGestureDetector(
-        behavior: _hitTestBehavior,
-        gestures: <Type, GestureRecognizerFactory>{
-          if (_draggable && _horizontal)
-            NFHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFHorizontalDragGestureRecognizer>(
-              () => NFHorizontalDragGestureRecognizer(),
-              (NFHorizontalDragGestureRecognizer instance) => instance
-                ..onStart = _handleDragStart
-                ..onUpdate = _handleDragUpdate
-                ..onEnd = _handleDragEnd
-                ..dragStartBehavior = widget.dragStartBehavior
-                ..shouldGiveUp = widget.shouldGiveUpGesture,
-            ),
-          if (_draggable && !_horizontal)
-            NFVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFVerticalDragGestureRecognizer>(
-              () => NFVerticalDragGestureRecognizer(),
-              (NFVerticalDragGestureRecognizer instance) => instance
-                ..onStart = _handleDragStart
-                ..onUpdate = _handleDragUpdate
-                ..onEnd = _handleDragEnd
-                ..dragStartBehavior = widget.dragStartBehavior
-                ..shouldGiveUp = widget.shouldGiveUpGesture,
-            ),
-        },
-        child: barrier == null
-          ? wrappedChild
-          : () {
-              final List<Widget> children = [
-                IgnorePointer(
-                  ignoring: _ignoringBarrier,
-                  child: widget.onBarrierTap == null
-                    ? barrier
-                    : GestureDetector(
-                        onTap: widget.onBarrierTap,
-                        behavior: HitTestBehavior.opaque,
-                        child: barrier,
-                      ),
-                ),
-                wrappedChild,
-              ];
-              return _hitTestBehavior == HitTestBehavior.translucent
-                  // todo: remove/update this when https://github.com/flutter/flutter/issues/75099 is resolved
-                  ? StackWithAllChildrenReceiveEvents(children: children)
-                  : Stack(children: children);
-            }(),
-      ),
+    return RawGestureDetector(
+      behavior: _hitTestBehavior,
+      gestures: <Type, GestureRecognizerFactory>{
+        if (_draggable && _horizontal)
+          NFHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFHorizontalDragGestureRecognizer>(
+            () => NFHorizontalDragGestureRecognizer(),
+            (NFHorizontalDragGestureRecognizer instance) => instance
+              ..onStart = _handleDragStart
+              ..onUpdate = _handleDragUpdate
+              ..onEnd = _handleDragEnd
+              ..dragStartBehavior = widget.dragStartBehavior
+              ..shouldGiveUp = widget.shouldGiveUpGesture,
+          ),
+        if (_draggable && !_horizontal)
+          NFVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFVerticalDragGestureRecognizer>(
+            () => NFVerticalDragGestureRecognizer(),
+            (NFVerticalDragGestureRecognizer instance) => instance
+              ..onStart = _handleDragStart
+              ..onUpdate = _handleDragUpdate
+              ..onEnd = _handleDragEnd
+              ..dragStartBehavior = widget.dragStartBehavior
+              ..shouldGiveUp = widget.shouldGiveUpGesture,
+          ),
+      },
+      child: barrier == null
+        ? wrappedChild
+        : () {
+            final List<Widget> children = [
+              IgnorePointer(
+                ignoring: _ignoringBarrier,
+                child: widget.onBarrierTap == null
+                  ? barrier
+                  : GestureDetector(
+                      onTap: widget.onBarrierTap,
+                      behavior: HitTestBehavior.opaque,
+                      child: barrier,
+                    ),
+              ),
+              RepaintBoundary(
+                child: wrappedChild,
+              ),
+            ];
+            return _hitTestBehavior == HitTestBehavior.translucent
+                // todo: remove/update this when https://github.com/flutter/flutter/issues/75099 is resolved
+                ? StackWithAllChildrenReceiveEvents(children: children)
+                : Stack(children: children);
+          }(),
     );
   }
 }
@@ -604,7 +604,6 @@ class SlidableController extends AnimationController with _DragEventListenersMix
          debugLabel: debugLabel,
          lowerBound: lowerBound,
          upperBound: upperBound,
-        //  springDescription: springDescription,
          animationBehavior: animationBehavior,
          vsync: vsync,
        );
@@ -625,8 +624,17 @@ class SlidableController extends AnimationController with _DragEventListenersMix
   /// a gesture to be closed and currently is animating to this state.
   bool get closed => isDismissed || !_dragged && status == AnimationStatus.reverse;
 
-  // todo: remove if https://github.com/flutter/flutter/pull/76017 gets merged
   SpringDescription? springDescription;
+
+  static SlidableController of<T>(BuildContext context) {
+    return (context.getElementForInheritedWidgetOfExactType<SlidableControllerProvider<T>>()?.widget
+      as SlidableControllerProvider<T>).controller;
+  }
+
+  static SlidableController? maybeOf<T>(BuildContext context) {
+    return (context.getElementForInheritedWidgetOfExactType<SlidableControllerProvider<T>>()?.widget
+      as SlidableControllerProvider<T>?)?.controller;
+  }
 
   @override
   TickerFuture fling({ double velocity = 1.0, SpringDescription? springDescription, AnimationBehavior? animationBehavior }) {
@@ -647,6 +655,10 @@ class SlidableController extends AnimationController with _DragEventListenersMix
 /// Provides access to the [SlidableController].
 /// 
 /// Type parameter [T] is used to distunguish different types of controllers.
+///
+/// See also:
+/// * [SlidableController.of]
+/// * [SlidableController.maybeOf]
 class SlidableControllerProvider<T> extends InheritedWidget {
   const SlidableControllerProvider({
     Key? key,
@@ -656,10 +668,6 @@ class SlidableControllerProvider<T> extends InheritedWidget {
 
   final Widget child;
   final SlidableController controller;
-
-  static SlidableControllerProvider<T>? of<T>(BuildContext context) {
-    return context.getElementForInheritedWidgetOfExactType<SlidableControllerProvider<T>>()?.widget as SlidableControllerProvider<T>?;
-  }
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {

@@ -19,6 +19,17 @@ class DismissibleRoute extends StatefulWidget {
   }) : dismissBarrier = dismissBarrier ?? Container(color: Colors.black26),
        super(key: key);
 
+  static late final springDescription = SpringDescription.withDampingRatio(
+    mass: 0.01,
+    stiffness: 200.0,
+    ratio: 3.0,
+  );
+
+  /// Returns controller of the nearest dismissible route.
+  static SlidableController? controllerOf(BuildContext context) {
+    return SlidableController.maybeOf<DismissibleRoute>(context);
+  }
+
   /// Route that will be dismissible.
   final TransitionRoute route;
   
@@ -40,7 +51,7 @@ class DismissibleRoute extends StatefulWidget {
   DismissibleRouteState createState() => DismissibleRouteState();
 }
 
-class DismissibleRouteState extends State<DismissibleRoute> with SingleTickerProviderStateMixin {
+class DismissibleRouteState extends State<DismissibleRoute> with TickerProviderStateMixin {
   bool _dragged = false;
 
   /// Whether route has been dismissed by users swipe.
@@ -54,14 +65,22 @@ class DismissibleRouteState extends State<DismissibleRoute> with SingleTickerPro
       _beenDismissed && !widget.route.animation!.isDismissed ||
       _dragged && widget.route.animation!.status == AnimationStatus.forward;
 
+  late SlidableController _controller;
   /// Controller to manipulate the route shadow.
-  late AnimationController _controller;
+  late AnimationController _boxDecorationController;
   late Animation<Decoration> _boxDecorationAnimation;
+
+  // ignore: invalid_use_of_protected_member
+  AnimationController get _routeAnimationController => widget.route.controller!;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _controller = SlidableController(
+      vsync: this,
+      springDescription: DismissibleRoute.springDescription,
+    );
+    _boxDecorationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
@@ -82,71 +101,90 @@ class DismissibleRouteState extends State<DismissibleRoute> with SingleTickerPro
       ),
     ).animate(CurvedAnimation(
       curve: Curves.easeOutCubic,
-      parent: _controller
+      parent: _boxDecorationController
     ));
+    _routeAnimationController.addStatusListener(_handleAnimationStatus);
   }
 
   @override
   void dispose() {
+    _routeAnimationController.removeStatusListener(_handleAnimationStatus);
     _controller.dispose();
+    _boxDecorationController.dispose();
     super.dispose();
+  }
+
+  /// Used to disable dismiss gesture while pop animation is being performed.
+  bool _popAnimating = false;
+  void _handleAnimationStatus(AnimationStatus status) {
+    if (status == AnimationStatus.reverse) {
+      if (!_popAnimating) {
+        setState(() {
+          _popAnimating = true;
+        });
+      }
+    } else {
+      if (_popAnimating) {
+        setState(() {
+          _popAnimating = false;
+        });
+      }
+    }
   }
 
   void _handleSlideChange(double value) {
     final status = widget.route.animation!.status;
     if (_beenDismissed && value == 1.0 && (status == AnimationStatus.completed || status == AnimationStatus.forward)) {
-      // ignore: invalid_use_of_protected_member
-      widget.route.controller!.reverseDuration = const Duration(milliseconds: 1);
       // TODO: milliseconds: 1 is a workaround for the https://github.com/flutter/flutter/issues/78750 . remove it when it's resolved
+      _routeAnimationController.reverseDuration = const Duration(milliseconds: 1);
       Navigator.of(context).pop();
     }
 
-    if (value != 0.0 && _controller.status != AnimationStatus.forward) {
-      _controller.forward();
+    if (value != 0.0 && _boxDecorationController.status != AnimationStatus.forward) {
+      _boxDecorationController.forward();
     } else if (value == 0.0) {
-      _controller.reset();
+      _boxDecorationController.reset();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Slidable(
-      direction: widget.dismissDirection,
-      start: 0.0,
-      end: 1.0,
-      springDescription: SpringDescription.withDampingRatio(
-        mass: 0.01,
-        stiffness: 200.0,
-        ratio: 3.0,
-      ),
-      barrierIgnoringStrategy: const IgnoringStrategy(dismissed: true, reverse: true),
-      catchIgnoringStrategy: const MovingIgnoringStrategy(forward: true, reverse: true),
-      barrier: _showBarrier ? widget.dismissBarrier : null,
-      barrierBuilder: (animation, child) {
-        return FadeTransition(
-          opacity: animation.drive(Tween(begin: 1.0, end: 0.0)), 
-          child: child,
-        );
-      },
-      onSlideChange: _handleSlideChange,
-      onDragUpdate: (details) {
-        setState(() {
-          _dragged = true;
-        });
-      },
-      onDragEnd: (_, res) {
-        setState(() {
-          _beenDismissed = res;
-          _dragged = false;
-        });
-      },
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) => Container(
-          child: !_beenDismissed
-            ? widget.animatedChild
-            : widget.child,
-          decoration: _boxDecorationAnimation.value,
+    return SlidableControllerProvider<DismissibleRoute>(
+      controller: _controller,
+      child: Slidable(
+        controller: _controller,
+        direction: _popAnimating ? SlideDirection.none : widget.dismissDirection,
+        start: 0.0,
+        end: 1.0,
+        barrierIgnoringStrategy: const IgnoringStrategy(dismissed: true, reverse: true),
+        catchIgnoringStrategy: const MovingIgnoringStrategy(forward: true, reverse: true),
+        barrier: _showBarrier ? widget.dismissBarrier : null,
+        barrierBuilder: (animation, child) {
+          return FadeTransition(
+            opacity: animation.drive(Tween(begin: 1.0, end: 0.0)), 
+            child: child,
+          );
+        },
+        onSlideChange: _handleSlideChange,
+        onDragUpdate: (details) {
+          setState(() {
+            _dragged = true;
+          });
+        },
+        onDragEnd: (_, res) {
+          setState(() {
+            _beenDismissed = res;
+            _dragged = false;
+          });
+        },
+        child: AnimatedBuilder(
+          animation: _boxDecorationController,
+          builder: (context, child) => Container(
+            child: !_beenDismissed
+              ? widget.animatedChild
+              : widget.child,
+            decoration: _boxDecorationAnimation.value,
+          ),
         ),
       ),
     );

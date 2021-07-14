@@ -36,7 +36,7 @@ class NFShowFunctions {
   }) async {
     final l10n = NFLocalizations.of(context);
     title ??= Text(l10n.warning);
-    acceptButton ??= NFButton.close();
+    acceptButton ??= NFButton.close(splashColor: buttonSplashColor);
     return showDialog<T>(
       context,
       title: title,
@@ -148,13 +148,11 @@ class NFShowFunctions {
                 children: <Widget>[
                   if (content != null)
                     Flexible(
-                      child: Padding(
-                        padding: contentPadding,
-                        child: NFScrollbar(
-                          thickness: 5.0,
-                          child: SingleChildScrollView(
-                            child: content,
-                          ),
+                      child: Material( // Prevent that content splash goes out of dialog border radius
+                        color: Colors.transparent,
+                        child: Padding(
+                          padding: contentPadding,
+                          child: content,
                         ),
                       ),
                     ),

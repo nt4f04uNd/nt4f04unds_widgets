@@ -16,10 +16,19 @@ i cannot (and don't want to) guarantee you the safety of your ass during its usa
 
 
 ```dart
+Future<void> main() async {
+  // These two lines are to use [Pref]s API.
+  // Can be omitted if you don't use them.
+  WidgetsFlutterBinding.ensureInitialized();
+  await NFPrefs.initialize();
+
+  runApp(App());
+}
+
 final RouteObserver<Route> routeObserver = RouteObserver();
 
 class App extends StatefulWidget {
-  App({Key key}) : super(key: key);
+  App({Key? key}) : super(key: key);
   
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -56,7 +65,6 @@ class _AppState extends State<App> {
     );
   }
 }
-
 ```
 
 ### naming conventions

@@ -5,8 +5,8 @@
 
 /// Module for essential (visible) to user widgets.
 
-export 'scrollbar/scrollbar.dart';
 export 'animation/animation.dart';
+export 'scrollbar/scrollbar.dart';
 export 'buttons.dart';
 export 'animation/count_switcher.dart';
 export 'icon_button.dart';

@@ -23,6 +23,7 @@ class SelectionAppBar extends AppBar {
     required List<Widget> actions,
     required List<Widget> actionsSelection,
     required VoidCallback? onMenuPressed,
+    bool showMenuButton = true,
     Widget? leading,
     Curve curve = Curves.easeOutCubic,
     Curve reverseCurve = Curves.easeInCubic,
@@ -45,10 +46,10 @@ class SelectionAppBar extends AppBar {
     double? toolbarHeight,
   }) : super(
         key: key,
-        leading: leading != null ? leading : Builder(
+        leading: !showMenuButton ? leading : Builder(
           builder: (BuildContext context) {
             return AnimatedMenuCloseButton(
-              animation: selectionController.animationController,
+              animation: selectionController.animation,
               onMenuPressed: onMenuPressed,
               onClosePressed: selectionController.close,
             );
@@ -58,7 +59,7 @@ class SelectionAppBar extends AppBar {
           animation: CurvedAnimation(
             curve: curve,
             reverseCurve: reverseCurve,
-            parent: selectionController.animationController,
+            parent: selectionController.animation,
           ),
           child1: title,
           child2: titleSelection,
@@ -70,9 +71,9 @@ class SelectionAppBar extends AppBar {
               animation: CurvedAnimation(
                 curve: curve,
                 reverseCurve: reverseCurve,
-                parent: selectionController.animationController,
+                parent: selectionController.animation,
               ),
-              builder2: _defaultSelectionActionsBuilder,
+              builder2: defaultSelectionActionsBuilder,
               child1: Row(children: actions),
               child2: Row(children: actionsSelection),
             ),
@@ -97,7 +98,7 @@ class SelectionAppBar extends AppBar {
         toolbarHeight: toolbarHeight,
       );
 
-  static Widget _defaultSelectionActionsBuilder(Widget child, Animation<double> animation,) {
+  static Widget defaultSelectionActionsBuilder(Widget child, Animation<double> animation,) {
     return FadeTransition(
       opacity: animation,
       child: Transform(

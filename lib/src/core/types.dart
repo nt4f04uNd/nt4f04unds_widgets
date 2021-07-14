@@ -8,6 +8,9 @@
 /// See why to have this function here https://github.com/dart-lang/language/issues/1326
 Type typeOf<X>() => X;
 
+/// Checks whether the generic is nullable.
+bool isNullable<T>() => null is T;
+
 /// Signature for function that returns a boolean.
 typedef BoolCallback = bool Function();
 
