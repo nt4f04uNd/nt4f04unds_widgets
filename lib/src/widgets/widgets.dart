@@ -19,7 +19,6 @@ export 'selection.dart';
 export 'settings_widgets.dart';
 export 'slider.dart';
 export 'snackbar.dart';
-export 'spinner.dart';
 export 'tabs.dart';
 export 'text.dart';
 export 'text_selection.dart';

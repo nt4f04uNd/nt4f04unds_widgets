@@ -12,15 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-import 'core/core.dart';
-
-class _Observer extends WidgetsBindingObserver {
-  @override
-  void didChangeMetrics() {
-    updateScreenSize();
-  }
-}
-
 /// Core widget of the library.
 /// 
 /// At the app start you should call [init] method. That is required for some of the
@@ -29,8 +20,6 @@ class _Observer extends WidgetsBindingObserver {
 /// See also:
 /// * [NFTheme] in which you should wrap your widget tree
 class NFWidgets {
-  static _Observer? _observer;
-
   /// A key of the root navigator.
   /// 
   /// Used in [NFSnackbarController] to obtain the root overlay to display snackbars.
@@ -47,19 +36,6 @@ class NFWidgets {
   }) {
     NFWidgets.routeObservers = routeObservers;
     NFWidgets.navigatorKey = navigatorKey;
-    updateScreenSize();
-    if (_observer == null) {
-      _observer = _Observer();
-      WidgetsBinding.instance!.addObserver(_observer!);
-    }
-  }
-
-  /// Removes the [WidgetsBinding] observer.
-  static void dispose() {
-    if (_observer != null) {
-      WidgetsBinding.instance!.removeObserver(_observer!);
-      _observer = null;
-    }
   }
 }
 

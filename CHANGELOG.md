@@ -1,3 +1,8 @@
+## 2.0.0
+
+* fix for breaking changes in gestures in Flutter 2.5.0
+* removed deprecated `ScreenSize` and `NFSpinner`
+
 ## 1.1.5
 
 * added `AnimationStatusBuilder` and `AnimationStrategyBuilder`

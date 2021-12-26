@@ -550,7 +550,7 @@ class NFVerticalDragGestureRecognizer extends NFDragGestureRecognizer {
   @override
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
     final double minVelocity = minFlingVelocity ?? kMinFlingVelocity;
-    final double minDistance = minFlingDistance ?? computeHitSlop(kind);
+    final double minDistance = minFlingDistance ?? computeHitSlop(kind, gestureSettings);
     return estimate.pixelsPerSecond.dy.abs() > minVelocity &&
         estimate.offset.dy.abs() > minDistance;
   }
@@ -558,7 +558,7 @@ class NFVerticalDragGestureRecognizer extends NFDragGestureRecognizer {
   @override
   bool _hasSufficientGlobalDistanceToAccept(
       PointerDeviceKind pointerDeviceKind) {
-    return _globalDistanceMoved.abs() > computeHitSlop(pointerDeviceKind);
+    return _globalDistanceMoved.abs() > computeHitSlop(pointerDeviceKind, gestureSettings);
   }
 
   @override
@@ -595,7 +595,7 @@ class NFHorizontalDragGestureRecognizer extends NFDragGestureRecognizer {
   @override
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
     final double minVelocity = minFlingVelocity ?? kMinFlingVelocity;
-    final double minDistance = minFlingDistance ?? computeHitSlop(kind);
+    final double minDistance = minFlingDistance ?? computeHitSlop(kind, gestureSettings);
     return estimate.pixelsPerSecond.dx.abs() > minVelocity &&
         estimate.offset.dx.abs() > minDistance;
   }
@@ -603,7 +603,7 @@ class NFHorizontalDragGestureRecognizer extends NFDragGestureRecognizer {
   @override
   bool _hasSufficientGlobalDistanceToAccept(
       PointerDeviceKind pointerDeviceKind) {
-    return _globalDistanceMoved.abs() > computeHitSlop(pointerDeviceKind);
+    return _globalDistanceMoved.abs() > computeHitSlop(pointerDeviceKind, gestureSettings);
   }
 
   @override
@@ -634,7 +634,7 @@ class NFPanGestureRecognizer extends NFDragGestureRecognizer {
   @override
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
     final double minVelocity = minFlingVelocity ?? kMinFlingVelocity;
-    final double minDistance = minFlingDistance ?? computeHitSlop(kind);
+    final double minDistance = minFlingDistance ?? computeHitSlop(kind, gestureSettings);
     return estimate.pixelsPerSecond.distanceSquared >
             minVelocity * minVelocity &&
         estimate.offset.distanceSquared > minDistance * minDistance;
@@ -643,7 +643,7 @@ class NFPanGestureRecognizer extends NFDragGestureRecognizer {
   @override
   bool _hasSufficientGlobalDistanceToAccept(
       PointerDeviceKind pointerDeviceKind) {
-    return _globalDistanceMoved.abs() > computePanSlop(pointerDeviceKind);
+    return _globalDistanceMoved.abs() > computePanSlop(pointerDeviceKind, gestureSettings);
   }
 
   @override

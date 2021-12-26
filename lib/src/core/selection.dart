@@ -42,15 +42,18 @@ class SelectionController<T> extends Listenable
   /// If [alwaysInSelection] is true, this will return [kAlwaysCompleteAnimation].
   Animation<double> get animation => _animationController?.view ?? kAlwaysCompleteAnimation;
 
-  @Deprecated("Use animation instead, this property will be removed in the next version")
   /// The [AnimationController] associated with this selection controller.
   AnimationController get animationController {
-    _debugAssertNotAlwaysInSelection();
+    if (kDebugMode) {
+      debugAssertNotAlwaysInSelection();
+    }
     return _animationController!;
   }
   AnimationController? _animationController;
   set animationController(AnimationController value) {
-    _debugAssertNotAlwaysInSelection();
+    if (kDebugMode) {
+      debugAssertNotAlwaysInSelection();
+    }
     if (!alwaysInSelection && value != _animationController) {
       _animationController!.removeStatusListener(notifyStatusListeners);
       _animationController = value;
@@ -68,10 +71,9 @@ class SelectionController<T> extends Listenable
   bool get closeSelectionWhenEmpty => _closeSelectionWhenEmpty;
   bool _closeSelectionWhenEmpty;
   set closeSelectionWhenEmpty(bool value) {
-    assert(() {
-      _debugAssertNotAlwaysInSelection();
-      return true;
-    }());
+    if (kDebugMode) {
+      debugAssertNotAlwaysInSelection();
+    }
     _closeSelectionWhenEmpty = value;
   }
 
@@ -79,7 +81,8 @@ class SelectionController<T> extends Listenable
   /// and is in selection state on its entire lifecycle.
   bool get alwaysInSelection => _animationController == null;
 
-  void _debugAssertNotAlwaysInSelection() {
+  /// Asserts [alwaysInSelection] is false.
+  void debugAssertNotAlwaysInSelection() {
     assert(
       !alwaysInSelection,
       "This method cannot to be used when `alwaysInSelection` is true.\n"

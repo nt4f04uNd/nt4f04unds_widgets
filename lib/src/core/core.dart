@@ -12,7 +12,6 @@ export 'animation_strategy.dart';
 export 'animation.dart';
 export 'duration.dart';
 export 'prefs.dart';
-export 'screen_size.dart';
 export 'scroll_physics.dart';
 export 'selection.dart';
 export 'show_functions.dart';

@@ -3,7 +3,6 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 /// Function to slow down duration by [timeDilation]
