@@ -1,0 +1,27 @@
+{
+  "warning": "Warnung",
+  "@warning": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "close": "Schließen",
+  "@close": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accept": "Akzeptieren",
+  "@accept": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "cancel": "Abbrechen",
+  "@cancel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "copied": "Kopiert",
+  "@copied": {
+    "type": "text",
+    "placeholders": {}
+  }
+}
