@@ -1,3 +1,8 @@
+## 3.0.0
+
+* Made `SystemUiStyleController` a singleton to make it mockable (rather than an abstract class with static methods)
+# TODO:
+
 ## 2.0.0
 
 * fix for breaking changes in gestures in Flutter 2.5.0

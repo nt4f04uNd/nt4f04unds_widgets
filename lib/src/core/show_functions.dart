@@ -71,9 +71,9 @@ class NFShowFunctions {
     ui ??= NFTheme.of(context).modalSystemUiStyle;
     SystemUiOverlayStyle? lastUi;
     if (ui != null) {
-      lastUi = SystemUiStyleController.lastUi;
+      lastUi = SystemUiStyleController.instance.lastUi;
       // Animate ui on open.
-      SystemUiStyleController.animateSystemUiOverlay(to: ui);
+      SystemUiStyleController.instance.animateSystemUiOverlay(to: ui);
     }
 
     acceptButton ??= NFButton.accept(splashColor: buttonSplashColor);
@@ -221,9 +221,9 @@ class NFShowFunctions {
     ui ??= NFTheme.of(context).bottomSheetSystemUiStyle;
     SystemUiOverlayStyle? lastUi;
     if (ui != null) {
-      lastUi = SystemUiStyleController.lastUi;
+      lastUi = SystemUiStyleController.instance.lastUi;
       // Animate ui on open.
-      SystemUiStyleController.animateSystemUiOverlay(to: ui);
+      SystemUiStyleController.instance.animateSystemUiOverlay(to: ui);
     }
     return flutter.showBottomSheet<T>(
       context: context,
@@ -260,9 +260,9 @@ class NFShowFunctions {
     ui ??= NFTheme.of(context).bottomSheetSystemUiStyle;
     SystemUiOverlayStyle? lastUi;
     if (ui != null) {
-      lastUi = SystemUiStyleController.lastUi;
+      lastUi = SystemUiStyleController.instance.lastUi;
       // Animate ui on open.
-      SystemUiStyleController.animateSystemUiOverlay(to: ui);
+      SystemUiStyleController.instance.animateSystemUiOverlay(to: ui);
     }
     return flutter.showModalBottomSheet<T>(
       context: context,
@@ -304,13 +304,13 @@ class _UiHelper extends StatelessWidget {
       onPopNext: () {
         if (ui != null) {
           // Animate ui when the route on top pops.
-          SystemUiStyleController.animateSystemUiOverlay(to: ui!);
+          SystemUiStyleController.instance.animateSystemUiOverlay(to: ui!);
         }
       },
       onPop: () {
         if (lastUi != null) {
           // Animate ui after sheet been closed.
-          SystemUiStyleController.animateSystemUiOverlay(to: lastUi!);
+          SystemUiStyleController.instance.animateSystemUiOverlay(to: lastUi!);
         }
       },
       child: child

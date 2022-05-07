@@ -195,7 +195,7 @@ abstract class RouteTransition<T> extends PageRoute<T> {
           if (ui == null)
             return;
           uiAnimating = true;
-          await SystemUiStyleController.animateSystemUiOverlay(
+          await SystemUiStyleController.instance.animateSystemUiOverlay(
             to: ui,
             curve: transitionSettings.reverseCurve,
             duration: transitionDuration,
@@ -231,7 +231,7 @@ abstract class RouteTransition<T> extends PageRoute<T> {
         if (ui == null)
           return;
         uiAnimating = true;
-        await SystemUiStyleController.animateSystemUiOverlay(
+        await SystemUiStyleController.instance.animateSystemUiOverlay(
           to: ui,
           curve: transitionSettings.curve,
           // multiplying by 2 here, because animation looks too fast without it
@@ -258,7 +258,7 @@ abstract class RouteTransition<T> extends PageRoute<T> {
     // }
     // Animation<SystemUiOverlayStyle> getUiAnimation(SystemUiOverlayStyle ui, Animation<double> _animation) {
     //   return SystemUiOverlayStyleTween(
-    //     begin: SystemUiStyleController.actualUi,
+    //     begin: SystemUiStyleController.instance.actualUi,
     //     end: ui,
     //   ).animate(CurvedAnimation(
     //     curve: transitionSettings.curve,
@@ -270,7 +270,7 @@ abstract class RouteTransition<T> extends PageRoute<T> {
     //   if (onTop && status == AnimationStatus.completed) {
     //     final ui = getUi();
     //     if (ui != null) {
-    //       SystemUiStyleController.setSystemUiOverlay(ui);
+    //       SystemUiStyleController.instance.setSystemUiOverlay(ui);
     //     }
     //   }
     // });
@@ -278,7 +278,7 @@ abstract class RouteTransition<T> extends PageRoute<T> {
     //   if (status == AnimationStatus.dismissed) {
     //     final ui = getUi();
     //     if (ui != null) {
-    //       SystemUiStyleController.setSystemUiOverlay(SystemUiStyleController.actualUi!);
+    //       SystemUiStyleController.instance.setSystemUiOverlay(SystemUiStyleController.instance.actualUi!);
     //     }
     //   }
     // });
@@ -287,7 +287,7 @@ abstract class RouteTransition<T> extends PageRoute<T> {
     //     return;
     //   final ui = getUi();
     //   if (ui != null) {
-    //     SystemUiStyleController.setSystemUiOverlay(getUiAnimation(ui, animation).value);
+    //     SystemUiStyleController.instance.setSystemUiOverlay(getUiAnimation(ui, animation).value);
     //   }
     // });
     // secondaryAnimation.addListener(() {
@@ -295,7 +295,7 @@ abstract class RouteTransition<T> extends PageRoute<T> {
     //     return;
     //   final ui = getUi();
     //   if (ui != null) {
-    //     SystemUiStyleController.setSystemUiOverlay(getUiAnimation(ui, secondaryAnimation).value);
+    //     SystemUiStyleController.instance.setSystemUiOverlay(getUiAnimation(ui, secondaryAnimation).value);
     //   }
     // });
   }

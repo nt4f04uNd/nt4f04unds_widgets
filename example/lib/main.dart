@@ -29,7 +29,7 @@ class _AppState extends State<App> {
       navigatorKey: App.navigatorKey,
       routeObservers: [routerObserver],
     );
-    SystemUiStyleController.setSystemUiOverlay(SystemUiOverlayStyle.dark);
+    SystemUiStyleController.instance.setSystemUiOverlay(SystemUiOverlayStyle.dark);
   }
 
   @override
