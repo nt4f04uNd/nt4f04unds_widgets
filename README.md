@@ -55,11 +55,6 @@ class _AppState extends State<App> {
         color: Colors.black,
         navigatorKey: App.navigatorKey,
         theme: Constants.AppTheme.theme,
-        supportedLocales: Constants.Config.supportedLocales,
-        localizationsDelegates: const [
-          NFLocalizations.delegate,
-          // ... other locales
-        ],
         navigatorObservers: [routeObserver],
       ),
     );
@@ -72,4 +67,4 @@ class _AppState extends State<App> {
 names have `NF` prefix if:
 
 * they could be easily messed up with some names from flutter - `NFSnackbarController`
-* i just preferred them to have this prefix - `NFCopyButton`
+* i just preferred them to have this prefix

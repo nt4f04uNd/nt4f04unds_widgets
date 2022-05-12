@@ -1,7 +1,10 @@
 ## 3.0.0
 
 * Made `SystemUiStyleController` a singleton to make it mockable (rather than an abstract class with static methods)
-# TODO:
+* Adapt to recent Flutter theme and other deprecations
+* Remove `NFButton` and `NFCopyButton`
+* Remove `ShowFunctions.showAlert`
+* Remove localization
 
 ## 2.0.0
 

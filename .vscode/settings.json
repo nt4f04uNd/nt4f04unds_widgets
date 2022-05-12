@@ -18,5 +18,10 @@
         "statusBarItem.remoteBackground": "#f4ac19",
         "statusBarItem.remoteForeground": "#15202b"
     },
-    "peacock.color": "#f4ac19"
+    "peacock.color": "#f4ac19",
+    // TODO: remove
+    "dart.flutterSdkPath": "D:\\dev\\src\\fvm\\versions\\2.10.3",
+    "[dart]": {
+        "editor.defaultFormatter": "Dart-Code.flutter",
+    },
 }

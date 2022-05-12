@@ -6,13 +6,6 @@
 	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
 	// Placeholders with the same ids are connected.
 
-	"Get localization": {
-		"prefix": "_gl10n",
-		"description": "Get the package localization",
-		"body": [
-			"final l10n = NFLocalizations.of(context);"
-		],
-	},
 	"Get NFTheme": {
 		"prefix": "_nftheme",
 		"description": "Get the package theme",

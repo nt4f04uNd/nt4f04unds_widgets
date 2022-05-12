@@ -13,7 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 TextSpan textLink({
   required BuildContext context,
   required String text,
-  required String url,
+  required Uri url,
   TextStyle? style,
 }) {
   return TextSpan(
@@ -21,7 +21,7 @@ TextSpan textLink({
     style: style ?? TextStyle(color: Theme.of(context).primaryColor),
     recognizer: TapGestureRecognizer()
       ..onTap = () {
-        launch(url);
+        launchUrl(url);
       },
   );
 }

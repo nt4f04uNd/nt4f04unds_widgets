@@ -20,37 +20,6 @@ class NFShowFunctions {
 
   //****************** Enhanced Flutter functions *****************************************************
 
-  /// Calls [showGeneralDialog] function from Flutter material library to show a message to user (only accept button).
-  ///
-  /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [NFWidgets.defaultModalSystemUiStyle].
-  Future<T?> showAlert<T extends Object?>(
-    BuildContext context, {
-    Widget? title,
-    Widget? content,
-    EdgeInsets titlePadding = defaultAlertTitlePadding,
-    EdgeInsets contentPadding = defaultAlertContentPadding,
-    Widget? acceptButton,
-    Color? buttonSplashColor,
-    List<Widget>? additionalActions,
-    SystemUiOverlayStyle? ui,
-  }) async {
-    final l10n = NFLocalizations.of(context);
-    title ??= Text(l10n.warning);
-    acceptButton ??= NFButton.close(splashColor: buttonSplashColor);
-    return showDialog<T>(
-      context,
-      title: title,
-      content: content,
-      titlePadding: titlePadding,
-      contentPadding: contentPadding,
-      acceptButton: acceptButton,
-      buttonSplashColor: buttonSplashColor,
-      additionalActions: additionalActions,
-      hideCancelButton: true,
-      ui: ui,
-    );
-  }
-
   /// Calls [showGeneralDialog] function from Flutter material library to show a dialog to user (accept and decline buttons).
   ///
   /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [NFWidgets.defaultModalSystemUiStyle].
@@ -63,7 +32,6 @@ class NFShowFunctions {
     Widget? acceptButton,
     Widget? cancelButton,
     Color? buttonSplashColor,
-    bool hideCancelButton = false,
     List<Widget>? additionalActions,
     double borderRadius = 8.0,
     SystemUiOverlayStyle? ui,
@@ -74,11 +42,6 @@ class NFShowFunctions {
       lastUi = SystemUiStyleController.instance.lastUi;
       // Animate ui on open.
       SystemUiStyleController.instance.animateSystemUiOverlay(to: ui);
-    }
-
-    acceptButton ??= NFButton.accept(splashColor: buttonSplashColor);
-    if (!hideCancelButton) {
-      cancelButton ??= NFButton.cancel(splashColor: buttonSplashColor);
     }
 
     return flutter.showGeneralDialog<T>(
@@ -180,19 +143,20 @@ class NFShowFunctions {
                               alignment: MainAxisAlignment.start,
                               children: additionalActions,
                             ),
-                          ButtonBar(
-                            buttonPadding: EdgeInsets.zero,
-                            mainAxisSize: MainAxisSize.min,
-                            alignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              if (!hideCancelButton)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: cancelButton,
-                                ),
-                              acceptButton!,
-                            ],
-                          ),
+                          if (acceptButton != null || cancelButton != null)
+                            ButtonBar(
+                              buttonPadding: EdgeInsets.zero,
+                              mainAxisSize: MainAxisSize.min,
+                              alignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                if (cancelButton != null)
+                                  cancelButton,
+                                if (acceptButton != null && cancelButton != null)
+                                  const SizedBox(width: 8.0),
+                                if (acceptButton != null)
+                                  acceptButton,
+                              ],
+                            ),
                         ],
                       ),
                     ),

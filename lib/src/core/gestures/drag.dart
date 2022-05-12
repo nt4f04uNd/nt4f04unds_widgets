@@ -81,10 +81,10 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   /// {@macro flutter.gestures.GestureRecognizer.kind}
   NFDragGestureRecognizer({
     Object? debugOwner,
-    PointerDeviceKind? kind,
+    Set<PointerDeviceKind>? supportedDevices,
     this.dragStartBehavior = DragStartBehavior.start,
     this.velocityTrackerBuilder = _defaultBuilder,
-  }) : super(debugOwner: debugOwner, kind: kind);
+  }) : super(debugOwner: debugOwner, supportedDevices: supportedDevices);
 
   /// Called on each pointer move event (even before the drag was accepted).
   ///
@@ -544,8 +544,8 @@ class NFVerticalDragGestureRecognizer extends NFDragGestureRecognizer {
   /// {@macro flutter.gestures.GestureRecognizer.kind}
   NFVerticalDragGestureRecognizer({
     Object? debugOwner,
-    PointerDeviceKind? kind,
-  }) : super(debugOwner: debugOwner, kind: kind);
+    Set<PointerDeviceKind>? supportedDevices,
+  }) : super(debugOwner: debugOwner, supportedDevices: supportedDevices);
 
   @override
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
@@ -589,8 +589,8 @@ class NFHorizontalDragGestureRecognizer extends NFDragGestureRecognizer {
   /// {@macro flutter.gestures.GestureRecognizer.kind}
   NFHorizontalDragGestureRecognizer({
     Object? debugOwner,
-    PointerDeviceKind? kind,
-  }) : super(debugOwner: debugOwner, kind: kind);
+    Set<PointerDeviceKind>? supportedDevices,
+  }) : super(debugOwner: debugOwner, supportedDevices: supportedDevices);
 
   @override
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {

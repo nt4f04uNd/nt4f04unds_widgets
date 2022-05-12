@@ -13,14 +13,9 @@ dependencies:
   async: ^2.5.0
   marquee: ^2.1.0
   auto_size_text: ^3.0.0
-  url_launcher: ^6.0.3
+  url_launcher: ^6.1.0
   enum_to_string: ^2.0.1
   shared_preferences: ^2.0.5
   multiple_localization: ^0.2.1
   flutter:
     sdk: flutter
-
-dev_dependencies:
-  intl_translation:
-    git: 
-      url: https://github.com/nt4f04uNd/intl_translation
