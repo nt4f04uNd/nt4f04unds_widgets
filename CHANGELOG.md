@@ -5,6 +5,7 @@
 * Remove `NFButton` and `NFCopyButton`
 * Remove `ShowFunctions.showAlert`
 * Remove localization
+* Remove `NFBackButtonListener` - can now use `BackButtonListener` from the framework
 
 ## 2.0.0
 
