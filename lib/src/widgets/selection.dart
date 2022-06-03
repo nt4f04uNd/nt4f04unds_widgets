@@ -75,6 +75,7 @@ class SelectionAppBar extends AppBar {
                 reverseCurve: reverseCurve,
                 parent: selectionController.animation,
               ),
+              alignment: Alignment.centerRight,
               builder2: defaultSelectionActionsBuilder,
               child1: Row(children: actions),
               child2: Row(children: actionsSelection),
