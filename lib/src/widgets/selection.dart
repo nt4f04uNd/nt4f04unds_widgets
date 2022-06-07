@@ -102,14 +102,18 @@ class SelectionAppBar extends AppBar {
         toolbarHeight: toolbarHeight,
       );
 
-  static Widget defaultSelectionActionsBuilder(Widget child, Animation<double> animation,) {
+  static Widget defaultSelectionActionsBuilder(Widget child, Animation<double> animation) {
     return FadeTransition(
       opacity: animation,
-      child: Transform(
-        transform: Matrix4.identity()
-          ..rotateX((1.0 - animation.value) * math.pi / 2),
-        origin: const Offset(0.0, 30.0),
+      child: AnimatedBuilder(
+        animation: animation,
         child: child,
+        builder: (context, child) => Transform(
+          transform: Matrix4.identity()
+            ..rotateX((1.0 - animation.value) * math.pi / 2),
+          origin: const Offset(0.0, 30.0),
+          child: child,
+        ),
       ),
     );
   }

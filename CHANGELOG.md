@@ -6,6 +6,8 @@
 * Remove `ShowFunctions.showAlert`
 * Remove localization
 * Remove `NFBackButtonListener` - can now use `BackButtonListener` from the framework
+* Fix `SelectionAppBar` actions alignment
+* Fix `SelectionAppBar.defaultSelectionActionsBuilder` sometimes didn't animate correctly
 
 ## 2.0.0
 
