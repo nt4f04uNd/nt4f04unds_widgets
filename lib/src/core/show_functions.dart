@@ -3,6 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart' hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
 import 'package:flutter/material.dart' as flutter show showGeneralDialog, showBottomSheet, showModalBottomSheet;
@@ -250,7 +251,7 @@ class NFShowFunctions {
 }
 
 /// Helper that wraps widget into [RouteAwareWidget] and handles ui animations.
-class _UiHelper extends StatelessWidget {
+class _UiHelper extends StatefulWidget {
   const _UiHelper({
     Key? key,
     required this.ui,
@@ -263,21 +264,40 @@ class _UiHelper extends StatelessWidget {
   final Widget child;
 
   @override
+  State<_UiHelper> createState() => _UiHelperState();
+}
+
+class _UiHelperState extends State<_UiHelper> {
+  bool _popped = false;
+  Future<bool> _handlePop() async {
+    if (_popped) {
+      return false;
+    }
+    _popped = true;
+    // TODO: workaround for https://github.com/flutter/flutter/issues/82046 - can remove, when it is fixed
+    Navigator.pop(context);
+    return true;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return RouteAwareWidget(
-      onPopNext: () {
-        if (ui != null) {
-          // Animate ui when the route on top pops.
-          SystemUiStyleController.instance.animateSystemUiOverlay(to: ui!);
-        }
-      },
-      onPop: () {
-        if (lastUi != null) {
-          // Animate ui after sheet been closed.
-          SystemUiStyleController.instance.animateSystemUiOverlay(to: lastUi!);
-        }
-      },
-      child: child
+    return BackButtonListener(
+      onBackButtonPressed: _handlePop,
+      child: RouteAwareWidget(
+        onPopNext: () {
+          if (widget.ui != null) {
+            // Animate ui when the route on top pops.
+            SystemUiStyleController.instance.animateSystemUiOverlay(to: widget.ui!);
+          }
+        },
+        onPop: () {
+          if (widget.lastUi != null) {
+            // Animate ui after sheet been closed.
+            SystemUiStyleController.instance.animateSystemUiOverlay(to: widget.lastUi!);
+          }
+        },
+        child: widget.child
+      ),
     );
   }
 }
