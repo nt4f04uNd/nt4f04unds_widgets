@@ -11,8 +11,6 @@
 /// TODO: migrate this back to null safety (copited this on flutter master 43e1d1596e)
 /// ###########################################################################################
 
-import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
