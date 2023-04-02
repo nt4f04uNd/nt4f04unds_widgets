@@ -14,7 +14,8 @@ class NFMarquee extends StatelessWidget {
     Key? key,
     required this.text,
     required this.fontSize,
-    this.fontWeight = FontWeight.w600,
+    this.textStyle,
+    this.alignment = Alignment.centerLeft,
     this.velocity = 30.0,
     this.blankSpace = 65.0,
     this.startAfter = const Duration(milliseconds: 2000),
@@ -23,7 +24,8 @@ class NFMarquee extends StatelessWidget {
 
   final String text;
   final double fontSize;
-  final FontWeight fontWeight;
+  final TextStyle? textStyle;
+  final AlignmentGeometry alignment;
   final double velocity;
   final double blankSpace;
   final Duration startAfter;
@@ -32,27 +34,26 @@ class NFMarquee extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    final mergedStyle = TextStyle(fontSize: fontSize).merge(textStyle);
     return SizedBox(
       height: (fontSize + 13.0) * textScaleFactor,
-      child: AutoSizeText(
-        text,
-        minFontSize: fontSize,
-        maxFontSize: fontSize,
-        style: TextStyle(
-          fontSize: fontSize,
-          fontWeight:fontWeight,
-        ),
-        overflowReplacement: Marquee(
-          text: text,
-          blankSpace: blankSpace,
-          accelerationCurve: Curves.easeOutCubic,
-          velocity: velocity,
-          startPadding: 2.0,
-          startAfter: startAfter,
-          pauseAfterRound: pauseAfterRound,
-          style: TextStyle(
-            fontSize: fontSize,
-            fontWeight: fontWeight,
+      child: Align(
+        alignment: alignment,
+        child: AutoSizeText(
+          text,
+          minFontSize: fontSize,
+          maxFontSize: fontSize,
+          maxLines: 1,
+          style: mergedStyle,
+          overflowReplacement: Marquee(
+            text: text,
+            blankSpace: blankSpace,
+            accelerationCurve: Curves.easeOutCubic,
+            velocity: velocity,
+            startPadding: 2.0,
+            startAfter: startAfter,
+            pauseAfterRound: pauseAfterRound,
+            style: mergedStyle,
           ),
         ),
       ),

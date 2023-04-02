@@ -139,24 +139,30 @@ class NFShowFunctions {
                             : MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           if (additionalActions != null)
-                            ButtonBar(
-                              buttonPadding: EdgeInsets.zero,
-                              alignment: MainAxisAlignment.start,
-                              children: additionalActions,
+                            Flexible(
+                              child: ButtonBar(
+                                buttonPadding: EdgeInsets.zero,
+                                alignment: MainAxisAlignment.start,
+                                overflowDirection: VerticalDirection.down,
+                                children: additionalActions,
+                              ),
                             ),
                           if (acceptButton != null || cancelButton != null)
-                            ButtonBar(
-                              buttonPadding: EdgeInsets.zero,
-                              mainAxisSize: MainAxisSize.min,
-                              alignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                if (cancelButton != null)
-                                  cancelButton,
-                                if (acceptButton != null && cancelButton != null)
-                                  const SizedBox(width: 8.0),
-                                if (acceptButton != null)
-                                  acceptButton,
-                              ],
+                             Flexible(
+                              child:ButtonBar(
+                                buttonPadding: EdgeInsets.zero,
+                                mainAxisSize: MainAxisSize.min,
+                                alignment: MainAxisAlignment.end,
+                                overflowDirection: VerticalDirection.down,
+                                children: <Widget>[
+                                  if (cancelButton != null)
+                                    cancelButton,
+                                  if (acceptButton != null && cancelButton != null)
+                                    const SizedBox(width: 8.0),
+                                  if (acceptButton != null)
+                                    acceptButton,
+                                ],
+                              ),
                             ),
                         ],
                       ),
