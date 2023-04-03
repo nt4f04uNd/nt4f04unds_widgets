@@ -63,6 +63,7 @@ class SelectionAppBar extends AppBar {
             reverseCurve: reverseCurve,
             parent: selectionController.animation,
           ),
+          alignment: AlignmentDirectional.centerStart,
           child1: title,
           child2: titleSelection,
         ),
