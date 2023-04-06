@@ -16,7 +16,11 @@
         "titleBar.inactiveForeground": "#15202b99",
         "sash.hoverBorder": "#f6be4a",
         "statusBarItem.remoteBackground": "#f4ac19",
-        "statusBarItem.remoteForeground": "#15202b"
+        "statusBarItem.remoteForeground": "#15202b",
+        "commandCenter.border": "#15202b99"
     },
-    "peacock.color": "#f4ac19"
+    "peacock.color": "#f4ac19",
+    "[dart]": {
+        "editor.defaultFormatter": "Dart-Code.flutter",
+    },
 }

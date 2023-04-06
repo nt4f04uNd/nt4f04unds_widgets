@@ -12,7 +12,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:nt4f04unds_widgets/src/constants.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// A material design icon button.
@@ -116,7 +115,6 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 ///    current platform's conventions.
 ///  * [CloseButton], an icon button for closing pages.
 ///  * [AppBar], to show a toolbar at the top of an application.
-///  * [RaisedButton] and [FlatButton], for buttons with text in them.
 ///  * [InkResponse] and [InkWell], for the ink splash effect itself.
 class NFIconButton extends StatelessWidget {
   /// Creates an icon button.

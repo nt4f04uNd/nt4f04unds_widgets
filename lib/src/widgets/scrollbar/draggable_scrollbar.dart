@@ -6,13 +6,9 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'scrollbar.dart';
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'dart:math' as math;
 
@@ -389,7 +385,7 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
       duration: widget.barAnimationDuration,
     );
 
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       /// Call setState to make shouldAppear getter available, as
       /// at the first render [_viewMaxOffset] is `0.0`
       if (mounted) setState(() {});
@@ -407,7 +403,7 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // Update the max offset after each build.
       _barPadHeight = context.size!.height;
       _barMaxOffset = _barPadHeight -

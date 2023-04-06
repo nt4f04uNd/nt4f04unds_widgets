@@ -3,6 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart' hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
 import 'package:flutter/material.dart' as flutter show showGeneralDialog, showBottomSheet, showModalBottomSheet;
@@ -20,37 +21,6 @@ class NFShowFunctions {
 
   //****************** Enhanced Flutter functions *****************************************************
 
-  /// Calls [showGeneralDialog] function from Flutter material library to show a message to user (only accept button).
-  ///
-  /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [NFWidgets.defaultModalSystemUiStyle].
-  Future<T?> showAlert<T extends Object?>(
-    BuildContext context, {
-    Widget? title,
-    Widget? content,
-    EdgeInsets titlePadding = defaultAlertTitlePadding,
-    EdgeInsets contentPadding = defaultAlertContentPadding,
-    Widget? acceptButton,
-    Color? buttonSplashColor,
-    List<Widget>? additionalActions,
-    SystemUiOverlayStyle? ui,
-  }) async {
-    final l10n = NFLocalizations.of(context);
-    title ??= Text(l10n.warning);
-    acceptButton ??= NFButton.close(splashColor: buttonSplashColor);
-    return showDialog<T>(
-      context,
-      title: title,
-      content: content,
-      titlePadding: titlePadding,
-      contentPadding: contentPadding,
-      acceptButton: acceptButton,
-      buttonSplashColor: buttonSplashColor,
-      additionalActions: additionalActions,
-      hideCancelButton: true,
-      ui: ui,
-    );
-  }
-
   /// Calls [showGeneralDialog] function from Flutter material library to show a dialog to user (accept and decline buttons).
   ///
   /// Also handles system UI animations to the custom [ui] and out of it on pop, defaults to [NFWidgets.defaultModalSystemUiStyle].
@@ -63,7 +33,6 @@ class NFShowFunctions {
     Widget? acceptButton,
     Widget? cancelButton,
     Color? buttonSplashColor,
-    bool hideCancelButton = false,
     List<Widget>? additionalActions,
     double borderRadius = 8.0,
     SystemUiOverlayStyle? ui,
@@ -71,14 +40,9 @@ class NFShowFunctions {
     ui ??= NFTheme.of(context).modalSystemUiStyle;
     SystemUiOverlayStyle? lastUi;
     if (ui != null) {
-      lastUi = SystemUiStyleController.lastUi;
+      lastUi = SystemUiStyleController.instance.lastUi;
       // Animate ui on open.
-      SystemUiStyleController.animateSystemUiOverlay(to: ui);
-    }
-
-    acceptButton ??= NFButton.accept(splashColor: buttonSplashColor);
-    if (!hideCancelButton) {
-      cancelButton ??= NFButton.cancel(splashColor: buttonSplashColor);
+      SystemUiStyleController.instance.animateSystemUiOverlay(to: ui);
     }
 
     return flutter.showGeneralDialog<T>(
@@ -175,24 +139,31 @@ class NFShowFunctions {
                             : MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           if (additionalActions != null)
-                            ButtonBar(
-                              buttonPadding: EdgeInsets.zero,
-                              alignment: MainAxisAlignment.start,
-                              children: additionalActions,
+                            Flexible(
+                              child: ButtonBar(
+                                buttonPadding: EdgeInsets.zero,
+                                alignment: MainAxisAlignment.start,
+                                overflowDirection: VerticalDirection.down,
+                                children: additionalActions,
+                              ),
                             ),
-                          ButtonBar(
-                            buttonPadding: EdgeInsets.zero,
-                            mainAxisSize: MainAxisSize.min,
-                            alignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              if (!hideCancelButton)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: cancelButton,
-                                ),
-                              acceptButton!,
-                            ],
-                          ),
+                          if (acceptButton != null || cancelButton != null)
+                             Flexible(
+                              child:ButtonBar(
+                                buttonPadding: EdgeInsets.zero,
+                                mainAxisSize: MainAxisSize.min,
+                                alignment: MainAxisAlignment.end,
+                                overflowDirection: VerticalDirection.down,
+                                children: <Widget>[
+                                  if (cancelButton != null)
+                                    cancelButton,
+                                  if (acceptButton != null && cancelButton != null)
+                                    const SizedBox(width: 8.0),
+                                  if (acceptButton != null)
+                                    acceptButton,
+                                ],
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -221,9 +192,9 @@ class NFShowFunctions {
     ui ??= NFTheme.of(context).bottomSheetSystemUiStyle;
     SystemUiOverlayStyle? lastUi;
     if (ui != null) {
-      lastUi = SystemUiStyleController.lastUi;
+      lastUi = SystemUiStyleController.instance.lastUi;
       // Animate ui on open.
-      SystemUiStyleController.animateSystemUiOverlay(to: ui);
+      SystemUiStyleController.instance.animateSystemUiOverlay(to: ui);
     }
     return flutter.showBottomSheet<T>(
       context: context,
@@ -260,9 +231,9 @@ class NFShowFunctions {
     ui ??= NFTheme.of(context).bottomSheetSystemUiStyle;
     SystemUiOverlayStyle? lastUi;
     if (ui != null) {
-      lastUi = SystemUiStyleController.lastUi;
+      lastUi = SystemUiStyleController.instance.lastUi;
       // Animate ui on open.
-      SystemUiStyleController.animateSystemUiOverlay(to: ui);
+      SystemUiStyleController.instance.animateSystemUiOverlay(to: ui);
     }
     return flutter.showModalBottomSheet<T>(
       context: context,
@@ -286,7 +257,7 @@ class NFShowFunctions {
 }
 
 /// Helper that wraps widget into [RouteAwareWidget] and handles ui animations.
-class _UiHelper extends StatelessWidget {
+class _UiHelper extends StatefulWidget {
   const _UiHelper({
     Key? key,
     required this.ui,
@@ -299,21 +270,40 @@ class _UiHelper extends StatelessWidget {
   final Widget child;
 
   @override
+  State<_UiHelper> createState() => _UiHelperState();
+}
+
+class _UiHelperState extends State<_UiHelper> {
+  bool _popped = false;
+  Future<bool> _handlePop() async {
+    if (_popped) {
+      return false;
+    }
+    _popped = true;
+    // TODO: workaround for https://github.com/flutter/flutter/issues/82046 - can remove, when it is fixed
+    Navigator.pop(context);
+    return true;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return RouteAwareWidget(
-      onPopNext: () {
-        if (ui != null) {
-          // Animate ui when the route on top pops.
-          SystemUiStyleController.animateSystemUiOverlay(to: ui!);
-        }
-      },
-      onPop: () {
-        if (lastUi != null) {
-          // Animate ui after sheet been closed.
-          SystemUiStyleController.animateSystemUiOverlay(to: lastUi!);
-        }
-      },
-      child: child
+    return BackButtonListener(
+      onBackButtonPressed: _handlePop,
+      child: RouteAwareWidget(
+        onPopNext: () {
+          if (widget.ui != null) {
+            // Animate ui when the route on top pops.
+            SystemUiStyleController.instance.animateSystemUiOverlay(to: widget.ui!);
+          }
+        },
+        onPop: () {
+          if (widget.lastUi != null) {
+            // Animate ui after sheet been closed.
+            SystemUiStyleController.instance.animateSystemUiOverlay(to: widget.lastUi!);
+          }
+        },
+        child: widget.child
+      ),
     );
   }
 }

@@ -13,22 +13,24 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// ands properties, like [actualUi].
 /// 
 /// When using this class, it's recommended to never call [SystemChrome.setSystemUIOverlayStyle] directly.
-abstract class SystemUiStyleController {
-  static SystemUiOverlayStyle? _ui;
-  static late SystemUiOverlayStyle _from;
+class SystemUiStyleController {
+  static SystemUiStyleController instance = SystemUiStyleController();
+
+  SystemUiOverlayStyle? _ui;
+  late SystemUiOverlayStyle _from;
   /// It's not `late` because is use it in [lastUi].
-  static SystemUiOverlayStyle? _to;
-  static AnimationController? _controller;
-  static PersistentTickerProvider _tickerProvider = PersistentTickerProvider();
+  SystemUiOverlayStyle? _to;
+  AnimationController? _controller;
+  PersistentTickerProvider _tickerProvider = PersistentTickerProvider();
   /// Operation to wait before the animation completes
-  static Completer? _animationCompleter;
-  static StreamController<SystemUiOverlayStyle> _streamController = StreamController.broadcast();
+  Completer? _animationCompleter;
+  StreamController<SystemUiOverlayStyle> _streamController = StreamController.broadcast();
 
   /// Represents the actual UI that is now drawn on the screen.
   /// 
   /// Before using this property, it's required to call [setSystemUiOverlay] or
   /// [animateSystemUiOverlay] with `from` parameter at least once.
-  static SystemUiOverlayStyle get actualUi {
+  SystemUiOverlayStyle get actualUi {
     assert(() {
       if (_ui == null) {
         throw StateError(
@@ -43,19 +45,19 @@ abstract class SystemUiStyleController {
 
   /// This value is the UI that the current animation, if it exists, leads to
   /// or (led to, if it's ended).
-  static SystemUiOverlayStyle get lastUi => _to ?? actualUi;
+  SystemUiOverlayStyle get lastUi => _to ?? actualUi;
 
   /// The stream notifying of the [actualUi] changes.
-  static Stream<SystemUiOverlayStyle> get onUiChange => _streamController.stream;
+  Stream<SystemUiOverlayStyle> get onUiChange => _streamController.stream;
 
   /// Curve that will be used for UI animations.
-  static Curve curve = Curves.linear;
+  Curve curve = Curves.linear;
 
   /// Duration that will be used for UI animations.
-  static Duration duration = const Duration(milliseconds: 240);
+  Duration duration = const Duration(milliseconds: 240);
 
   /// Sets a new overlay ui style, any existing animation will be cancelled.
-  static void setSystemUiOverlay(SystemUiOverlayStyle ui) {
+  void setSystemUiOverlay(SystemUiOverlayStyle ui) {
     _controller?.dispose();
     _controller = null;
     _handleEnd();
@@ -85,7 +87,7 @@ abstract class SystemUiStyleController {
   /// 
   /// NOTE: don't `await` for this method in `main` this will lead to
   /// that your application never starts
-  static Future<void> animateSystemUiOverlay({
+  Future<void> animateSystemUiOverlay({
     SystemUiOverlayStyle? from,
     required SystemUiOverlayStyle to,
     Curve? curve,
@@ -94,15 +96,15 @@ abstract class SystemUiStyleController {
     from ??= actualUi;
     _from = from;
     _to = to;
-    curve ??= SystemUiStyleController.curve;
-    duration ??= SystemUiStyleController.duration;
+    curve ??= SystemUiStyleController.instance.curve;
+    duration ??= SystemUiStyleController.instance.duration;
     _handleEnd();
     _handleStart(curve: curve, duration: duration);
     return _animationCompleter!.future;
   }
 
   /// Creates animation from the [curve] and [duration].
-  static void _handleStart({ required Curve curve, required Duration duration }) {
+  void _handleStart({ required Curve curve, required Duration duration }) {
     _animationCompleter = Completer();
     _controller?.dispose();
     _controller = AnimationController(
@@ -126,7 +128,7 @@ abstract class SystemUiStyleController {
     _controller!.forward();
   }
 
-  static void _handleEnd() {
+  void _handleEnd() {
     if (_animationCompleter != null && !_animationCompleter!.isCompleted) {
       _animationCompleter!.complete();
       _animationCompleter = null;

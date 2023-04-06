@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-import 'slidable.dart';
-import 'route_transitions.dart';
-import 'snackbar.dart';
+import 'slidable_examples.dart';
+import 'route_transitions_examples.dart';
+import 'snackbar_examples.dart';
 
 final routerObserver = RouteObserver();
 
@@ -23,13 +23,13 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     NFWidgets.init(
       navigatorKey: App.navigatorKey,
       routeObservers: [routerObserver],
     );
-    SystemUiStyleController.setSystemUiOverlay(SystemUiOverlayStyle.dark);
+    SystemUiStyleController.instance.setSystemUiOverlay(SystemUiOverlayStyle.dark);
   }
 
   @override
@@ -75,8 +75,8 @@ class _HomeState extends State<Home> {
         ),
         Tile(
           name: 'route_transitions',
-          /// using FadeInRouteTransition here, because i need to demonstrate the work of UI style for [RouteTransition]s
-          onTap: () => _handleTap(FadeInRouteTransition(child: RouteTransitionExamples())),
+          onTap: () => _handleTap(
+              FadeInRouteTransition(child: RouteTransitionExamples())),
         ),
         Tile(
           name: 'snackbar',

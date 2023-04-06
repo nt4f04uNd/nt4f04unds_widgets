@@ -1,3 +1,14 @@
+## 3.0.0
+
+* Made `SystemUiStyleController` a singleton to make it mockable (rather than an abstract class with static methods)
+* Adapt to recent Flutter theme and other deprecations
+* Remove `NFButton` and `NFCopyButton`
+* Remove `ShowFunctions.showAlert`
+* Remove localization
+* Remove `NFBackButtonListener` - can now use `BackButtonListener` from the framework
+* Fix `SelectionAppBar` actions alignment
+* Fix `SelectionAppBar.defaultSelectionActionsBuilder` sometimes didn't animate correctly
+
 ## 2.0.0
 
 * fix for breaking changes in gestures in Flutter 2.5.0

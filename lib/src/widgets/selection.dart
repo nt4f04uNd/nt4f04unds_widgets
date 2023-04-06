@@ -5,8 +5,8 @@
 
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
-import 'package:nt4f04unds_widgets/src/constants.dart';
 
 /// A regular [AppBar] which to use with selection and [SelectionController].
 /// 
@@ -33,10 +33,12 @@ class SelectionAppBar extends AppBar {
     double elevationSelection = 2.0,
     ShapeBorder? shape,
     Color? backgroundColor,
-    Brightness? brightness,
+    SystemUiOverlayStyle? systemOverlayStyle,
     IconThemeData? iconTheme,
     IconThemeData? actionsIconTheme,
     TextTheme? textTheme,
+    TextStyle? toolbarTextStyle,
+    TextStyle? titleTextStyle,
     bool primary = true,
     bool? centerTitle,
     bool excludeHeaderSemantics = false,
@@ -61,6 +63,7 @@ class SelectionAppBar extends AppBar {
             reverseCurve: reverseCurve,
             parent: selectionController.animation,
           ),
+          alignment: AlignmentDirectional.centerStart,
           child1: title,
           child2: titleSelection,
         ),
@@ -73,6 +76,7 @@ class SelectionAppBar extends AppBar {
                 reverseCurve: reverseCurve,
                 parent: selectionController.animation,
               ),
+              alignment: Alignment.centerRight,
               builder2: defaultSelectionActionsBuilder,
               child1: Row(children: actions),
               child2: Row(children: actionsSelection),
@@ -85,10 +89,11 @@ class SelectionAppBar extends AppBar {
         elevation: selectionController.inSelection ? elevationSelection : elevation,
         shape: shape,
         backgroundColor: backgroundColor,
-        brightness: brightness,
+        systemOverlayStyle: systemOverlayStyle,
         iconTheme: iconTheme,
         actionsIconTheme: actionsIconTheme,
-        textTheme: textTheme,
+        toolbarTextStyle: toolbarTextStyle,
+        titleTextStyle: titleTextStyle,
         primary: primary,
         centerTitle: centerTitle,
         excludeHeaderSemantics: excludeHeaderSemantics,
@@ -98,14 +103,18 @@ class SelectionAppBar extends AppBar {
         toolbarHeight: toolbarHeight,
       );
 
-  static Widget defaultSelectionActionsBuilder(Widget child, Animation<double> animation,) {
+  static Widget defaultSelectionActionsBuilder(Widget child, Animation<double> animation) {
     return FadeTransition(
       opacity: animation,
-      child: Transform(
-        transform: Matrix4.identity()
-          ..rotateX((1.0 - animation.value) * math.pi / 2),
-        origin: const Offset(0.0, 30.0),
+      child: AnimatedBuilder(
+        animation: animation,
         child: child,
+        builder: (context, child) => Transform(
+          transform: Matrix4.identity()
+            ..rotateX((1.0 - animation.value) * math.pi / 2),
+          origin: const Offset(0.0, 30.0),
+          child: child,
+        ),
       ),
     );
   }

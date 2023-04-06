@@ -5,7 +5,6 @@
 
 export 'core/core.dart';
 export 'widgets/widgets.dart';
-export 'localization/localization.dart';
 export 'constants.dart';
 
 import 'package:flutter/material.dart';

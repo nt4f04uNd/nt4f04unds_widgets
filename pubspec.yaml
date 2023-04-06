@@ -1,26 +1,21 @@
 name: nt4f04unds_widgets
 description: A new Flutter package project.
-version: 2.0.0
+version: 3.0.0
 homepage: https://github.com/nt4f04uNd/nt4f04unds_widgets
 repository: https://github.com/nt4f04uNd/nt4f04unds_widgets
 issue_tracker: https://github.com/nt4f04uNd/nt4f04unds_widgets/issues
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
-  flutter: ^2.5.0
+  flutter: ^3.0.0
 
 dependencies:
   async: ^2.5.0
   marquee: ^2.1.0
   auto_size_text: ^3.0.0
-  url_launcher: ^6.0.3
+  url_launcher: ^6.1.0
   enum_to_string: ^2.0.1
   shared_preferences: ^2.0.5
   multiple_localization: ^0.2.1
   flutter:
     sdk: flutter
-
-dev_dependencies:
-  intl_translation:
-    git: 
-      url: https://github.com/nt4f04uNd/intl_translation

@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-import 'route_transitions.dart';
-
 const Duration _kStackFadeTransitionDuration = const Duration(milliseconds: 240);
 
 /// Settings for the [StackFadeRouteTransition].

@@ -127,6 +127,7 @@ class Slidable extends StatefulWidget {
     this.onDragEnd,
     this.onSlideChange,
     this.shouldGiveUpGesture,
+    this.shouldEagerlyWin,
     this.disableSlideTransition = false,
     this.barrierIgnoringStrategy = const IgnoringStrategy(dismissed: true, reverse: true),
     this.catchIgnoringStrategy = const MovingIgnoringStrategy(),
@@ -208,6 +209,11 @@ class Slidable extends StatefulWidget {
   ///
   /// Return `false` to give up the gesture.
   final ShouldGiveUpCallback? shouldGiveUpGesture;
+
+  /// Called on each pointer move event (even before the drag was accepted).
+  ///
+  /// Return `false` to win the gesture.
+  final ShouldGiveUpCallback? shouldEagerlyWin;
 
   ///todo: docs
   final bool disableSlideTransition;
@@ -538,7 +544,8 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
               ..onUpdate = _handleDragUpdate
               ..onEnd = _handleDragEnd
               ..dragStartBehavior = widget.dragStartBehavior
-              ..shouldGiveUp = widget.shouldGiveUpGesture,
+              ..shouldGiveUp = widget.shouldGiveUpGesture
+              ..shouldEagerlyWin = widget.shouldEagerlyWin,
           ),
         if (_draggable && !_horizontal)
           NFVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFVerticalDragGestureRecognizer>(
@@ -548,7 +555,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
               ..onUpdate = _handleDragUpdate
               ..onEnd = _handleDragEnd
               ..dragStartBehavior = widget.dragStartBehavior
-              ..shouldGiveUp = widget.shouldGiveUpGesture,
+              ..shouldEagerlyWin = widget.shouldEagerlyWin,
           ),
       },
       child: barrier == null
