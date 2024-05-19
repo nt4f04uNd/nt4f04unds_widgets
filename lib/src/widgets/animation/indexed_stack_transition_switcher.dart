@@ -5,7 +5,6 @@
 
 // todo: remove this when this issue gets resolved https://github.com/flutter/flutter/issues/56662
 
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 
 /// Based on the [PageTransitionSwitcher] from the `animations` package, this widget

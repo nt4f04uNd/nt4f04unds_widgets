@@ -140,8 +140,7 @@ class AnimatedMenuCloseButton extends StatefulWidget {
     this.reverseDuration,
     this.curve = Curves.easeOutCubic,
     this.reverseCurve = Curves.easeInCubic,
-  })  : assert(animation != null),
-        super(key: key);
+  })  : super(key: key);
 
   /// Animation controller that this button will listen to and animate together.
   ///

@@ -15,8 +15,7 @@ class NFSettingItem extends StatelessWidget {
     this.description,
     this.trailing,
     this.child,
-  })  : assert(title != null),
-        super(key: key);
+  })  : super(key: key);
 
   /// Text displayed as main title of the settings.
   final String title;

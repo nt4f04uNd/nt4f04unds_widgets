@@ -9,8 +9,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 
 const Duration _kUnconfirmedRippleDuration = Duration(milliseconds: 275);
 const Duration _kFadeInDuration = Duration(milliseconds: 120);
@@ -120,10 +118,7 @@ class NFListTileInkRipple extends InteractiveInkFeature {
     ShapeBorder? customBorder,
     double? radius,
     VoidCallback? onRemoved,
-  }) : assert(color != null),
-       assert(position != null),
-       assert(textDirection != null),
-       _position = position,
+  }) : _position = position,
        _borderRadius = borderRadius ?? BorderRadius.zero,
        _customBorder = customBorder,
        _textDirection = textDirection,
@@ -134,7 +129,6 @@ class NFListTileInkRipple extends InteractiveInkFeature {
             referenceBox: referenceBox,
             color: color,
             onRemoved: onRemoved) {
-    assert(_borderRadius != null);
 
     // Immediately begin fading-in the initial splash.
     _fadeInController =

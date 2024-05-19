@@ -173,11 +173,7 @@ class NFDraggableScrollbar extends StatefulWidget {
     this.onScrollNotification,
     this.appearOnlyOnScroll = false,
     this.shouldAppear = true,
-  })  : assert(barHeight != null),
-        assert(barWidth != null),
-        assert(barColor != null),
-        assert(barBuilder != null),
-        super(key: key);
+  })  : super(key: key);
 
   NFDraggableScrollbar.rrect({
     Key? key,
