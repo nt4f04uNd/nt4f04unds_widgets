@@ -58,7 +58,7 @@ class NFSettingItem extends StatelessWidget {
               child: Text(
                 description!,
                 style: TextStyle(
-                  color: Theme.of(context).textTheme.caption?.color,
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ),
             ),
