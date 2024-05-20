@@ -6,7 +6,7 @@ repository: https://github.com/nt4f04uNd/nt4f04unds_widgets
 issue_tracker: https://github.com/nt4f04uNd/nt4f04unds_widgets/issues
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.14.0 <3.0.0'
   flutter: ^3.0.0
 
 dependencies:

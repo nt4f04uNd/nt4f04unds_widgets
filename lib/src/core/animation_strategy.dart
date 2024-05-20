@@ -53,7 +53,7 @@ abstract class AnimationStrategy<T> implements MovingAnimationStrategy<T> {
   }
 
   @override
-  int get hashCode => hashValues(dismissed, forward, completed, reverse);
+  int get hashCode => Object.hash(dismissed, forward, completed, reverse);
 }
 
 /// Describes what to do when depending on the current animation status, that's either [AnimationStatus.forward], or [AnimationStatus.reverse].
@@ -101,7 +101,7 @@ abstract class MovingAnimationStrategy<T> {
   }
 
   @override
-  int get hashCode => hashValues(forward, reverse);
+  int get hashCode => Object.hash(forward, reverse);
 }
 
 /// Describes what [HitTestBehavior] should be applied, depending on [AnimationStatus].
