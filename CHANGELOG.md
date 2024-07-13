@@ -1,3 +1,14 @@
+## 4.0.0
+* Support Flutter 3.22
+  - `NFVerticalDragGestureRecognizer`, `NFHorizontalDragGestureRecognizer`, `NFPanGestureRecognizer` and
+    `NFDragGestureRecognizer` now accept an `allowedButtonsFilter`
+  - Additionally `NFDragGestureRecognizer` now accepts a `multitouchDragStrategy` and a `onlyAcceptDragOnThreshold` flag
+  - Stop using deprecated style elements
+  - Use `TextScaler` instead of `textScaleFactor` to support non-linear text scaling
+  - Removed `NFTextSelectionControls`, replaced by Flutters
+    [`TextSelectionControls`](https://api.flutter.dev/flutter/widgets/TextSelectionControls-class.html)
+  - Update dependencies
+
 ## 3.0.0
 
 * Made `SystemUiStyleController` a singleton to make it mockable (rather than an abstract class with static methods)
