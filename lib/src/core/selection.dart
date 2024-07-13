@@ -130,6 +130,7 @@ class SelectionController<T> extends Listenable
     notifyListeners();
     if (!alwaysInSelection)
       return _animationController!.forward();
+    return null;
   }
 
   /// Removes an item to selection set and notifies click listeners.
@@ -142,6 +143,7 @@ class SelectionController<T> extends Listenable
     notifyListeners();
     if (!alwaysInSelection && closeSelectionWhenEmpty && inSelection && data.length == 0)
       return _animationController!.reverse();
+    return null;
   }
 
   /// Adds item in selection, if item is already selected, unselects it.
@@ -158,6 +160,7 @@ class SelectionController<T> extends Listenable
     clear();
     if (!alwaysInSelection)
       return _animationController!.reverse();
+    return null;
   }
 
   /// Clears the set and notifies the listeners.

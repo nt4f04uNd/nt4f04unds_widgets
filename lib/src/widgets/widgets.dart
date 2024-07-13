@@ -21,4 +21,3 @@ export 'slider.dart';
 export 'snackbar.dart';
 export 'tabs.dart';
 export 'text.dart';
-export 'text_selection.dart';

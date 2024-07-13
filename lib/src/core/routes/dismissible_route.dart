@@ -4,7 +4,6 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// Makes the [route] dismissible.

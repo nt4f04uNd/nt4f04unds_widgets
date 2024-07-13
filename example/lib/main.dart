@@ -10,7 +10,9 @@ final routerObserver = RouteObserver();
 
 void main() {
   final WidgetsBinding binding = WidgetsFlutterBinding.ensureInitialized();
-  binding.renderView.automaticSystemUiAdjustment = false;
+  for (var view in binding.renderViews) {
+    view.automaticSystemUiAdjustment = false;
+  }
   runApp(App());
 }
 

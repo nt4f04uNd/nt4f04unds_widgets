@@ -150,12 +150,12 @@ class _TabStyle extends AnimatedWidget {
     // the same value of inherit. Force that to be inherit=true here.
     final TextStyle defaultStyle = (labelStyle ??
             tabBarTheme.labelStyle ??
-            themeData.primaryTextTheme.bodyText1)!
+            themeData.primaryTextTheme.bodyLarge)!
         .copyWith(inherit: true);
     final TextStyle defaultUnselectedStyle = (unselectedLabelStyle ??
             tabBarTheme.unselectedLabelStyle ??
             labelStyle ??
-            themeData.primaryTextTheme.bodyText1)!
+            themeData.primaryTextTheme.bodyLarge)!
         .copyWith(inherit: true);
     final TextStyle textStyle = selected!
         ? TextStyle.lerp(defaultStyle, defaultUnselectedStyle, animation.value)!
@@ -163,7 +163,7 @@ class _TabStyle extends AnimatedWidget {
 
     final Color? selectedColor = labelColor ??
         tabBarTheme.labelColor ??
-        themeData.primaryTextTheme.bodyText1!.color;
+        themeData.primaryTextTheme.bodyLarge!.color;
     final Color unselectedColor = unselectedLabelColor ??
         tabBarTheme.unselectedLabelColor ??
         selectedColor!.withAlpha(0xB2); // 70% alpha
@@ -241,11 +241,8 @@ class NFTabBar extends StatefulWidget implements PreferredSizeWidget {
     this.unselectedLabelStyle,
     this.dragStartBehavior = DragStartBehavior.start,
     this.onTap,
-  })  : assert(tabs != null),
-        assert(isScrollable != null),
-        assert(dragStartBehavior != null),
-        assert(indicator != null || (indicatorWeight != null && indicatorWeight > 0.0)),
-        assert(indicator != null || (indicatorPadding != null)),
+  })  : assert(indicator != null || (indicatorWeight > 0.0)),
+        assert(indicator != null),
         super(key: key);
 
   /// Typically a list of two or more [Tab] widgets.
@@ -436,7 +433,7 @@ class _NFTabBarState extends State<NFTabBar> {
     //
     // The material's color might be null (if it's a transparency). In that case
     // there's no good way for us to find out what the color is so we don't.
-    if (color.value == Material.of(context)!.color?.value) color = Colors.white;
+    if (color.value == Material.of(context).color?.value) color = Colors.white;
 
     return UnderlineTabIndicator(
       insets: widget.indicatorPadding,
@@ -837,7 +834,6 @@ class _TabBarScrollPosition extends ScrollPositionWithSingleContext {
       // scenario, setting the actual dimension would cause a strange scroll
       // effect without this guard because the super call below would starts a
       // ballistic scroll activity.
-      assert(viewportDimension != null);
       _initialViewportDimensionWasZero = viewportDimension != 0.0;
       correctPixels(tabBar!._initialScrollOffset(
           viewportDimension, minScrollExtent, maxScrollExtent));
@@ -903,7 +899,6 @@ class _TabLabelBarRenderer extends RenderFlex {
     required VerticalDirection verticalDirection,
     required this.onPerformLayout,
   })  : assert(onPerformLayout != null),
-        assert(textDirection != null),
         super(
           children: children,
           direction: direction,
@@ -966,9 +961,7 @@ class _IndicatorPainter extends CustomPainter {
     required this.indicatorSize,
     required this.tabKeys,
     _IndicatorPainter? old,
-  })  : assert(controller != null),
-        assert(indicator != null),
-        super(repaint: controller.animation) {
+  })  : super(repaint: controller.animation) {
     if (old != null)
       saveTabOffsets(old._currentTabOffsets, old._currentTextDirection);
   }
@@ -1115,12 +1108,12 @@ class _ChangeAnimation extends Animation<double>
 
   @override
   void removeStatusListener(AnimationStatusListener listener) {
-    if (parent != null) super.removeStatusListener(listener);
+    super.removeStatusListener(listener);
   }
 
   @override
   void removeListener(VoidCallback listener) {
-    if (parent != null) super.removeListener(listener);
+    super.removeListener(listener);
   }
 
   @override
@@ -1139,12 +1132,12 @@ class _DragAnimation extends Animation<double>
 
   @override
   void removeStatusListener(AnimationStatusListener listener) {
-    if (parent != null) super.removeStatusListener(listener);
+    super.removeStatusListener(listener);
   }
 
   @override
   void removeListener(VoidCallback listener) {
-    if (parent != null) super.removeListener(listener);
+    super.removeListener(listener);
   }
 
   @override

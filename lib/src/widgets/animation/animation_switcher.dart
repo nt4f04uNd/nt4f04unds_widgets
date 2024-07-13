@@ -16,10 +16,7 @@ class AnimationSwitcher extends StatelessWidget {
     this.alignment = AlignmentDirectional.topStart,
     this.builder1 = defaultBuilder,
     this.builder2 = defaultBuilder,
-  })  : assert(child1 != null),
-        assert(child2 != null),
-        assert(animation != null),
-        super(key: key);
+  })  : super(key: key);
 
   final Animation<double> animation;
   final AlignmentGeometry alignment;

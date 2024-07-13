@@ -173,11 +173,7 @@ class NFDraggableScrollbar extends StatefulWidget {
     this.onScrollNotification,
     this.appearOnlyOnScroll = false,
     this.shouldAppear = true,
-  })  : assert(barHeight != null),
-        assert(barWidth != null),
-        assert(barColor != null),
-        assert(barBuilder != null),
-        super(key: key);
+  })  : super(key: key);
 
   NFDraggableScrollbar.rrect({
     Key? key,
@@ -698,20 +694,20 @@ class NFScrollLabel extends StatelessWidget {
 
   /// The size of the label container.
   /// The font size is calculated automatically based on that.
-  /// Also respects [MediaQueryData.textScaleFactor].
+  /// Also respects [MediaQueryData.textScaler].
   final double size;
   final Color? color;
   final Color? fontColor;
 
   @override
   Widget build(BuildContext context) {
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    final textScaler = MediaQuery.of(context).textScaler;
     final fontSize = size / 2.1875;
     final theme = Theme.of(context);
     return Center(
       child: Container(
-        width: size * textScaleFactor,
-        height: size * textScaleFactor,
+        width: textScaler.scale(size),
+        height: textScaler.scale(size),
         margin: const EdgeInsets.only(bottom: 100.0),
         decoration: BoxDecoration(
           color: color ?? theme.colorScheme.primary,

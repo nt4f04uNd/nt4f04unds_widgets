@@ -148,8 +148,7 @@ class _NFSnackbarEntryWidget extends StatefulWidget {
   _NFSnackbarEntryWidget({
     Key? key,
     required this.entry,
-  }) : assert(entry != null),
-       super(key: key);
+  }) : super(key: key);
 
   final NFSnackbarEntry entry;
 

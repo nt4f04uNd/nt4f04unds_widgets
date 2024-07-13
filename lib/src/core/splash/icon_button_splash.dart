@@ -123,10 +123,7 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
     ShapeBorder? customBorder,
     double? radius,
     VoidCallback? onRemoved,
-  })  : assert(color != null),
-        assert(position != null),
-        assert(textDirection != null),
-        _position = position,
+  })  : _position = position,
         _borderRadius = borderRadius ?? BorderRadius.zero,
         _customBorder = customBorder,
         _textDirection = textDirection,
@@ -140,7 +137,6 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
             referenceBox: referenceBox,
             color: color,
             onRemoved: onRemoved) {
-    assert(_borderRadius != null);
 
     // Immediately begin fading-in the initial splash.
     _fadeInController =

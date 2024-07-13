@@ -3,7 +3,6 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart' hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
 import 'package:flutter/material.dart' as flutter show showGeneralDialog, showBottomSheet, showModalBottomSheet;
@@ -28,7 +27,7 @@ class NFShowFunctions {
     BuildContext context, {
     required Widget title,
     Widget? content,
-    EdgeInsets titlePadding: defaultAlertTitlePadding,
+    EdgeInsets titlePadding = defaultAlertTitlePadding,
     EdgeInsets contentPadding = defaultAlertContentPadding,
     Widget? acceptButton,
     Widget? cancelButton,
@@ -81,11 +80,11 @@ class NFShowFunctions {
               backgroundColor: Theme.of(context).colorScheme.surface,
               contentPadding: EdgeInsets.zero,
               titlePadding: EdgeInsets.zero,
-              contentTextStyle: Theme.of(context).textTheme.subtitle1?.copyWith(
+              contentTextStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w500,
                 fontSize: 15.0,
               ),
-              titleTextStyle: Theme.of(context).textTheme.headline5?.copyWith(
+              titleTextStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w700, 
                 fontSize: 20.0, 
                 height: 1.5
@@ -180,7 +179,7 @@ class NFShowFunctions {
   /// Calls [showBottomSheet], but also handles system UI animations to the custom [ui] and out of it on pop.
   ///
   /// [ui] Defaults to [NFWidgets.defaultBottomSheetSystemUiStyle].
-  PersistentBottomSheetController<T> showBottomSheet<T>({
+  PersistentBottomSheetController showBottomSheet({
     required BuildContext context,
     required WidgetBuilder builder,
     SystemUiOverlayStyle? ui,
@@ -196,7 +195,7 @@ class NFShowFunctions {
       // Animate ui on open.
       SystemUiStyleController.instance.animateSystemUiOverlay(to: ui);
     }
-    return flutter.showBottomSheet<T>(
+    return flutter.showBottomSheet(
       context: context,
       builder: (context) => _UiHelper(
         ui: ui,

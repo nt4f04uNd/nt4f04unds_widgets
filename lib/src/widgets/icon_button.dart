@@ -145,10 +145,7 @@ class NFIconButton extends StatelessWidget {
     this.autofocus = false,
     this.tooltip,
     this.enableFeedback = true,
-  })  : assert(iconSize != null),
-        assert(autofocus != null),
-        assert(icon != null),
-        super(key: key);
+  })  : super(key: key);
 
   /// The size of the icon inside the button.
   ///
