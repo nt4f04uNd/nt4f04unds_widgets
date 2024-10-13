@@ -627,12 +627,11 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
       };
       _velocityTrackers[event.pointer]!.addPosition(event.timeStamp, position);
     }
-    if (event is PointerMoveEvent && shouldGiveUp != null && shouldGiveUp!(event)) {
+    if (event is PointerMoveEvent &&
+        ((shouldGiveUp != null && shouldGiveUp!(event)) ||
+            (event.buttons != _initialButtons))) {
       _giveUpPointer(event.pointer);
       return;
-    }
-    if (event is PointerMoveEvent && event.buttons != _initialButtons) {
-      resolve(GestureDisposition.accepted);
     }
     if ((event is PointerMoveEvent || event is PointerPanZoomUpdateEvent)
         && _shouldTrackMoveEvent(event.pointer)) {
