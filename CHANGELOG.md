@@ -1,3 +1,7 @@
+## 4.0.1
+* Reject pointer events as drag events when the buttons change when using the `NFDragGestureRecognizer`, which is closer
+  to what Flutter does.
+
 ## 4.0.0
 * Support Flutter 3.22
   - `NFVerticalDragGestureRecognizer`, `NFHorizontalDragGestureRecognizer`, `NFPanGestureRecognizer` and
