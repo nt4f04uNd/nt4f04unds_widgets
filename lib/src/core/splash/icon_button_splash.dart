@@ -18,16 +18,6 @@ const Duration _kCancelDuration = Duration(milliseconds: 250);
 /// The fade out start interval, when the cancel wasn't called.
 const double _kFadeOutIntervalStart = 0.7;
 
-RectCallback? _getClipCallback(
-    RenderBox referenceBox, bool containedInkWell, RectCallback? rectCallback) {
-  if (rectCallback != null) {
-    assert(containedInkWell);
-    return rectCallback;
-  }
-  if (containedInkWell) return () => Offset.zero & referenceBox.size;
-  return null;
-}
-
 double _getTargetRadius(RenderBox referenceBox, bool containedInkWell,
     RectCallback? rectCallback, Offset position) {
   final Size size =
@@ -124,20 +114,14 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
     double? radius,
     VoidCallback? onRemoved,
   })  : _position = position,
-        _borderRadius = borderRadius ?? BorderRadius.zero,
-        _customBorder = customBorder,
-        _textDirection = textDirection,
         _targetRadius = radius ??
             _getTargetRadius(
                 referenceBox, containedInkWell, rectCallback, position),
-        _clipCallback =
-            _getClipCallback(referenceBox, containedInkWell, rectCallback),
         super(
             controller: controller,
             referenceBox: referenceBox,
             color: color,
             onRemoved: onRemoved) {
-
     // Immediately begin fading-in the initial splash.
     _fadeInController =
         AnimationController(duration: _kFadeInDuration, vsync: controller.vsync)
@@ -173,11 +157,7 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
   }
 
   final Offset _position;
-  final BorderRadius _borderRadius;
-  final ShapeBorder? _customBorder;
   final double _targetRadius;
-  final RectCallback? _clipCallback;
-  final TextDirection _textDirection;
 
   bool isCancelled = false;
 
