@@ -6,7 +6,7 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// todo: propose changes to the tabs in the framework and delete this. 
+// todo: propose changes to the tabs in the framework and delete this.
 
 /// This is file with copied tabs stuff from flutter framework.
 ///
@@ -143,7 +143,7 @@ class _TabStyle extends AnimatedWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
     final Animation<double> animation = listenable as Animation<double>;
 
     // To enable TextStyle.lerp(style1, style2, value), both styles must have
@@ -159,7 +159,8 @@ class _TabStyle extends AnimatedWidget {
         .copyWith(inherit: true);
     final TextStyle textStyle = selected!
         ? TextStyle.lerp(defaultStyle, defaultUnselectedStyle, animation.value)!
-        : TextStyle.lerp(defaultUnselectedStyle, defaultStyle, animation.value)!;
+        : TextStyle.lerp(
+            defaultUnselectedStyle, defaultStyle, animation.value)!;
 
     final Color? selectedColor = labelColor ??
         tabBarTheme.labelColor ??
@@ -419,7 +420,7 @@ class _NFTabBarState extends State<NFTabBar> {
 
   Decoration? get _indicator {
     if (widget.indicator != null) return widget.indicator;
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
     if (tabBarTheme.indicator != null) return tabBarTheme.indicator;
 
     Color color = widget.indicatorColor ?? Theme.of(context).indicatorColor;
@@ -433,7 +434,7 @@ class _NFTabBarState extends State<NFTabBar> {
     //
     // The material's color might be null (if it's a transparency). In that case
     // there's no good way for us to find out what the color is so we don't.
-    if (color.value == Material.of(context).color?.value) color = Colors.white;
+    if (color == Material.of(context).color) color = Colors.white;
 
     return UnderlineTabIndicator(
       insets: widget.indicatorPadding,
@@ -560,13 +561,14 @@ class _NFTabBarState extends State<NFTabBar> {
 
   void _scrollToCurrentIndex() {
     final double offset = _tabCenteredScrollOffset(_currentIndex);
-    _scrollController!.animateTo(offset,
-        duration: kTabScrollDuration, curve: Curves.ease);
+    _scrollController!
+        .animateTo(offset, duration: kTabScrollDuration, curve: Curves.ease);
   }
 
   void _scrollToControllerValue() {
-    final double? leadingPosition =
-        _currentIndex! > 0 ? _tabCenteredScrollOffset(_currentIndex! - 1) : null;
+    final double? leadingPosition = _currentIndex! > 0
+        ? _tabCenteredScrollOffset(_currentIndex! - 1)
+        : null;
     final double middlePosition = _tabCenteredScrollOffset(_currentIndex);
     final double? trailingPosition = _currentIndex! < maxTabIndex
         ? _tabCenteredScrollOffset(_currentIndex! + 1)
@@ -614,7 +616,8 @@ class _NFTabBarState extends State<NFTabBar> {
   }
 
   // Called each time layout completes.
-  void _saveTabOffsets(List<double> tabOffsets, TextDirection? textDirection, double width) {
+  void _saveTabOffsets(
+      List<double> tabOffsets, TextDirection? textDirection, double width) {
     _tabStripWidth = width;
     _indicatorPainter?.saveTabOffsets(tabOffsets, textDirection);
   }
@@ -659,7 +662,7 @@ class _NFTabBarState extends State<NFTabBar> {
       );
     }
 
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
 
     final List<Widget> wrappedTabs = [];
     for (int i = 0; i < widget.tabs.length; i += 1) {
@@ -732,16 +735,16 @@ class _NFTabBarState extends State<NFTabBar> {
               //   padding: EdgeInsets.only(bottom: widget.indicatorWeight),
               //   child:
               Stack(
-              children: [
-                wrappedTabs[index],
-                Semantics(
-                  selected: index == _currentIndex,
-                  label: localizations.tabLabel(
-                    tabIndex: index + 1,
-                    tabCount: tabCount,
-                  ),
+            children: [
+              wrappedTabs[index],
+              Semantics(
+                selected: index == _currentIndex,
+                label: localizations.tabLabel(
+                  tabIndex: index + 1,
+                  tabCount: tabCount,
                 ),
-              ],
+              ),
+            ],
           ),
           // ),
         ),
@@ -961,7 +964,7 @@ class _IndicatorPainter extends CustomPainter {
     required this.indicatorSize,
     required this.tabKeys,
     _IndicatorPainter? old,
-  })  : super(repaint: controller.animation) {
+  }) : super(repaint: controller.animation) {
     if (old != null)
       saveTabOffsets(old._currentTabOffsets, old._currentTextDirection);
   }
@@ -1029,7 +1032,8 @@ class _IndicatorPainter extends CustomPainter {
 
     // return Rect.fromLTWH(tabLeft, 0.0, tabRight - tabLeft, tabBarSize.height);
     // TODO: PR to flutter with adding border radius to decoration, single bar and tabbar paddings.
-    return Rect.fromLTWH(tabLeft, 0.0 + tabBarSize.height - 4, tabRight - tabLeft, 4);
+    return Rect.fromLTWH(
+        tabLeft, 0.0 + tabBarSize.height - 4, tabRight - tabLeft, 4);
   }
 
   @override
@@ -1143,6 +1147,8 @@ class _DragAnimation extends Animation<double>
   @override
   double get value {
     assert(!controller!.indexIsChanging);
-    return (controller!.animation!.value - index.toDouble()).abs().clamp(0.0, 1.0);
+    return (controller!.animation!.value - index.toDouble())
+        .abs()
+        .clamp(0.0, 1.0);
   }
 }

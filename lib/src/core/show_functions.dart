@@ -4,8 +4,10 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart' hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
-import 'package:flutter/material.dart' as flutter show showGeneralDialog, showBottomSheet, showModalBottomSheet;
+import 'package:flutter/material.dart'
+    hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
+import 'package:flutter/material.dart' as flutter
+    show showGeneralDialog, showBottomSheet, showModalBottomSheet;
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const defaultAlertTitlePadding = EdgeInsets.fromLTRB(26.0, 24.0, 26.0, 1.0);
@@ -80,15 +82,16 @@ class NFShowFunctions {
               backgroundColor: Theme.of(context).colorScheme.surface,
               contentPadding: EdgeInsets.zero,
               titlePadding: EdgeInsets.zero,
-              contentTextStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                fontSize: 15.0,
-              ),
-              titleTextStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700, 
-                fontSize: 20.0, 
-                height: 1.5
-              ),
+              contentTextStyle:
+                  Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15.0,
+                      ),
+              titleTextStyle: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(
+                      fontWeight: FontWeight.w700, fontSize: 20.0, height: 1.5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(borderRadius),
@@ -111,7 +114,8 @@ class NFShowFunctions {
                 children: <Widget>[
                   if (content != null)
                     Flexible(
-                      child: Material( // Prevent that content splash goes out of dialog border radius
+                      child: Material(
+                        // Prevent that content splash goes out of dialog border radius
                         color: Colors.transparent,
                         child: Padding(
                           padding: contentPadding,
@@ -140,6 +144,7 @@ class NFShowFunctions {
                           if (additionalActions != null)
                             Flexible(
                               child: ButtonBar(
+                                // TODO: Replace with `OverflowBar`, but causes content to expand, which centers `NFIconButton` because they have an `Align`.
                                 buttonPadding: EdgeInsets.zero,
                                 alignment: MainAxisAlignment.start,
                                 overflowDirection: VerticalDirection.down,
@@ -147,19 +152,15 @@ class NFShowFunctions {
                               ),
                             ),
                           if (acceptButton != null || cancelButton != null)
-                             Flexible(
-                              child:ButtonBar(
-                                buttonPadding: EdgeInsets.zero,
-                                mainAxisSize: MainAxisSize.min,
-                                alignment: MainAxisAlignment.end,
+                            Flexible(
+                              child: OverflowBar(
                                 overflowDirection: VerticalDirection.down,
                                 children: <Widget>[
-                                  if (cancelButton != null)
-                                    cancelButton,
-                                  if (acceptButton != null && cancelButton != null)
+                                  if (cancelButton != null) cancelButton,
+                                  if (acceptButton != null &&
+                                      cancelButton != null)
                                     const SizedBox(width: 8.0),
-                                  if (acceptButton != null)
-                                    acceptButton,
+                                  if (acceptButton != null) acceptButton,
                                 ],
                               ),
                             ),
@@ -292,16 +293,18 @@ class _UiHelperState extends State<_UiHelper> {
         onPopNext: () {
           if (widget.ui != null) {
             // Animate ui when the route on top pops.
-            SystemUiStyleController.instance.animateSystemUiOverlay(to: widget.ui!);
+            SystemUiStyleController.instance
+                .animateSystemUiOverlay(to: widget.ui!);
           }
         },
         onPop: () {
           if (widget.lastUi != null) {
             // Animate ui after sheet been closed.
-            SystemUiStyleController.instance.animateSystemUiOverlay(to: widget.lastUi!);
+            SystemUiStyleController.instance
+                .animateSystemUiOverlay(to: widget.lastUi!);
           }
         },
-        child: widget.child
+        child: widget.child,
       ),
     );
   }

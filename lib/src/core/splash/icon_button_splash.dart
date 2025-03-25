@@ -143,9 +143,9 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
         AnimationController(duration: _kFadeInDuration, vsync: controller.vsync)
           ..addListener(controller.markNeedsPaint)
           ..forward();
-    _fadeIn = _fadeInController.drive(IntTween(
+    _fadeIn = _fadeInController.drive(Tween(
       begin: 0,
-      end: color.alpha,
+      end: color.a,
     ));
 
     // Controls the splash radius and its center. Starts upon confirm.
@@ -184,7 +184,7 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
   late Animation<double> _radius;
   late AnimationController _radiusController;
 
-  late Animation<int> _fadeIn;
+  late Animation<double> _fadeIn;
   late AnimationController _fadeInController;
 
   late AnimationController _fadeOutController;
@@ -195,8 +195,10 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
     return _NFIconButtonInkRippleFactory(radius: radius);
   }
 
-  static final Animatable<double> _easeCurveTween = CurveTween(curve: Curves.ease);
-  static final Animatable<double> _fadeOutIntervalTween = CurveTween(curve: const Interval(_kFadeOutIntervalStart, 1.0));
+  static final Animatable<double> _easeCurveTween =
+      CurveTween(curve: Curves.ease);
+  static final Animatable<double> _fadeOutIntervalTween =
+      CurveTween(curve: const Interval(_kFadeOutIntervalStart, 1.0));
 
   @override
   void confirm() {
@@ -247,26 +249,26 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
 
   @override
   void paintFeature(Canvas canvas, Matrix4 transform) {
-    final int alpha = _fadeInController.isAnimating
+    final double alpha = _fadeInController.isAnimating
         ? _fadeIn.value
         : !isCancelled
             ? _fadeOutController
-                .drive(IntTween(
-                  begin: color.alpha,
+                .drive(Tween<double>(
+                  begin: color.a,
                   end: 0,
                 ).chain(_fadeOutIntervalTween))
                 .value
             : _fadeOutController
                 .drive(
-                  IntTween(
-                    begin: color.alpha,
+                  Tween<double>(
+                    begin: color.a,
                     end: 0,
                   ).chain(
                     CurveTween(curve: Curves.easeOutCubic),
                   ),
                 )
                 .value;
-    final Paint paint = Paint()..color = color.withAlpha(alpha);
+    final Paint paint = Paint()..color = color.withValues(alpha: alpha);
     // final Paint paint = Paint()..color = color.withAlpha(200);
     // Splash moves to the center of the reference box.
     final Offset center = Offset.lerp(
