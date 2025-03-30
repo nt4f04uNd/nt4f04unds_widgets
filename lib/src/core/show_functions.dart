@@ -143,10 +143,7 @@ class NFShowFunctions {
                         children: <Widget>[
                           if (additionalActions != null)
                             Flexible(
-                              child: ButtonBar(
-                                // TODO: Replace with `OverflowBar`, but causes content to expand, which centers `NFIconButton` because they have an `Align`.
-                                buttonPadding: EdgeInsets.zero,
-                                alignment: MainAxisAlignment.start,
+                              child: OverflowBar(
                                 overflowDirection: VerticalDirection.down,
                                 children: additionalActions,
                               ),
