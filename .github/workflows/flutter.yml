@@ -1,0 +1,43 @@
+name: Verify code and run tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+      - 'releases/**'
+
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Set up analyze problem matcher
+        run: echo "::add-matcher::${{ github.workspace }}/problem-matchers/dart-format.json"
+      - name: Check Dart formatting
+        run: dart format --output json --set-exit-if-changed .
+      - name: Remove problem matcher for analyze
+        run: echo "::remove-matcher owner=dart-format"
+
+      - name: Set up analyze problem matcher
+        run: echo "::add-matcher::${{ github.workspace }}/problem-matchers/flutter-analyze.json"
+      - name: Run Dart Linter
+        run: flutter analyze --flutter-repo .
+      - name: Remove problem matcher for analyze
+        run: echo "::remove-matcher owner=flutter-analyze"
+
+      - name: Run tests
+        run: flutter test --no-pub --test-randomize-ordering-seed random

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "fileLocation": ["relative", "${{ github.workspace }}"],
+  "patterns": [
+    {
+      "regexp": "\"path\":\"([^\"]+)\"",
+      "file": 1,
+      "message": "This file is not properly formatted, run `dart format` to fix it."
+    }
+  ]
+}
