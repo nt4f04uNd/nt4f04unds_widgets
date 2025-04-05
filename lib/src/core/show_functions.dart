@@ -87,11 +87,12 @@ class NFShowFunctions {
                         fontWeight: FontWeight.w500,
                         fontSize: 15.0,
                       ),
-              titleTextStyle: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(
-                      fontWeight: FontWeight.w700, fontSize: 20.0, height: 1.5),
+              titleTextStyle:
+                  Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20.0,
+                        height: 1.5,
+                      ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(borderRadius),
