@@ -1,14 +1,17 @@
 {
-  "version": 1,
-  "fileLocation": ["relative", "${{ github.workspace }}"],
-  "patterns": [
+  "problemMatcher": [
     {
-      "regexp": "^\\s*(\\w*) • (.*?) • (.*):([0-9]+):([0-9]+) • .*$",
-      "severity": 1,
-      "message": 2,
-      "file": 3,
-      "line": 4,
-      "column": 5
+      "owner": "flutter-analyze",
+      "pattern": [
+        {
+          "regexp": "^\\s*(\\w*) • (.*?) • (.*):([0-9]+):([0-9]+) • .*$",
+          "severity": 1,
+          "message": 2,
+          "file": 3,
+          "line": 4,
+          "column": 5
+        }
+      ]
     }
   ]
 }
