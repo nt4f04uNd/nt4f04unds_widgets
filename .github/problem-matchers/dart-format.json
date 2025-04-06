@@ -4,9 +4,9 @@
       "owner": "dart-format",
       "pattern": [
         {
-          "regexp": "^{\"path\":\"([^\"]+)\",\"(source)\".*$",
-          "file": 1,
-          "message": 2
+          "regexp": "^(Format)ted (\\D.+)$",
+          "message": 1,
+          "file": 2
         }
       ]
     }
