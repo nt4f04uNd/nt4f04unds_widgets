@@ -29,14 +29,14 @@ jobs:
         run: |
           echo "::add-matcher::${{ github.workspace }}/.github/problem-matchers/dart-format.json"
           dart format --set-exit-if-changed .
-          echo "::remove-matcher owner=dart-format"
-          echo "::remove-matcher owner=dart-format-info"
+          echo "::remove-matcher owner=dart-format::"
 
       - name: Run Dart Linter
         run: |
           echo "::add-matcher::${{ github.workspace }}/.github/problem-matchers/flutter-analyze.json"
           flutter analyze --fatal-infos
-          echo "::remove-matcher owner=flutter-analyze"
+          echo "::remove-matcher owner=flutter-analyze::"
+          echo "::remove-matcher owner=flutter-analyze-info::"
 
       - name: 💾 Cache Gradle
         uses: actions/cache@v4
