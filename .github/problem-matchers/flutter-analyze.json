@@ -4,12 +4,13 @@
       "owner": "flutter-analyze",
       "pattern": [
         {
-          "regexp": "^\\s*(\\w*) • (.*?) • (.*):([0-9]+):([0-9]+) • .*$",
+          "regexp": "^\\s*(\\w*) • (.*?) • (.*):([0-9]+):([0-9]+) • (.*)$",
           "severity": 1,
           "message": 2,
           "file": 3,
           "line": 4,
-          "column": 5
+          "column": 5,
+          "code": 6
         }
       ]
     }
