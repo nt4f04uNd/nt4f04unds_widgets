@@ -1,3 +1,8 @@
+## 5.0.0
+* Support Flutter 3.29
+  - The `additionalActions` in `NFShowFunctions.showDialog` now expand horizontally by default to half the dialog width.
+    Previously they would shrink by default.
+
 ## 4.0.1
 * Reject pointer events as drag events when the buttons change when using the `NFDragGestureRecognizer`, which is closer
   to what Flutter does.

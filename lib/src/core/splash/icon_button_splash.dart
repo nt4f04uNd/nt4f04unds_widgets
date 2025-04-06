@@ -18,16 +18,6 @@ const Duration _kCancelDuration = Duration(milliseconds: 250);
 /// The fade out start interval, when the cancel wasn't called.
 const double _kFadeOutIntervalStart = 0.7;
 
-RectCallback? _getClipCallback(
-    RenderBox referenceBox, bool containedInkWell, RectCallback? rectCallback) {
-  if (rectCallback != null) {
-    assert(containedInkWell);
-    return rectCallback;
-  }
-  if (containedInkWell) return () => Offset.zero & referenceBox.size;
-  return null;
-}
-
 double _getTargetRadius(RenderBox referenceBox, bool containedInkWell,
     RectCallback? rectCallback, Offset position) {
   final Size size =
@@ -124,28 +114,22 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
     double? radius,
     VoidCallback? onRemoved,
   })  : _position = position,
-        _borderRadius = borderRadius ?? BorderRadius.zero,
-        _customBorder = customBorder,
-        _textDirection = textDirection,
         _targetRadius = radius ??
             _getTargetRadius(
                 referenceBox, containedInkWell, rectCallback, position),
-        _clipCallback =
-            _getClipCallback(referenceBox, containedInkWell, rectCallback),
         super(
             controller: controller,
             referenceBox: referenceBox,
             color: color,
             onRemoved: onRemoved) {
-
     // Immediately begin fading-in the initial splash.
     _fadeInController =
         AnimationController(duration: _kFadeInDuration, vsync: controller.vsync)
           ..addListener(controller.markNeedsPaint)
           ..forward();
-    _fadeIn = _fadeInController.drive(IntTween(
+    _fadeIn = _fadeInController.drive(Tween(
       begin: 0,
-      end: color.alpha,
+      end: color.a,
     ));
 
     // Controls the splash radius and its center. Starts upon confirm.
@@ -173,18 +157,14 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
   }
 
   final Offset _position;
-  final BorderRadius _borderRadius;
-  final ShapeBorder? _customBorder;
   final double _targetRadius;
-  final RectCallback? _clipCallback;
-  final TextDirection _textDirection;
 
   bool isCancelled = false;
 
   late Animation<double> _radius;
   late AnimationController _radiusController;
 
-  late Animation<int> _fadeIn;
+  late Animation<double> _fadeIn;
   late AnimationController _fadeInController;
 
   late AnimationController _fadeOutController;
@@ -195,8 +175,10 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
     return _NFIconButtonInkRippleFactory(radius: radius);
   }
 
-  static final Animatable<double> _easeCurveTween = CurveTween(curve: Curves.ease);
-  static final Animatable<double> _fadeOutIntervalTween = CurveTween(curve: const Interval(_kFadeOutIntervalStart, 1.0));
+  static final Animatable<double> _easeCurveTween =
+      CurveTween(curve: Curves.ease);
+  static final Animatable<double> _fadeOutIntervalTween =
+      CurveTween(curve: const Interval(_kFadeOutIntervalStart, 1.0));
 
   @override
   void confirm() {
@@ -247,26 +229,26 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
 
   @override
   void paintFeature(Canvas canvas, Matrix4 transform) {
-    final int alpha = _fadeInController.isAnimating
+    final double alpha = _fadeInController.isAnimating
         ? _fadeIn.value
         : !isCancelled
             ? _fadeOutController
-                .drive(IntTween(
-                  begin: color.alpha,
+                .drive(Tween<double>(
+                  begin: color.a,
                   end: 0,
                 ).chain(_fadeOutIntervalTween))
                 .value
             : _fadeOutController
                 .drive(
-                  IntTween(
-                    begin: color.alpha,
+                  Tween<double>(
+                    begin: color.a,
                     end: 0,
                   ).chain(
                     CurveTween(curve: Curves.easeOutCubic),
                   ),
                 )
                 .value;
-    final Paint paint = Paint()..color = color.withAlpha(alpha);
+    final Paint paint = Paint()..color = color.withValues(alpha: alpha);
     // final Paint paint = Paint()..color = color.withAlpha(200);
     // Splash moves to the center of the reference box.
     final Offset center = Offset.lerp(

@@ -228,7 +228,7 @@ class Slidable extends StatefulWidget {
 
   /// What [HitTestBehavior] to apply to the gesture detector.
   ///
-  /// Defaults to [new HitTestBehaviorStrategy].
+  /// Defaults to [HitTestBehaviorStrategy].
   final HitTestBehaviorStrategy hitTestBehaviorStrategy;
 
   /// The offset threshold the item has to be dragged in order to be considered
