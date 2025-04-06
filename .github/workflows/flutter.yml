@@ -30,6 +30,7 @@ jobs:
           echo "::add-matcher::${{ github.workspace }}/.github/problem-matchers/dart-format.json"
           dart format --set-exit-if-changed .
           echo "::remove-matcher owner=dart-format"
+          echo "::remove-matcher owner=dart-format-info"
 
       - name: Run Dart Linter
         run: |
