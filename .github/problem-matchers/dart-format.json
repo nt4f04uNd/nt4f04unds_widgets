@@ -1,11 +1,14 @@
 {
-  "version": 1,
-  "fileLocation": ["relative", "${{ github.workspace }}"],
-  "patterns": [
+  "problemMatcher": [
     {
-      "regexp": "^{\\\"path\\\":\\\"([^\\\"]+)\\\".*$",
-      "file": 1,
-      "message": "This file is not properly formatted, run `dart format` to fix it."
+      "owner": "dart-format",
+      "pattern": [
+        {
+          "regexp": "^{\"path\":\"([^\"]+)\".*$",
+          "file": 1,
+          "message": "This file is not properly formatted, run `dart format` to fix it."
+        }
+      ]
     }
   ]
 }
