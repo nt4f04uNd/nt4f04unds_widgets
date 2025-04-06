@@ -8,7 +8,7 @@
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 
-/// When pressed, animates down like a button, and then animates back up, 
+/// When pressed, animates down like a button, and then animates back up,
 /// when user unpresses it.
 class ResponsiveWidget extends StatefulWidget {
   ResponsiveWidget({
@@ -41,7 +41,7 @@ class ResponsiveWidget extends StatefulWidget {
 
   /// The curve to use for move down animation.
   final Curve curve;
-  
+
   /// The curve to use for move up animation.
   final Curve reverseCurve;
 
@@ -58,11 +58,7 @@ class _ResponsiveWidgetState extends State<ResponsiveWidget> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-      reverseDuration: widget.reverseDuration,
-    );
+    controller = AnimationController(vsync: this, duration: widget.duration, reverseDuration: widget.reverseDuration);
     _createAnimation();
   }
 
@@ -86,11 +82,7 @@ class _ResponsiveWidgetState extends State<ResponsiveWidget> with SingleTickerPr
   }
 
   void _createAnimation() {
-    animation = CurvedAnimation(
-      curve: widget.curve,
-      reverseCurve: widget.reverseCurve,
-      parent: controller
-    );
+    animation = CurvedAnimation(curve: widget.curve, reverseCurve: widget.reverseCurve, parent: controller);
   }
 
   void _moveDown() {
@@ -98,7 +90,8 @@ class _ResponsiveWidgetState extends State<ResponsiveWidget> with SingleTickerPr
       controller.duration = widget.duration;
     } else {
       // Slow if tapped on the not dismissed state.
-      controller.duration = widget.duration + Duration(milliseconds: (widget.duration.inMilliseconds / 2 * controller.value).toInt());
+      controller.duration =
+          widget.duration + Duration(milliseconds: (widget.duration.inMilliseconds / 2 * controller.value).toInt());
     }
     operation?.cancel();
     operation = CancelableOperation.fromFuture(controller.forward());
@@ -131,10 +124,9 @@ class _ResponsiveWidgetState extends State<ResponsiveWidget> with SingleTickerPr
         child: AnimatedBuilder(
           animation: animation,
           child: widget.child,
-          builder: (BuildContext context, Widget? child) => Transform.translate(
-            offset: Offset(0.0, widget.offset * animation.value),
-            child: child,
-          ),
+          builder:
+              (BuildContext context, Widget? child) =>
+                  Transform.translate(offset: Offset(0.0, widget.offset * animation.value), child: child),
         ),
       ),
     );

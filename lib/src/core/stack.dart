@@ -8,7 +8,7 @@ import 'package:flutter/rendering.dart';
 
 /// The reason to use this is to make [HitTestBehavior.translucent]
 /// work with stack, see https://github.com/flutter/flutter/issues/75099
-/// 
+///
 /// This was taken from https://github.com/flutter/flutter/issues/18450#issuecomment-575447316
 class StackWithAllChildrenReceiveEvents extends Stack {
   StackWithAllChildrenReceiveEvents({
@@ -17,13 +17,7 @@ class StackWithAllChildrenReceiveEvents extends Stack {
     TextDirection textDirection = TextDirection.ltr,
     StackFit fit = StackFit.loose,
     List<Widget> children = const <Widget>[],
-  }) : super(
-          key: key,
-          alignment: alignment,
-          textDirection: textDirection,
-          fit: fit,
-          children: children,
-        );
+  }) : super(key: key, alignment: alignment, textDirection: textDirection, fit: fit, children: children);
 
   @override
   _RenderStackWithAllChildrenReceiveEvents createRenderObject(BuildContext context) {
@@ -56,11 +50,7 @@ class _RenderStackWithAllChildrenReceiveEvents extends RenderStack {
     AlignmentGeometry alignment = AlignmentDirectional.topStart,
     TextDirection? textDirection,
     StackFit fit = StackFit.loose,
-  }) : super(
-          alignment: alignment,
-          textDirection: textDirection,
-          fit: fit,
-        );
+  }) : super(alignment: alignment, textDirection: textDirection, fit: fit);
 
   bool allCdefaultHitTestChildren(BoxHitTestResult result, {required Offset position}) {
     RenderBox? child = lastChild;

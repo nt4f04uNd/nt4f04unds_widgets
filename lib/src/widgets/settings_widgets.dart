@@ -9,13 +9,7 @@ import 'package:flutter/material.dart';
 
 /// Creates a setting item with [title], [description] and [content] sections.
 class NFSettingItem extends StatelessWidget {
-  const NFSettingItem({
-    Key? key,
-    required this.title,
-    this.description,
-    this.trailing,
-    this.child,
-  })  : super(key: key);
+  const NFSettingItem({Key? key, required this.title, this.description, this.trailing, this.child}) : super(key: key);
 
   /// Text displayed as main title of the settings.
   final String title;
@@ -42,27 +36,17 @@ class NFSettingItem extends StatelessWidget {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(top: 10.0),
-                child: Text(
-                  title,
-                  style: const TextStyle(fontSize: 16.0),
-                ),
+                child: Text(title, style: const TextStyle(fontSize: 16.0)),
               ),
-              if (trailing != null)
-                trailing!
+              if (trailing != null) trailing!,
             ],
           ),
           if (description != null)
             Padding(
               padding: const EdgeInsets.only(top: 2.0),
-              child: Text(
-                description!,
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodySmall?.color,
-                ),
-              ),
+              child: Text(description!, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
             ),
-          if (child != null)
-            child!
+          if (child != null) child!,
         ],
       ),
     );
@@ -74,11 +58,7 @@ class NFSettingItem extends StatelessWidget {
 ///
 /// The [child] is untouchable in the animation.
 class NFChangedSwitcher extends StatefulWidget {
-  NFChangedSwitcher({
-    Key? key,
-    this.changed = false,
-    this.child,
-  }) : super(key: key);
+  NFChangedSwitcher({Key? key, this.changed = false, this.child}) : super(key: key);
 
   /// When true, the [child] is shown and clickable.
   /// When false, the [child] is hidden and untouchable, but occupies the same space.

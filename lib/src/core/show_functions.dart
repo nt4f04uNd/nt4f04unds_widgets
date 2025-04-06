@@ -4,10 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart'
-    hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
-import 'package:flutter/material.dart' as flutter
-    show showGeneralDialog, showBottomSheet, showModalBottomSheet;
+import 'package:flutter/material.dart' hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
+import 'package:flutter/material.dart' as flutter show showGeneralDialog, showBottomSheet, showModalBottomSheet;
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const defaultAlertTitlePadding = EdgeInsets.fromLTRB(26.0, 24.0, 26.0, 1.0);
@@ -53,25 +51,16 @@ class NFShowFunctions {
       barrierLabel: 'NFAlertDialog',
       context: context,
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final scaleAnimation = Tween(begin: 0.9, end: 1.0).animate(
-          CurvedAnimation(
-            curve: Curves.easeOutCubic,
-            reverseCurve: Curves.easeInCubic,
-            parent: animation,
-          ),
-        );
+        final scaleAnimation = Tween(
+          begin: 0.9,
+          end: 1.0,
+        ).animate(CurvedAnimation(curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic, parent: animation));
         final fadeAnimation = CurvedAnimation(
           curve: Curves.easeOutCubic,
           reverseCurve: Curves.easeInCubic,
           parent: animation,
         );
-        return ScaleTransition(
-          scale: scaleAnimation,
-          child: FadeTransition(
-            opacity: fadeAnimation,
-            child: child,
-          ),
-        );
+        return ScaleTransition(scale: scaleAnimation, child: FadeTransition(opacity: fadeAnimation, child: child));
       },
       pageBuilder: (context, animation, secondaryAnimation) {
         return _UiHelper(
@@ -82,22 +71,13 @@ class NFShowFunctions {
               backgroundColor: Theme.of(context).colorScheme.surface,
               contentPadding: EdgeInsets.zero,
               titlePadding: EdgeInsets.zero,
-              contentTextStyle:
-                  Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 15.0,
-                      ),
-              titleTextStyle:
-                  Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20.0,
-                        height: 1.5,
-                      ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(borderRadius),
-                ),
-              ),
+              contentTextStyle: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: 15.0),
+              titleTextStyle: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700, fontSize: 20.0, height: 1.5),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
               title: Container(
                 padding: titlePadding,
                 decoration: BoxDecoration(
@@ -118,10 +98,7 @@ class NFShowFunctions {
                       child: Material(
                         // Prevent that content splash goes out of dialog border radius
                         color: Colors.transparent,
-                        child: Padding(
-                          padding: contentPadding,
-                          child: content,
-                        ),
+                        child: Padding(padding: contentPadding, child: content),
                       ),
                     ),
                   Material(
@@ -131,16 +108,10 @@ class NFShowFunctions {
                       bottomRight: Radius.circular(borderRadius),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 4.0,
-                        left: 14.0,
-                        right: 14.0,
-                        bottom: 10.0,
-                      ),
+                      padding: const EdgeInsets.only(top: 4.0, left: 14.0, right: 14.0, bottom: 10.0),
                       child: Row(
-                        mainAxisAlignment: additionalActions == null
-                            ? MainAxisAlignment.end
-                            : MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment:
+                            additionalActions == null ? MainAxisAlignment.end : MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           if (additionalActions != null)
                             Flexible(
@@ -155,9 +126,7 @@ class NFShowFunctions {
                                 overflowDirection: VerticalDirection.down,
                                 children: <Widget>[
                                   if (cancelButton != null) cancelButton,
-                                  if (acceptButton != null &&
-                                      cancelButton != null)
-                                    const SizedBox(width: 8.0),
+                                  if (acceptButton != null && cancelButton != null) const SizedBox(width: 8.0),
                                   if (acceptButton != null) acceptButton,
                                 ],
                               ),
@@ -196,11 +165,7 @@ class NFShowFunctions {
     }
     return flutter.showBottomSheet(
       context: context,
-      builder: (context) => _UiHelper(
-        ui: ui,
-        lastUi: lastUi,
-        child: builder(context),
-      ),
+      builder: (context) => _UiHelper(ui: ui, lastUi: lastUi, child: builder(context)),
       backgroundColor: backgroundColor,
       elevation: elevation,
       shape: shape,
@@ -235,11 +200,7 @@ class NFShowFunctions {
     }
     return flutter.showModalBottomSheet<T>(
       context: context,
-      builder: (context) => _UiHelper(
-        ui: ui,
-        lastUi: lastUi,
-        child: builder(context),
-      ),
+      builder: (context) => _UiHelper(ui: ui, lastUi: lastUi, child: builder(context)),
       backgroundColor: backgroundColor,
       elevation: elevation,
       shape: shape,
@@ -256,12 +217,7 @@ class NFShowFunctions {
 
 /// Helper that wraps widget into [RouteAwareWidget] and handles ui animations.
 class _UiHelper extends StatefulWidget {
-  const _UiHelper({
-    Key? key,
-    required this.ui,
-    required this.lastUi,
-    required this.child,
-  }) : super(key: key);
+  const _UiHelper({Key? key, required this.ui, required this.lastUi, required this.child}) : super(key: key);
 
   final SystemUiOverlayStyle? ui;
   final SystemUiOverlayStyle? lastUi;
@@ -291,15 +247,13 @@ class _UiHelperState extends State<_UiHelper> {
         onPopNext: () {
           if (widget.ui != null) {
             // Animate ui when the route on top pops.
-            SystemUiStyleController.instance
-                .animateSystemUiOverlay(to: widget.ui!);
+            SystemUiStyleController.instance.animateSystemUiOverlay(to: widget.ui!);
           }
         },
         onPop: () {
           if (widget.lastUi != null) {
             // Animate ui after sheet been closed.
-            SystemUiStyleController.instance
-                .animateSystemUiOverlay(to: widget.lastUi!);
+            SystemUiStyleController.instance.animateSystemUiOverlay(to: widget.lastUi!);
           }
         },
         child: widget.child,

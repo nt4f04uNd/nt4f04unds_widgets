@@ -5,12 +5,11 @@
 
 import 'package:flutter/material.dart';
 
-
 /// Describes what to do when depending on the current animation status.
 /// An interface for other animation strategies.
 @immutable
 abstract class AnimationStrategy<T> implements MovingAnimationStrategy<T> {
-  const AnimationStrategy({ 
+  const AnimationStrategy({
     required this.dismissed,
     required this.forward,
     required this.completed,
@@ -43,13 +42,12 @@ abstract class AnimationStrategy<T> implements MovingAnimationStrategy<T> {
 
   @override
   bool operator ==(Object other) {
-    if (other.runtimeType != runtimeType)
-      return false;
-    return other is AnimationStrategy 
-        && other.dismissed == dismissed
-        && other.forward == forward
-        && other.completed == completed
-        && other.reverse == reverse;
+    if (other.runtimeType != runtimeType) return false;
+    return other is AnimationStrategy &&
+        other.dismissed == dismissed &&
+        other.forward == forward &&
+        other.completed == completed &&
+        other.reverse == reverse;
   }
 
   @override
@@ -60,10 +58,7 @@ abstract class AnimationStrategy<T> implements MovingAnimationStrategy<T> {
 /// An interface for other animation strategies.
 @immutable
 abstract class MovingAnimationStrategy<T> {
-  const MovingAnimationStrategy({ 
-    required this.forward,
-    required this.reverse,
-  });
+  const MovingAnimationStrategy({required this.forward, required this.reverse});
 
   final T forward;
   final T reverse;
@@ -93,11 +88,8 @@ abstract class MovingAnimationStrategy<T> {
 
   @override
   bool operator ==(Object other) {
-    if (other.runtimeType != runtimeType)
-      return false;
-    return other is AnimationStrategy 
-        && other.forward == forward
-        && other.reverse == reverse;
+    if (other.runtimeType != runtimeType) return false;
+    return other is AnimationStrategy && other.forward == forward && other.reverse == reverse;
   }
 
   @override
@@ -130,12 +122,8 @@ class HitTestBehaviorStrategy extends AnimationStrategy<HitTestBehavior> {
 
 /// Describes when the [IgnoringPointer] should be applied, depending on [AnimationStatus].
 class IgnoringStrategy extends AnimationStrategy<bool> {
-  const IgnoringStrategy({
-    bool dismissed = false,
-    bool forward = false,
-    bool reverse = false,
-    bool completed = false,
-  }) : super(dismissed: dismissed, forward: forward, reverse: reverse, completed: completed);
+  const IgnoringStrategy({bool dismissed = false, bool forward = false, bool reverse = false, bool completed = false})
+    : super(dismissed: dismissed, forward: forward, reverse: reverse, completed: completed);
 
   /// Ignore in any [AnimationStatus].
   const IgnoringStrategy.all() : super(dismissed: true, forward: true, reverse: true, completed: true);
@@ -148,9 +136,9 @@ class IgnoringStrategy extends AnimationStrategy<bool> {
   /// Will evaluate to a single bool condition from the [status].
   bool evaluateStatus(AnimationStatus status) {
     return dismissed && status == AnimationStatus.dismissed ||
-           forward && status == AnimationStatus.forward ||
-           reverse && status == AnimationStatus.reverse ||
-           completed && status == AnimationStatus.completed;
+        forward && status == AnimationStatus.forward ||
+        reverse && status == AnimationStatus.reverse ||
+        completed && status == AnimationStatus.completed;
   }
 }
 
@@ -159,10 +147,8 @@ class IgnoringStrategy extends AnimationStrategy<bool> {
 /// See also:
 /// * [IgnoringStrategy] to also respect dismissed and completed animation statues
 class MovingIgnoringStrategy extends MovingAnimationStrategy<bool> {
-  const MovingIgnoringStrategy({
-    bool forward = false,
-    bool reverse = false,
-  }) : super(forward: forward, reverse: reverse);
+  const MovingIgnoringStrategy({bool forward = false, bool reverse = false})
+    : super(forward: forward, reverse: reverse);
 
   /// Ignore in any [AnimationStatus].
   const MovingIgnoringStrategy.all() : super(forward: true, reverse: true);
@@ -174,7 +160,6 @@ class MovingIgnoringStrategy extends MovingAnimationStrategy<bool> {
 
   /// Will evaluate to a single bool condition from the [status].
   bool evaluateStatus(AnimationStatus status) {
-    return forward && status == AnimationStatus.forward ||
-           reverse && status == AnimationStatus.reverse;
+    return forward && status == AnimationStatus.forward || reverse && status == AnimationStatus.reverse;
   }
 }
