@@ -3,11 +3,12 @@
   "fileLocation": ["relative", "${{ github.workspace }}"],
   "patterns": [
     {
-      "regexp": "^(.*):([0-9]+):([0-9]+): (.*)$",
-      "file": 1,
-      "line": 2,
-      "column": 3,
-      "message": 4
+      "regexp": "^\\s*(\\w*) • (.*?) • (.*):([0-9]+):([0-9]+) • .*$",
+      "severity": 1,
+      "message": 2,
+      "file": 3,
+      "line": 4,
+      "column": 5
     }
   ]
 }
