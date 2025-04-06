@@ -3,10 +3,10 @@ name: Verify code and run tests
 on:
   pull_request:
   push:
-    branches:
-      - main
-      - master
-      - 'releases/**'
+#    branches: TODO: Re-enable
+#      - main
+#      - master
+#      - 'releases/**'
 
 jobs:
   flutter:
