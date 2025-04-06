@@ -9,14 +9,14 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// An analogue of the [AnimatedSwitcher], but based on explicit [animation] property.
 class AnimationSwitcher extends StatelessWidget {
   const AnimationSwitcher({
-    Key? key,
+    super.key,
     required this.animation,
     required this.child1,
     required this.child2,
     this.alignment = AlignmentDirectional.topStart,
     this.builder1 = defaultBuilder,
     this.builder2 = defaultBuilder,
-  }) : super(key: key);
+  });
 
   final Animation<double> animation;
   final AlignmentGeometry alignment;

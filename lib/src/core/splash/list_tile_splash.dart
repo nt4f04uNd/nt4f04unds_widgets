@@ -108,7 +108,7 @@ class NFListTileInkRipple extends InteractiveInkFeature {
   /// When the ripple is removed, [onRemoved] will be called.
   NFListTileInkRipple({
     required MaterialInkController controller,
-    required RenderBox referenceBox,
+    required super.referenceBox,
     required Offset position,
     required Color color,
     required TextDirection textDirection,
@@ -117,14 +117,14 @@ class NFListTileInkRipple extends InteractiveInkFeature {
     BorderRadius? borderRadius,
     ShapeBorder? customBorder,
     double? radius,
-    VoidCallback? onRemoved,
+    super.onRemoved,
   }) : _position = position,
        _borderRadius = borderRadius ?? BorderRadius.zero,
        _customBorder = customBorder,
        _textDirection = textDirection,
        _targetRadius = radius ?? _getTargetRadius(referenceBox, containedInkWell, rectCallback, position),
        _clipCallback = _getClipCallback(referenceBox, containedInkWell, rectCallback),
-       super(controller: controller, referenceBox: referenceBox, color: color, onRemoved: onRemoved) {
+       super(controller: controller, color: color) {
     // Immediately begin fading-in the initial splash.
     _fadeInController =
         AnimationController(duration: _kFadeInDuration, vsync: controller.vsync)

@@ -11,17 +11,17 @@ import 'package:flutter/rendering.dart';
 ///
 /// This was taken from https://github.com/flutter/flutter/issues/18450#issuecomment-575447316
 class StackWithAllChildrenReceiveEvents extends Stack {
-  StackWithAllChildrenReceiveEvents({
-    Key? key,
-    AlignmentDirectional alignment = AlignmentDirectional.topStart,
-    TextDirection textDirection = TextDirection.ltr,
-    StackFit fit = StackFit.loose,
-    List<Widget> children = const <Widget>[],
-  }) : super(key: key, alignment: alignment, textDirection: textDirection, fit: fit, children: children);
+  const StackWithAllChildrenReceiveEvents({
+    super.key,
+    AlignmentDirectional super.alignment,
+    TextDirection super.textDirection = TextDirection.ltr,
+    super.fit,
+    super.children,
+  });
 
   @override
-  _RenderStackWithAllChildrenReceiveEvents createRenderObject(BuildContext context) {
-    return _RenderStackWithAllChildrenReceiveEvents(
+  RenderStackWithAllChildrenReceiveEvents createRenderObject(BuildContext context) {
+    return RenderStackWithAllChildrenReceiveEvents(
       alignment: alignment,
       textDirection: textDirection ?? Directionality.of(context),
       fit: fit,
@@ -29,7 +29,7 @@ class StackWithAllChildrenReceiveEvents extends Stack {
   }
 
   @override
-  void updateRenderObject(BuildContext context, _RenderStackWithAllChildrenReceiveEvents renderObject) {
+  void updateRenderObject(BuildContext context, RenderStackWithAllChildrenReceiveEvents renderObject) {
     renderObject
       ..alignment = alignment
       ..textDirection = textDirection ?? Directionality.of(context)
@@ -45,12 +45,8 @@ class StackWithAllChildrenReceiveEvents extends Stack {
   }
 }
 
-class _RenderStackWithAllChildrenReceiveEvents extends RenderStack {
-  _RenderStackWithAllChildrenReceiveEvents({
-    AlignmentGeometry alignment = AlignmentDirectional.topStart,
-    TextDirection? textDirection,
-    StackFit fit = StackFit.loose,
-  }) : super(alignment: alignment, textDirection: textDirection, fit: fit);
+class RenderStackWithAllChildrenReceiveEvents extends RenderStack {
+  RenderStackWithAllChildrenReceiveEvents({super.alignment, super.textDirection, super.fit});
 
   bool allCdefaultHitTestChildren(BoxHitTestResult result, {required Offset position}) {
     RenderBox? child = lastChild;

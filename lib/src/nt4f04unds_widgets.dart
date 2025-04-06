@@ -41,13 +41,10 @@ class NFWidgets {
 /// wrap your app into this widget.
 class NFTheme extends InheritedWidget {
   /// Creates inherited defaults widget.
-  const NFTheme({Key? key, required this.data, required this.child}) : super(child: child, key: key);
+  const NFTheme({super.key, required this.data, required super.child});
 
   /// Default library-wide values.
   final NFThemeData data;
-
-  /// The widget below this widget in the tree.
-  final Widget child;
 
   static NFThemeData of(BuildContext context) {
     final widget = context.getElementForInheritedWidgetOfExactType<NFTheme>()?.widget as NFTheme;

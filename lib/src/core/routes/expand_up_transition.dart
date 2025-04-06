@@ -9,8 +9,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// A page that uses [ExpandUpRouteTransition].
 class ExpandUpPage<T> extends Page<T> {
-  const ExpandUpPage({required this.child, this.transitionSettings, LocalKey? key, String? name, Object? arguments})
-    : super(key: key, name: name, arguments: arguments);
+  const ExpandUpPage({required this.child, this.transitionSettings, super.key, super.name, super.arguments});
 
   final Widget child;
 
@@ -25,8 +24,7 @@ class ExpandUpPage<T> extends Page<T> {
 /// Route transition that uses [OpenUpwardsPageTransitionsBuilder] from the flutter.
 class ExpandUpRouteTransition<T> extends RouteTransition<T> {
   /// Creates route transition.
-  ExpandUpRouteTransition({RouteSettings? settings, required this.child, RouteTransitionSettings? transitionSettings})
-    : super(settings: settings, transitionSettings: transitionSettings);
+  ExpandUpRouteTransition({super.settings, required this.child, super.transitionSettings});
 
   final Widget child;
 

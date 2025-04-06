@@ -34,7 +34,7 @@ class NFScrollbar extends StatefulWidget {
   /// The [child] should be a source of [ScrollNotification] notifications,
   /// typically a [Scrollable] widget.
   const NFScrollbar({
-    Key? key,
+    super.key,
     required this.child,
     this.color,
     this.thickness = _kScrollbarThickness,
@@ -44,7 +44,7 @@ class NFScrollbar extends StatefulWidget {
     this.radius = const Radius.circular(8.0),
     this.minLength = _kScrollbarHeight,
     this.minOverscrollLength,
-  }) : super(key: key);
+  });
 
   /// The widget below this widget in the tree.
   ///
@@ -65,7 +65,7 @@ class NFScrollbar extends StatefulWidget {
   final double? minOverscrollLength;
 
   @override
-  _NFScrollbarState createState() => _NFScrollbarState();
+  State createState() => _NFScrollbarState();
 }
 
 class _NFScrollbarState extends State<NFScrollbar> with SingleTickerProviderStateMixin {

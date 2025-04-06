@@ -22,11 +22,11 @@ class SystemUiStyleController {
   /// It's not `late` because is use it in [lastUi].
   SystemUiOverlayStyle? _to;
   AnimationController? _controller;
-  PersistentTickerProvider _tickerProvider = PersistentTickerProvider();
+  final PersistentTickerProvider _tickerProvider = PersistentTickerProvider();
 
   /// Operation to wait before the animation completes
   Completer? _animationCompleter;
-  StreamController<SystemUiOverlayStyle> _streamController = StreamController.broadcast();
+  final StreamController<SystemUiOverlayStyle> _streamController = StreamController.broadcast();
 
   /// Represents the actual UI that is now drawn on the screen.
   ///
@@ -149,7 +149,7 @@ class SystemUiOverlayStyleTween extends Tween<SystemUiOverlayStyle> {
   /// If [end] is not null, then its lerping logic is
   /// used (via [SystemUiOverlayStyle.lerpTo]). Otherwise, [begin]'s lerping logic is used
   /// (via [SystemUiOverlayStyle.lerpFrom]).
-  SystemUiOverlayStyleTween({SystemUiOverlayStyle? begin, SystemUiOverlayStyle? end}) : super(begin: begin, end: end);
+  SystemUiOverlayStyleTween({super.begin, super.end});
 
   /// Returns the value this variable has at the given animation clock value.
   @override

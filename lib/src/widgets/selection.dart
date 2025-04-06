@@ -5,7 +5,6 @@
 
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// A regular [AppBar] which to use with selection and [SelectionController].
@@ -16,7 +15,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// * [AnimatedMenuCloseButton] which creates animated menu / close button which can be used with selection app bar
 class SelectionAppBar extends AppBar {
   SelectionAppBar({
-    Key? key,
+    super.key,
     required SelectionController selectionController,
     required Widget title,
     required Widget titleSelection,
@@ -27,27 +26,26 @@ class SelectionAppBar extends AppBar {
     Widget? leading,
     Curve curve = Curves.easeOutCubic,
     Curve reverseCurve = Curves.easeInCubic,
-    Widget? flexibleSpace,
-    PreferredSizeWidget? bottom,
+    super.flexibleSpace,
+    super.bottom,
     double elevation = 2.0,
     double elevationSelection = 2.0,
-    ShapeBorder? shape,
-    Color? backgroundColor,
-    SystemUiOverlayStyle? systemOverlayStyle,
-    IconThemeData? iconTheme,
-    IconThemeData? actionsIconTheme,
+    super.shape,
+    super.backgroundColor,
+    super.systemOverlayStyle,
+    super.iconTheme,
+    super.actionsIconTheme,
     TextTheme? textTheme,
-    TextStyle? toolbarTextStyle,
-    TextStyle? titleTextStyle,
-    bool primary = true,
-    bool? centerTitle,
-    bool excludeHeaderSemantics = false,
-    double titleSpacing = NavigationToolbar.kMiddleSpacing,
-    double toolbarOpacity = 1.0,
-    double bottomOpacity = 1.0,
-    double? toolbarHeight,
+    super.toolbarTextStyle,
+    super.titleTextStyle,
+    super.primary,
+    super.centerTitle,
+    super.excludeHeaderSemantics,
+    double super.titleSpacing = NavigationToolbar.kMiddleSpacing,
+    super.toolbarOpacity,
+    super.bottomOpacity,
+    super.toolbarHeight,
   }) : super(
-         key: key,
          leading:
              !showMenuButton
                  ? leading
@@ -83,23 +81,7 @@ class SelectionAppBar extends AppBar {
            ),
          ],
          automaticallyImplyLeading: false,
-         flexibleSpace: flexibleSpace,
-         bottom: bottom,
          elevation: selectionController.inSelection ? elevationSelection : elevation,
-         shape: shape,
-         backgroundColor: backgroundColor,
-         systemOverlayStyle: systemOverlayStyle,
-         iconTheme: iconTheme,
-         actionsIconTheme: actionsIconTheme,
-         toolbarTextStyle: toolbarTextStyle,
-         titleTextStyle: titleTextStyle,
-         primary: primary,
-         centerTitle: centerTitle,
-         excludeHeaderSemantics: excludeHeaderSemantics,
-         titleSpacing: titleSpacing,
-         toolbarOpacity: toolbarOpacity,
-         bottomOpacity: bottomOpacity,
-         toolbarHeight: toolbarHeight,
        );
 
   static Widget defaultSelectionActionsBuilder(Widget child, Animation<double> animation) {
@@ -127,8 +109,8 @@ class SelectionAppBar extends AppBar {
 ///
 /// As source of animation [SelectionController.animationController] can be used.
 class AnimatedMenuCloseButton extends StatefulWidget {
-  AnimatedMenuCloseButton({
-    Key? key,
+  const AnimatedMenuCloseButton({
+    super.key,
     required this.animation,
     this.size,
     this.iconSize,
@@ -139,7 +121,7 @@ class AnimatedMenuCloseButton extends StatefulWidget {
     this.reverseDuration,
     this.curve = Curves.easeOutCubic,
     this.reverseCurve = Curves.easeInCubic,
-  }) : super(key: key);
+  });
 
   /// Animation controller that this button will listen to and animate together.
   ///
@@ -173,7 +155,8 @@ class AnimatedMenuCloseButton extends StatefulWidget {
   /// The curve to use for `close_menu` animation.
   final Curve reverseCurve;
 
-  _AnimatedMenuCloseButtonState createState() => _AnimatedMenuCloseButtonState();
+  @override
+  State createState() => _AnimatedMenuCloseButtonState();
 }
 
 class _AnimatedMenuCloseButtonState extends State<AnimatedMenuCloseButton> with SingleTickerProviderStateMixin {

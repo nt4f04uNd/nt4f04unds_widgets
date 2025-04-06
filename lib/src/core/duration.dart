@@ -3,7 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-/// Returns the formatted time string in format <M>:<S>.
+/// Returns the formatted time string in format `<M>:<S>`.
 ///
 /// * Minutes can go from 0 to 99.
 /// * Seconds from 0 to 59.

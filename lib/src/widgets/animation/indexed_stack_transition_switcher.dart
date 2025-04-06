@@ -13,13 +13,13 @@ import 'package:flutter/material.dart';
 class IndexedTransitionSwitcher extends StatefulWidget {
   /// Creates an [IndexedTransitionSwitcher].
   const IndexedTransitionSwitcher({
-    Key? key,
+    super.key,
     required this.index,
     required this.children,
     required this.transitionBuilder,
     this.reverse = false,
     this.duration = const Duration(milliseconds: 300),
-  }) : super(key: key);
+  });
 
   /// The index of the child to show.
   final int index;
@@ -46,7 +46,7 @@ class IndexedTransitionSwitcher extends StatefulWidget {
   final bool reverse;
 
   @override
-  _IndexedTransitionSwitcherState createState() => _IndexedTransitionSwitcherState();
+  State createState() => _IndexedTransitionSwitcherState();
 }
 
 class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher> with TickerProviderStateMixin {
@@ -56,8 +56,7 @@ class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher> w
   void initState() {
     super.initState();
     // Create the page entries
-    this._childEntries =
-        widget.children.asMap().entries.map((entry) => _createPageEntry(entry.key, entry.value)).toList();
+    _childEntries = widget.children.asMap().entries.map((entry) => _createPageEntry(entry.key, entry.value)).toList();
   }
 
   @override

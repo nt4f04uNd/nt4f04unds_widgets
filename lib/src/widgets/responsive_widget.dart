@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 /// When pressed, animates down like a button, and then animates back up,
 /// when user unpresses it.
 class ResponsiveWidget extends StatefulWidget {
-  ResponsiveWidget({
-    Key? key,
+  const ResponsiveWidget({
+    super.key,
     required this.child,
     required this.onPressed,
     this.offset = 2.0,
@@ -20,7 +20,7 @@ class ResponsiveWidget extends StatefulWidget {
     this.reverseDuration,
     this.curve = Curves.easeOutCubic,
     this.reverseCurve = Curves.easeInCubic,
-  }) : super(key: key);
+  });
 
   /// The widget below this widget in the tree.
   final Widget? child;
@@ -46,7 +46,7 @@ class ResponsiveWidget extends StatefulWidget {
   final Curve reverseCurve;
 
   @override
-  _ResponsiveWidgetState createState() => _ResponsiveWidgetState();
+  State createState() => _ResponsiveWidgetState();
 }
 
 class _ResponsiveWidgetState extends State<ResponsiveWidget> with SingleTickerProviderStateMixin {

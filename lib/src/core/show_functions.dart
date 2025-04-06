@@ -217,7 +217,7 @@ class NFShowFunctions {
 
 /// Helper that wraps widget into [RouteAwareWidget] and handles ui animations.
 class _UiHelper extends StatefulWidget {
-  const _UiHelper({Key? key, required this.ui, required this.lastUi, required this.child}) : super(key: key);
+  const _UiHelper({required this.ui, required this.lastUi, required this.child});
 
   final SystemUiOverlayStyle? ui;
   final SystemUiOverlayStyle? lastUi;

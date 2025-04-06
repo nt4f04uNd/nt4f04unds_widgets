@@ -95,7 +95,7 @@ class SelectionController<T> extends Listenable
 
   /// Returns true if controller was never in the in selection state.
   bool get wasEverSelected => _wasEverSelected;
-  bool _wasEverSelected = false;
+  final bool _wasEverSelected = false;
 
   /// True when controller goes into selection or already in it.
   ///
@@ -137,8 +137,9 @@ class SelectionController<T> extends Listenable
     _prevLength = data.length;
     data.remove(item);
     notifyListeners();
-    if (!alwaysInSelection && closeSelectionWhenEmpty && inSelection && data.length == 0)
+    if (!alwaysInSelection && closeSelectionWhenEmpty && inSelection && data.isEmpty) {
       return _animationController!.reverse();
+    }
     return null;
   }
 

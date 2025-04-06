@@ -100,7 +100,7 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
   /// When the ripple is removed, [onRemoved] will be called.
   NFIconButtonInkRipple({
     required MaterialInkController controller,
-    required RenderBox referenceBox,
+    required super.referenceBox,
     required Offset position,
     required Color color,
     required TextDirection textDirection,
@@ -109,10 +109,10 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
     BorderRadius? borderRadius,
     ShapeBorder? customBorder,
     double? radius,
-    VoidCallback? onRemoved,
+    super.onRemoved,
   }) : _position = position,
        _targetRadius = radius ?? _getTargetRadius(referenceBox, containedInkWell, rectCallback, position),
-       super(controller: controller, referenceBox: referenceBox, color: color, onRemoved: onRemoved) {
+       super(controller: controller, color: color) {
     // Immediately begin fading-in the initial splash.
     _fadeInController =
         AnimationController(duration: _kFadeInDuration, vsync: controller.vsync)

@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 ///
 /// Can be used for showing number counters.
 class CountSwitcher extends StatelessWidget {
-  const CountSwitcher({Key? key, this.child, this.childKey, this.valueIncreased = true}) : super(key: key);
+  const CountSwitcher({super.key, this.child, this.childKey, this.valueIncreased = true});
 
   final Widget? child;
 
@@ -55,16 +55,17 @@ class CountSwitcher extends StatelessWidget {
 
           //* For entering widget
           if (child.key == childKey) {
-            if (valueIncreased)
+            if (valueIncreased) {
               return SlideTransition(
                 position: inForwardAnimation,
                 child: FadeTransition(opacity: animation, child: child),
               );
-            else
+            } else {
               return SlideTransition(
                 position: inBackAnimation,
                 child: FadeTransition(opacity: animation, child: child),
               );
+            }
           } else {
             //* For exiting widget
             if (valueIncreased) {
@@ -72,11 +73,12 @@ class CountSwitcher extends StatelessWidget {
                 position: outForwardAnimation,
                 child: FadeTransition(opacity: animation, child: child),
               );
-            } else
+            } else {
               return SlideTransition(
                 position: outBackAnimation,
                 child: FadeTransition(opacity: animation, child: child),
               );
+            }
           }
         },
         child: Container(key: childKey, child: child),

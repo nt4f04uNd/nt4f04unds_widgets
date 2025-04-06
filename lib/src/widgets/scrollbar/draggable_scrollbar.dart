@@ -13,7 +13,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'dart:math' as math;
 
 /// Build the bar and label using the current configuration.
-typedef Widget BarBuilder(Color barColor, Animation<double> animation, double height, double width);
+typedef BarBuilder = Widget Function(Color barColor, Animation<double> animation, double height, double width);
 
 /// Signature used to build a label widget.
 ///
@@ -24,12 +24,12 @@ typedef Widget BarBuilder(Color barColor, Animation<double> animation, double he
 /// bar offset also repects the margins and the bar height.
 ///
 /// Used by [NFDraggableScrollbar.labelBuilder].
-typedef Widget LabelBuilder(BuildContext context, double progress, double barPadHeight);
+typedef LabelBuilder = Widget Function(BuildContext context, double progress, double barPadHeight);
 
 /// Signature used to build a label animation.
 ///
 /// Used by [NFDraggableScrollbar.labelTransitionBuilder].
-typedef Widget LabelTransitionBuilder(BuildContext context, Animation<double> animation, Widget child);
+typedef LabelTransitionBuilder = Widget Function(BuildContext context, Animation<double> animation, Widget child);
 
 /// Signature for drag callbacks.
 ///
@@ -44,7 +44,7 @@ typedef Widget LabelTransitionBuilder(BuildContext context, Animation<double> an
 ///  * [NFDraggableScrollbar.onDragUpdate]
 ///  * [NFDraggableScrollbar.onDragEnd]
 ///  * [NFDraggableScrollbar.onScrollNotification]
-typedef void DraggableScrollBarCallback(double progress, double barPadHeight);
+typedef DraggableScrollBarCallback = void Function(double progress, double barPadHeight);
 
 /// A widget that will display a child with a ScrollBar that can be dragged.
 ///
@@ -152,8 +152,8 @@ class NFDraggableScrollbar extends StatefulWidget {
   /// Defaults to `true`.
   final bool shouldAppear;
 
-  NFDraggableScrollbar({
-    Key? key,
+  const NFDraggableScrollbar({
+    super.key,
     required this.barHeight,
     required this.barWidth,
     required this.barColor,
@@ -173,10 +173,10 @@ class NFDraggableScrollbar extends StatefulWidget {
     this.onScrollNotification,
     this.appearOnlyOnScroll = false,
     this.shouldAppear = true,
-  }) : super(key: key);
+  });
 
   NFDraggableScrollbar.rrect({
-    Key? key,
+    super.key,
     Key? barKey,
     required this.child,
     this.barPad,
@@ -197,11 +197,10 @@ class NFDraggableScrollbar extends StatefulWidget {
     this.appearOnlyOnScroll = false,
     this.shouldAppear = true,
     BorderRadiusGeometry borderRadius = const BorderRadius.all(Radius.circular(0.0)),
-  }) : barBuilder = _barRRectBuilder(barKey, appearOnlyOnScroll, borderRadius),
-       super(key: key);
+  }) : barBuilder = _barRRectBuilder(barKey, appearOnlyOnScroll, borderRadius);
 
   NFDraggableScrollbar.arrows({
-    Key? key,
+    super.key,
     Key? barKey,
     required this.child,
     this.barPad,
@@ -221,11 +220,10 @@ class NFDraggableScrollbar extends StatefulWidget {
     this.onScrollNotification,
     this.appearOnlyOnScroll = false,
     this.shouldAppear = true,
-  }) : barBuilder = _barArrowBuilder(barKey, appearOnlyOnScroll),
-       super(key: key);
+  }) : barBuilder = _barArrowBuilder(barKey, appearOnlyOnScroll);
 
   NFDraggableScrollbar.semicircle({
-    Key? key,
+    super.key,
     Key? barKey,
     required this.child,
     this.barPad,
@@ -245,8 +243,7 @@ class NFDraggableScrollbar extends StatefulWidget {
     this.onScrollNotification,
     this.appearOnlyOnScroll = false,
     this.shouldAppear = true,
-  }) : barBuilder = _barSemicircleBuilder(barKey, appearOnlyOnScroll),
-       super(key: key);
+  }) : barBuilder = _barSemicircleBuilder(barKey, appearOnlyOnScroll);
 
   @override
   NFDraggableScrollbarState createState() => NFDraggableScrollbarState();
@@ -276,7 +273,6 @@ class NFDraggableScrollbar extends StatefulWidget {
         foregroundPainter: ArrowCustomPainter(Colors.grey),
         child: Material(
           elevation: 4.0,
-          child: Container(constraints: BoxConstraints.tight(Size(width, height * 0.6))),
           color: barColor,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(height),
@@ -284,6 +280,7 @@ class NFDraggableScrollbar extends StatefulWidget {
             topRight: Radius.circular(4.0),
             bottomRight: Radius.circular(4.0),
           ),
+          child: Container(constraints: BoxConstraints.tight(Size(width, height * 0.6))),
         ),
       );
       return buildScrollBarAnimation(bar: bar, barAnimation: barAnimation, appearOnlyOnScroll: appearOnlyOnScroll);
@@ -293,12 +290,12 @@ class NFDraggableScrollbar extends StatefulWidget {
   static BarBuilder _barArrowBuilder(Key? barKey, bool appearOnlyOnScroll) {
     return (Color barColor, Animation<double> animation, double height, double width) {
       final bar = ClipPath(
+        clipper: ArrowClipper(),
         child: Container(
           height: height,
           width: width,
           decoration: BoxDecoration(color: barColor, borderRadius: BorderRadius.all(Radius.circular(12.0))),
         ),
-        clipper: ArrowClipper(),
       );
       return buildScrollBarAnimation(bar: bar, barAnimation: animation, appearOnlyOnScroll: appearOnlyOnScroll);
     };
@@ -309,9 +306,9 @@ class NFDraggableScrollbar extends StatefulWidget {
       final bar = Material(
         key: barKey,
         elevation: 4.0,
-        child: Container(constraints: BoxConstraints.tight(Size(width, height))),
         color: barColor,
         borderRadius: borderRadius,
+        child: Container(constraints: BoxConstraints.tight(Size(width, height))),
       );
       return buildScrollBarAnimation(bar: bar, barAnimation: animation, appearOnlyOnScroll: appearOnlyOnScroll);
     };
@@ -635,7 +632,7 @@ class ArrowClipper extends CustomClipper<Path> {
 }
 
 class NFScrollLabel extends StatelessWidget {
-  const NFScrollLabel({Key? key, required this.text, this.size = 70.0, this.color, this.fontColor}) : super(key: key);
+  const NFScrollLabel({super.key, required this.text, this.size = 70.0, this.color, this.fontColor});
 
   final String text;
 

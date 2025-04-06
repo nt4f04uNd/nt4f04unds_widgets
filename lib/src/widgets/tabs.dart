@@ -13,6 +13,7 @@
 /// I needed to have some styles on tabs,
 /// such as the border radius on tabs, reduced height and some paddings
 /// for tabs and tabbar itself.
+library;
 
 import 'dart:ui';
 
@@ -41,10 +42,9 @@ class NFTab extends StatelessWidget {
   /// and [child] arguments must not be used at the same time. The
   /// [iconMargin] is only useful when [icon] and either one of [text] or
   /// [child] is non-null.
-  const NFTab({Key? key, this.text, this.icon, this.iconMargin = const EdgeInsets.only(bottom: 10.0), this.child})
+  const NFTab({super.key, this.text, this.icon, this.iconMargin = const EdgeInsets.only(bottom: 10.0), this.child})
     : assert(text != null || child != null || icon != null),
-      assert(text == null || child == null),
-      super(key: key);
+      assert(text == null || child == null);
 
   /// The text to display as the tab's label.
   ///
@@ -88,11 +88,11 @@ class NFTab extends StatelessWidget {
       label = Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[Container(child: icon, margin: iconMargin), _buildLabelText()],
+        children: <Widget>[Container(margin: iconMargin, child: icon), _buildLabelText()],
       );
     }
 
-    return SizedBox(height: height, child: Center(child: label, widthFactor: 1.0));
+    return SizedBox(height: height, child: Center(widthFactor: 1.0, child: label));
   }
 
   @override
@@ -105,7 +105,6 @@ class NFTab extends StatelessWidget {
 
 class _TabStyle extends AnimatedWidget {
   const _TabStyle({
-    Key? key,
     required Animation<double> animation,
     this.selected,
     this.labelColor,
@@ -113,7 +112,7 @@ class _TabStyle extends AnimatedWidget {
     this.labelStyle,
     this.unselectedLabelStyle,
     required this.child,
-  }) : super(key: key, listenable: animation);
+  }) : super(listenable: animation);
 
   final TextStyle? labelStyle;
   final TextStyle? unselectedLabelStyle;
@@ -195,7 +194,7 @@ class NFTabBar extends StatefulWidget implements PreferredSizeWidget {
   /// If [indicator] is not null, then [indicatorWeight], [indicatorPadding], and
   /// [indicatorColor] are ignored.
   const NFTabBar({
-    Key? key,
+    super.key,
     required this.tabs,
     this.controller,
     this.isScrollable = false,
@@ -215,8 +214,7 @@ class NFTabBar extends StatefulWidget implements PreferredSizeWidget {
     this.dragStartBehavior = DragStartBehavior.start,
     this.onTap,
   }) : assert(indicator != null || (indicatorWeight > 0.0)),
-       assert(indicator != null),
-       super(key: key);
+       assert(indicator != null);
 
   /// Typically a list of two or more [Tab] widgets.
   ///
@@ -363,15 +361,16 @@ class NFTabBar extends StatefulWidget implements PreferredSizeWidget {
     for (final Widget item in tabs) {
       if (item is Tab) {
         final Tab tab = item;
-        if ((tab.text != null || tab.child != null) && tab.icon != null)
+        if ((tab.text != null || tab.child != null) && tab.icon != null) {
           return Size.fromHeight(_kTextAndIconTabHeight + indicatorWeight);
+        }
       }
     }
     return Size.fromHeight(_kTabHeight + indicatorWeight);
   }
 
   @override
-  _NFTabBarState createState() => _NFTabBarState();
+  State createState() => _NFTabBarState();
 }
 
 class _NFTabBarState extends State<NFTabBar> {
@@ -420,7 +419,7 @@ class _NFTabBarState extends State<NFTabBar> {
   bool get _controllerIsValid => _controller?.animation != null;
 
   void _updateTabController() {
-    final TabController? newController = widget.controller ?? DefaultTabController.of(context);
+    final TabController? newController = widget.controller ?? DefaultTabController.maybeOf(context);
     assert(() {
       if (newController == null) {
         throw FlutterError(
@@ -539,16 +538,17 @@ class _NFTabBarState extends State<NFTabBar> {
     final double index = _controller!.index.toDouble();
     final double value = _controller!.animation!.value;
     double? offset;
-    if (value == index - 1.0)
+    if (value == index - 1.0) {
       offset = leadingPosition ?? middlePosition;
-    else if (value == index + 1.0)
+    } else if (value == index + 1.0) {
       offset = trailingPosition ?? middlePosition;
-    else if (value == index)
+    } else if (value == index) {
       offset = middlePosition;
-    else if (value < index)
+    } else if (value < index) {
       offset = leadingPosition == null ? middlePosition : lerpDouble(middlePosition, leadingPosition, index - value);
-    else
+    } else {
       offset = trailingPosition == null ? middlePosition : lerpDouble(middlePosition, trailingPosition, value - index);
+    }
 
     _scrollController!.jumpTo(offset!);
   }
@@ -737,12 +737,8 @@ class _TabBarScrollController extends ScrollController {
 // only compute the scroll position's initial scroll offset (the "correct"
 // pixels value) after the TabBar viewport width and scroll limits are known.
 class _TabBarScrollPosition extends ScrollPositionWithSingleContext {
-  _TabBarScrollPosition({
-    required ScrollPhysics physics,
-    required ScrollContext context,
-    ScrollPosition? oldPosition,
-    this.tabBar,
-  }) : super(physics: physics, context: context, initialPixels: null, oldPosition: oldPosition);
+  _TabBarScrollPosition({required super.physics, required super.context, super.oldPosition, this.tabBar})
+    : super(initialPixels: null);
 
   final _NFTabBarState? tabBar;
 
@@ -773,10 +769,8 @@ typedef _LayoutCallback = void Function(List<double> xOffsets, TextDirection? te
 // upon layout. The tab widths are only used at paint time (see _IndicatorPainter)
 // or in response to input.
 class _TabLabelBar extends Flex {
-  _TabLabelBar({Key? key, List<Widget> children = const <Widget>[], this.onPerformLayout})
+  const _TabLabelBar({super.children, this.onPerformLayout})
     : super(
-        key: key,
-        children: children,
         direction: Axis.horizontal,
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -808,24 +802,14 @@ class _TabLabelBar extends Flex {
 
 class _TabLabelBarRenderer extends RenderFlex {
   _TabLabelBarRenderer({
-    List<RenderBox>? children,
-    required Axis direction,
-    required MainAxisSize mainAxisSize,
-    required MainAxisAlignment mainAxisAlignment,
-    required CrossAxisAlignment crossAxisAlignment,
-    required TextDirection textDirection,
-    required VerticalDirection verticalDirection,
+    required super.direction,
+    required super.mainAxisSize,
+    required super.mainAxisAlignment,
+    required super.crossAxisAlignment,
+    required TextDirection super.textDirection,
+    required super.verticalDirection,
     required this.onPerformLayout,
-  }) : assert(onPerformLayout != null),
-       super(
-         children: children,
-         direction: direction,
-         mainAxisSize: mainAxisSize,
-         mainAxisAlignment: mainAxisAlignment,
-         crossAxisAlignment: crossAxisAlignment,
-         textDirection: textDirection,
-         verticalDirection: verticalDirection,
-       );
+  }) : assert(onPerformLayout != null);
 
   _LayoutCallback? onPerformLayout;
 
@@ -963,16 +947,17 @@ class _IndicatorPainter extends CustomPainter {
       final Rect? next = currentIndex < maxTabIndex ? indicatorRect(size, currentIndex + 1) : null;
       final double index = controller.index.toDouble();
       final double value = controller.animation!.value;
-      if (value == index - 1.0)
+      if (value == index - 1.0) {
         _currentRect = previous ?? middle;
-      else if (value == index + 1.0)
+      } else if (value == index + 1.0) {
         _currentRect = next ?? middle;
-      else if (value == index)
+      } else if (value == index) {
         _currentRect = middle;
-      else if (value < index)
+      } else if (value < index) {
         _currentRect = previous == null ? middle : Rect.lerp(middle, previous, index - value);
-      else
+      } else {
         _currentRect = next == null ? middle : Rect.lerp(middle, next, value - index);
+      }
     }
     assert(_currentRect != null);
 
@@ -1013,16 +998,6 @@ class _ChangeAnimation extends Animation<double> with AnimationWithParentMixin<d
   Animation<double> get parent => controller!.animation!;
 
   @override
-  void removeStatusListener(AnimationStatusListener listener) {
-    super.removeStatusListener(listener);
-  }
-
-  @override
-  void removeListener(VoidCallback listener) {
-    super.removeListener(listener);
-  }
-
-  @override
   double get value => _indexChangeProgress(controller!);
 }
 
@@ -1034,16 +1009,6 @@ class _DragAnimation extends Animation<double> with AnimationWithParentMixin<dou
 
   @override
   Animation<double> get parent => controller!.animation!;
-
-  @override
-  void removeStatusListener(AnimationStatusListener listener) {
-    super.removeStatusListener(listener);
-  }
-
-  @override
-  void removeListener(VoidCallback listener) {
-    super.removeListener(listener);
-  }
 
   @override
   double get value {

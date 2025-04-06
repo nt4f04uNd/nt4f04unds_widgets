@@ -9,12 +9,12 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// Button to go back from page.
 class NFBackButton extends StatelessWidget {
   const NFBackButton({
-    Key? key,
+    super.key,
     this.icon,
     this.size = NFConstants.iconButtonSize,
     this.iconSize = NFConstants.iconSize,
     this.onPressed,
-  }) : super(key: key);
+  });
 
   /// A custom icon for back button
   final IconData? icon;
@@ -46,8 +46,8 @@ class NFBackButton extends StatelessWidget {
 ///
 /// On and off toggle will have a color animation.
 class AnimatedIconButton extends StatefulWidget {
-  AnimatedIconButton({
-    Key? key,
+  const AnimatedIconButton({
+    super.key,
     required this.onPressed,
     required this.icon,
     this.duration = const Duration(milliseconds: 500),
@@ -58,7 +58,7 @@ class AnimatedIconButton extends StatefulWidget {
     this.inactiveColor,
     this.disabledColor,
     this.tooltip,
-  }) : super(key: key);
+  });
 
   /// An icon to use.
   final Widget icon;
