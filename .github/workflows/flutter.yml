@@ -34,7 +34,7 @@ jobs:
       - name: Run Dart Linter
         run: |
           echo "::add-matcher::${{ github.workspace }}/.github/problem-matchers/flutter-analyze.json"
-          flutter analyze --flutter-repo .
+          flutter analyze --fatal-infos
           echo "::remove-matcher owner=flutter-analyze"
 
       - name: Run tests
