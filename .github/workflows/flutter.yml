@@ -26,14 +26,14 @@ jobs:
         run: flutter pub get
 
       - name: Set up analyze problem matcher
-        run: echo "::add-matcher::${{ github.workspace }}/problem-matchers/dart-format.json"
+        run: echo "::add-matcher::${{ github.workspace }}/.github/problem-matchers/dart-format.json"
       - name: Check Dart formatting
         run: dart format --output json --set-exit-if-changed .
       - name: Remove problem matcher for analyze
         run: echo "::remove-matcher owner=dart-format"
 
       - name: Set up analyze problem matcher
-        run: echo "::add-matcher::${{ github.workspace }}/problem-matchers/flutter-analyze.json"
+        run: echo "::add-matcher::${{ github.workspace }}/.github/problem-matchers/flutter-analyze.json"
       - name: Run Dart Linter
         run: flutter analyze --flutter-repo .
       - name: Remove problem matcher for analyze
