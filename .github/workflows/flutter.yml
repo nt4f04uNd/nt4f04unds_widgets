@@ -28,7 +28,7 @@ jobs:
       - name: Check Dart formatting
         run: |
           echo "::add-matcher::${{ github.workspace }}/.github/problem-matchers/dart-format.json"
-          dart format --output json --set-exit-if-changed .
+          dart format --set-exit-if-changed .
           echo "::remove-matcher owner=dart-format"
 
       - name: Run Dart Linter
