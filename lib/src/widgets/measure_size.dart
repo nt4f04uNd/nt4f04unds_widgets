@@ -8,7 +8,7 @@ import 'package:flutter/rendering.dart';
 ///
 /// Taken from https://stackoverflow.com/a/60868972/9710294
 class MeasureSize extends SingleChildRenderObjectWidget {
-  const MeasureSize({Key? key, required Widget child, required this.onChange}) : super(key: key, child: child);
+  const MeasureSize({super.key, required Widget super.child, required this.onChange});
 
   final OnWidgetSizeChange onChange;
 
@@ -18,7 +18,7 @@ class MeasureSize extends SingleChildRenderObjectWidget {
   }
 }
 
-typedef void OnWidgetSizeChange(Size size);
+typedef OnWidgetSizeChange = void Function(Size size);
 
 class MeasureSizeRenderObject extends RenderProxyBox {
   MeasureSizeRenderObject(this.onChange);

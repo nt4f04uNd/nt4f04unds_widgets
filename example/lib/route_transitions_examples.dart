@@ -5,7 +5,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'main.dart';
 
 class RouteTransitionExamples extends StatelessWidget {
-  const RouteTransitionExamples({Key? key}) : super(key: key);
+  const RouteTransitionExamples({super.key});
 
   @override
   Widget build(BuildContext context) {

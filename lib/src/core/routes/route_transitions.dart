@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// Default route transition duration.
-const Duration kRouteTransitionDuration = const Duration(milliseconds: 300);
+const Duration kRouteTransitionDuration = Duration(milliseconds: 300);
 
 /// Configures the look of the route transition.
 ///
@@ -95,21 +95,12 @@ class RouteTransitionBuilder<T> extends RouteTransition<T> {
   RouteTransitionBuilder({
     required this.builder,
     required this.animationBuilder,
-    RouteSettings? settings,
-    RouteTransitionSettings? transitionSettings,
-    this.barrierDismissible = false,
-    this.barrierColor,
-    this.barrierLabel,
-  }) : super(settings: settings, transitionSettings: transitionSettings);
-
-  @override
-  final bool barrierDismissible;
-
-  @override
-  final Color? barrierColor;
-
-  @override
-  final String? barrierLabel;
+    super.settings,
+    super.transitionSettings,
+    super.barrierDismissible = false,
+    super.barrierColor,
+    super.barrierLabel,
+  });
 
   /// Builds the primary contents of the route.
   final WidgetBuilder builder;
@@ -135,9 +126,13 @@ class RouteTransitionBuilder<T> extends RouteTransition<T> {
 
 /// Represents a route transition with various [transitionSettings] to its parameters.
 abstract class RouteTransition<T> extends PageRoute<T> {
-  RouteTransition({RouteSettings? settings, RouteTransitionSettings? transitionSettings})
-    : transitionSettings = transitionSettings ?? RouteTransitionSettings(),
-      super(settings: settings);
+  RouteTransition({
+    super.settings,
+    RouteTransitionSettings? transitionSettings,
+    super.barrierDismissible,
+    this.barrierColor,
+    this.barrierLabel,
+  }) : transitionSettings = transitionSettings ?? RouteTransitionSettings();
 
   /// Settings that define how the transition will look like
   final RouteTransitionSettings transitionSettings;
@@ -146,13 +141,10 @@ abstract class RouteTransition<T> extends PageRoute<T> {
   bool get opaque => transitionSettings.opaque;
 
   @override
-  final bool barrierDismissible = false;
+  final Color? barrierColor;
 
   @override
-  final Color? barrierColor = null;
-
-  @override
-  final String? barrierLabel = null;
+  final String? barrierLabel;
 
   @override
   Duration get transitionDuration => transitionSettings.transitionDuration;
@@ -309,7 +301,8 @@ abstract class RouteTransition<T> extends PageRoute<T> {
 
 /// Reacts with callbacks depent of the current route state in the [Navigator].
 class RouteAwareWidget extends StatefulWidget {
-  RouteAwareWidget({
+  const RouteAwareWidget({
+    super.key,
     required this.child,
     this.routeObservers,
     this.onPush,
@@ -329,6 +322,7 @@ class RouteAwareWidget extends StatefulWidget {
   /// Enables logging of push and pop events.
   final bool logging;
 
+  @override
   State<RouteAwareWidget> createState() => RouteAwareWidgetState();
 }
 
@@ -354,6 +348,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
 
   @override
   void didPush() {
+    // ignore: avoid_print
     if (widget.logging) print('DID_PUSH');
     if (widget.onPush != null) widget.onPush!();
     // Current route was pushed onto navigator and is now topmost route.
@@ -361,6 +356,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
 
   @override
   void didPop() {
+    // ignore: avoid_print
     if (widget.logging) print('DID_POP');
     if (widget.onPop != null) widget.onPop!();
     // Current route was pushed off the navigator.
@@ -368,6 +364,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
 
   @override
   void didPushNext() {
+    // ignore: avoid_print
     if (widget.logging) print('DID_PUSH_NEXT');
     if (widget.onPushNext != null) widget.onPushNext!();
     // Covering route was pushed into the navigator.
@@ -375,6 +372,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
 
   @override
   void didPopNext() {
+    // ignore: avoid_print
     if (widget.logging) print('DID_POP_NEXT');
     if (widget.onPopNext != null) widget.onPopNext!();
     // Covering route was popped off the navigator.

@@ -9,16 +9,15 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// Makes the [route] dismissible.
 class DismissibleRoute extends StatefulWidget {
   DismissibleRoute({
-    Key? key,
+    super.key,
     required this.route,
     required this.child,
     required this.animatedChild,
     Widget? dismissBarrier,
     this.dismissDirection = SlideDirection.right,
-  }) : dismissBarrier = dismissBarrier ?? Container(color: Colors.black26),
-       super(key: key);
+  }) : dismissBarrier = dismissBarrier ?? Container(color: Colors.black26);
 
-  static late final springDescription = SpringDescription.withDampingRatio(mass: 0.01, stiffness: 200.0, ratio: 3.0);
+  static final springDescription = SpringDescription.withDampingRatio(mass: 0.01, stiffness: 200.0, ratio: 3.0);
 
   /// Returns controller of the nearest dismissible route.
   static SlidableController? controllerOf(BuildContext context) {
@@ -153,8 +152,8 @@ class DismissibleRouteState extends State<DismissibleRoute> with TickerProviderS
           animation: _boxDecorationController,
           builder:
               (context, child) => Container(
-                child: !_beenDismissed ? widget.animatedChild : widget.child,
                 decoration: _boxDecorationAnimation.value,
+                child: !_beenDismissed ? widget.animatedChild : widget.child,
               ),
         ),
       ),

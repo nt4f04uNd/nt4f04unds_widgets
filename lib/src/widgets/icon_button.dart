@@ -130,7 +130,7 @@ class NFIconButton extends StatelessWidget {
   /// The [icon] argument must be specified, and is typically either an [Icon]
   /// or an [ImageIcon].
   const NFIconButton({
-    Key? key,
+    super.key,
     required this.icon,
     this.size = NFConstants.iconButtonSize,
     this.iconSize = NFConstants.iconSize,
@@ -145,7 +145,7 @@ class NFIconButton extends StatelessWidget {
     this.autofocus = false,
     this.tooltip,
     this.enableFeedback = true,
-  }) : super(key: key);
+  });
 
   /// The size of the icon inside the button.
   ///
@@ -257,15 +257,16 @@ class NFIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterial(context));
     Color currentColor;
-    if (onPressed != null)
+    if (onPressed != null) {
       currentColor = color ?? Theme.of(context).iconTheme.color!;
-    else
+    } else {
       currentColor = disabledColor ?? Theme.of(context).disabledColor;
+    }
 
     Widget result = Align(
       // NOTE that align needed for container constraints get to work
       alignment: Alignment.center,
-      child: Container(
+      child: SizedBox(
         height: iconSize,
         width: iconSize,
         child: IconTheme.merge(data: IconThemeData(size: iconSize, color: currentColor), child: icon),
@@ -285,7 +286,7 @@ class NFIconButton extends StatelessWidget {
       child: Align(
         // NOTE that align needed for container constraints get to work
         alignment: Alignment.center,
-        child: Container(
+        child: SizedBox(
           width: maxSize,
           height: maxSize,
           child: InkWell(
@@ -295,13 +296,13 @@ class NFIconButton extends StatelessWidget {
             canRequestFocus: onPressed != null,
             onTap: onPressed,
             enableFeedback: enableFeedback,
-            child: result,
             focusColor: focusColor ?? Theme.of(context).focusColor,
             hoverColor: hoverColor ?? Theme.of(context).hoverColor,
             highlightColor: highlightColor ?? Colors.transparent,
             splashColor: splashColor ?? Theme.of(context).splashColor,
             // radius: maxSize / 2,
             customBorder: CircleBorder(side: BorderSide(width: 0)),
+            child: result,
           ),
         ),
       ),

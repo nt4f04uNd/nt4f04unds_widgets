@@ -4,6 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 
 /// Module for not essential to user UI widgets, like scroll or gesture behaviors
+library;
 
 export 'splash/splash.dart';
 export 'routes/routes.dart';
