@@ -9,9 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// A regular [AppBar] which to use with selection and [SelectionController].
-/// 
+///
 /// By default performs a fade switch animation while switching in and out of the selection mode.
-/// 
+///
 /// See also:
 /// * [AnimatedMenuCloseButton] which creates animated menu / close button which can be used with selection app bar
 class SelectionAppBar extends AppBar {
@@ -47,61 +47,60 @@ class SelectionAppBar extends AppBar {
     double bottomOpacity = 1.0,
     double? toolbarHeight,
   }) : super(
-        key: key,
-        leading: !showMenuButton ? leading : Builder(
-          builder: (BuildContext context) {
-            return AnimatedMenuCloseButton(
-              animation: selectionController.animation,
-              onMenuPressed: onMenuPressed,
-              onClosePressed: selectionController.close,
-            );
-          },
-        ),
-        title: AnimationSwitcher(
-          animation: CurvedAnimation(
-            curve: curve,
-            reverseCurve: reverseCurve,
-            parent: selectionController.animation,
-          ),
-          alignment: AlignmentDirectional.centerStart,
-          child1: title,
-          child2: titleSelection,
-        ),
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-            child: AnimationSwitcher(
-              animation: CurvedAnimation(
-                curve: curve,
-                reverseCurve: reverseCurve,
-                parent: selectionController.animation,
-              ),
-              alignment: Alignment.centerRight,
-              builder2: defaultSelectionActionsBuilder,
-              child1: Row(children: actions),
-              child2: Row(children: actionsSelection),
-            ),
-          ),
-        ],
-        automaticallyImplyLeading: false,
-        flexibleSpace: flexibleSpace,
-        bottom: bottom,
-        elevation: selectionController.inSelection ? elevationSelection : elevation,
-        shape: shape,
-        backgroundColor: backgroundColor,
-        systemOverlayStyle: systemOverlayStyle,
-        iconTheme: iconTheme,
-        actionsIconTheme: actionsIconTheme,
-        toolbarTextStyle: toolbarTextStyle,
-        titleTextStyle: titleTextStyle,
-        primary: primary,
-        centerTitle: centerTitle,
-        excludeHeaderSemantics: excludeHeaderSemantics,
-        titleSpacing: titleSpacing,
-        toolbarOpacity: toolbarOpacity,
-        bottomOpacity: bottomOpacity,
-        toolbarHeight: toolbarHeight,
-      );
+         key: key,
+         leading:
+             !showMenuButton
+                 ? leading
+                 : Builder(
+                   builder: (BuildContext context) {
+                     return AnimatedMenuCloseButton(
+                       animation: selectionController.animation,
+                       onMenuPressed: onMenuPressed,
+                       onClosePressed: selectionController.close,
+                     );
+                   },
+                 ),
+         title: AnimationSwitcher(
+           animation: CurvedAnimation(curve: curve, reverseCurve: reverseCurve, parent: selectionController.animation),
+           alignment: AlignmentDirectional.centerStart,
+           child1: title,
+           child2: titleSelection,
+         ),
+         actions: <Widget>[
+           Padding(
+             padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+             child: AnimationSwitcher(
+               animation: CurvedAnimation(
+                 curve: curve,
+                 reverseCurve: reverseCurve,
+                 parent: selectionController.animation,
+               ),
+               alignment: Alignment.centerRight,
+               builder2: defaultSelectionActionsBuilder,
+               child1: Row(children: actions),
+               child2: Row(children: actionsSelection),
+             ),
+           ),
+         ],
+         automaticallyImplyLeading: false,
+         flexibleSpace: flexibleSpace,
+         bottom: bottom,
+         elevation: selectionController.inSelection ? elevationSelection : elevation,
+         shape: shape,
+         backgroundColor: backgroundColor,
+         systemOverlayStyle: systemOverlayStyle,
+         iconTheme: iconTheme,
+         actionsIconTheme: actionsIconTheme,
+         toolbarTextStyle: toolbarTextStyle,
+         titleTextStyle: titleTextStyle,
+         primary: primary,
+         centerTitle: centerTitle,
+         excludeHeaderSemantics: excludeHeaderSemantics,
+         titleSpacing: titleSpacing,
+         toolbarOpacity: toolbarOpacity,
+         bottomOpacity: bottomOpacity,
+         toolbarHeight: toolbarHeight,
+       );
 
   static Widget defaultSelectionActionsBuilder(Widget child, Animation<double> animation) {
     return FadeTransition(
@@ -109,12 +108,12 @@ class SelectionAppBar extends AppBar {
       child: AnimatedBuilder(
         animation: animation,
         child: child,
-        builder: (context, child) => Transform(
-          transform: Matrix4.identity()
-            ..rotateX((1.0 - animation.value) * math.pi / 2),
-          origin: const Offset(0.0, 30.0),
-          child: child,
-        ),
+        builder:
+            (context, child) => Transform(
+              transform: Matrix4.identity()..rotateX((1.0 - animation.value) * math.pi / 2),
+              origin: const Offset(0.0, 30.0),
+              child: child,
+            ),
       ),
     );
   }
@@ -140,7 +139,7 @@ class AnimatedMenuCloseButton extends StatefulWidget {
     this.reverseDuration,
     this.curve = Curves.easeOutCubic,
     this.reverseCurve = Curves.easeInCubic,
-  })  : super(key: key);
+  }) : super(key: key);
 
   /// Animation controller that this button will listen to and animate together.
   ///
@@ -170,7 +169,7 @@ class AnimatedMenuCloseButton extends StatefulWidget {
 
   /// The curve to use for `menu_close` animation.
   final Curve curve;
-  
+
   /// The curve to use for `close_menu` animation.
   final Curve reverseCurve;
 
@@ -184,17 +183,11 @@ class _AnimatedMenuCloseButtonState extends State<AnimatedMenuCloseButton> with 
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-      reverseDuration: widget.reverseDuration,
-    );
-    animation = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(curve: widget.curve,
-        reverseCurve: widget.reverseCurve,
-        parent: controller,
-      ),
-    );
+    controller = AnimationController(vsync: this, duration: widget.duration, reverseDuration: widget.reverseDuration);
+    animation = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(curve: widget.curve, reverseCurve: widget.reverseCurve, parent: controller));
 
     widget.animation.addStatusListener(_handleParentAnimationStatusChange);
 
@@ -234,11 +227,7 @@ class _AnimatedMenuCloseButtonState extends State<AnimatedMenuCloseButton> with 
   }
 
   void _createAnimation() {
-    animation = CurvedAnimation(
-      curve: widget.curve,
-      reverseCurve: widget.reverseCurve,
-      parent: controller
-    );
+    animation = CurvedAnimation(curve: widget.curve, reverseCurve: widget.reverseCurve, parent: controller);
   }
 
   @override
@@ -248,21 +237,18 @@ class _AnimatedMenuCloseButtonState extends State<AnimatedMenuCloseButton> with 
     final theme = Theme.of(context);
     return AnimatedBuilder(
       animation: controller,
-      builder: (BuildContext context, Widget? child) => NFIconButton(
-        size: widget.size ?? NFConstants.iconButtonSize,
-        iconSize: widget.iconSize ?? NFConstants.iconSize,
-        color: theme.colorScheme.onSurface,
-        onPressed: showClose
-          ? widget.onClosePressed
-          : widget.onMenuPressed,
-        icon: AnimatedIcon(
-          icon: showClose
-            ? AnimatedIcons.menu_close
-            : AnimatedIcons.close_menu,
-          color: widget.iconColor,
-          progress: animation,
-        ),
-      ),
+      builder:
+          (BuildContext context, Widget? child) => NFIconButton(
+            size: widget.size ?? NFConstants.iconButtonSize,
+            iconSize: widget.iconSize ?? NFConstants.iconSize,
+            color: theme.colorScheme.onSurface,
+            onPressed: showClose ? widget.onClosePressed : widget.onMenuPressed,
+            icon: AnimatedIcon(
+              icon: showClose ? AnimatedIcons.menu_close : AnimatedIcons.close_menu,
+              color: widget.iconColor,
+              progress: animation,
+            ),
+          ),
     );
   }
 }

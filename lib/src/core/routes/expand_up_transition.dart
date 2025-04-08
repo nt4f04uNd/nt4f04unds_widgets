@@ -9,13 +9,8 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// A page that uses [ExpandUpRouteTransition].
 class ExpandUpPage<T> extends Page<T> {
-   const ExpandUpPage({
-    required this.child,
-    this.transitionSettings,
-    LocalKey? key,
-    String? name,
-    Object? arguments,
-  }) :  super(key: key, name: name, arguments: arguments);
+  const ExpandUpPage({required this.child, this.transitionSettings, LocalKey? key, String? name, Object? arguments})
+    : super(key: key, name: name, arguments: arguments);
 
   final Widget child;
 
@@ -23,23 +18,15 @@ class ExpandUpPage<T> extends Page<T> {
 
   @override
   RouteTransition<T> createRoute(BuildContext context) {
-    return ExpandUpRouteTransition<T>(
-      settings: this,
-      child: child,
-      transitionSettings: transitionSettings,
-    );
+    return ExpandUpRouteTransition<T>(settings: this, child: child, transitionSettings: transitionSettings);
   }
 }
-
 
 /// Route transition that uses [OpenUpwardsPageTransitionsBuilder] from the flutter.
 class ExpandUpRouteTransition<T> extends RouteTransition<T> {
   /// Creates route transition.
-  ExpandUpRouteTransition({
-    RouteSettings? settings,
-    required this.child,
-    RouteTransitionSettings? transitionSettings,
-  }) : super(settings: settings, transitionSettings: transitionSettings);
+  ExpandUpRouteTransition({RouteSettings? settings, required this.child, RouteTransitionSettings? transitionSettings})
+    : super(settings: settings, transitionSettings: transitionSettings);
 
   final Widget child;
 
@@ -49,15 +36,26 @@ class ExpandUpRouteTransition<T> extends RouteTransition<T> {
   }
 
   @override
-  Widget buildAnimation(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    return const OpenUpwardsPageTransitionsBuilder().buildTransitions(this, context, CurvedAnimation(
-      parent: animation,
-      curve: transitionSettings.curve,
-      reverseCurve: transitionSettings.reverseCurve,
-    ), CurvedAnimation(
-      parent: secondaryAnimation,
-      curve: transitionSettings.secondaryCurve,
-      reverseCurve: transitionSettings.secondaryReverseCurve,
-    ), child);
+  Widget buildAnimation(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return const OpenUpwardsPageTransitionsBuilder().buildTransitions(
+      this,
+      context,
+      CurvedAnimation(
+        parent: animation,
+        curve: transitionSettings.curve,
+        reverseCurve: transitionSettings.reverseCurve,
+      ),
+      CurvedAnimation(
+        parent: secondaryAnimation,
+        curve: transitionSettings.secondaryCurve,
+        reverseCurve: transitionSettings.secondaryReverseCurve,
+      ),
+      child,
+    );
   }
 }
