@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 /// Put it into slider theme to apply custom track margin.
 class TrackShapeWithMargin extends RoundedRectSliderTrackShape {
-  const TrackShapeWithMargin({ this.horizontalMargin = 12.0 });
+  const TrackShapeWithMargin({this.horizontalMargin = 12.0});
 
   /// Margin to be applied for each side horizontally
   final double horizontalMargin;

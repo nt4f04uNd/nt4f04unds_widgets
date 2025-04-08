@@ -44,7 +44,7 @@ class NFSnackbarEntry {
   bool get onScreen => _overlayEntry != null;
 
   /// The overlay entry to instert to overlay.
-  /// 
+  ///
   /// To create the entry, call [createOverlayEntry].
   OverlayEntry? _overlayEntry;
 
@@ -52,30 +52,27 @@ class NFSnackbarEntry {
   void _show() {
     assert(!onScreen);
     _overlayEntry = OverlayEntry(
-      builder: (context) => Container(
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: _NFSnackbarEntryWidget(entry: this, key: globalKey),
-        ),
-      ),
+      builder:
+          (context) =>
+              Align(alignment: Alignment.bottomCenter, child: _NFSnackbarEntryWidget(entry: this, key: globalKey)),
     );
-    late final OverlayState _overlay;
-    if (overlay == null) {
+    late final OverlayState overlay;
+    if (this.overlay == null) {
       final overlayFromKey = NFWidgets.navigatorKey?.currentState?.overlay;
       assert(() {
         if (overlayFromKey == null) {
           throw ArgumentError(
             "Either provide `NFWidgets.navigatorKey` to get the root navigator overlay, "
-            "or pass an `overlay` directly"
+            "or pass an `overlay` directly",
           );
         }
         return true;
       }());
-      _overlay = overlayFromKey!;
+      overlay = overlayFromKey!;
     } else {
-      _overlay = overlay!;
+      overlay = this.overlay!;
     }
-    _overlay.insert(_overlayEntry!);
+    overlay.insert(_overlayEntry!);
   }
 
   /// Removes [overlayEntry].
@@ -86,26 +83,26 @@ class NFSnackbarEntry {
 }
 
 /// A controller for snackbars.
-/// 
+///
 /// See also:
 /// * [NFSnackbar], a snackbar widget
 /// * [NFSnackbarEntry], which describes a snackbar entry and some settings for it
 abstract class NFSnackbarController {
   /// Max length of [snackbarsQueue].
-  /// 
+  ///
   /// When queue exceeds this length, it's
-  static int maxQueueLength = 4; 
+  static int maxQueueLength = 4;
 
   /// Queue of snackbars to render.
-  /// 
+  ///
   /// First snackbar is the nearest to be shown, last is farthest.
-  /// 
+  ///
   /// If contains [NFSnackbarEntry.important], it will be always displayed at the first
   /// position.
   static List<NFSnackbarEntry> snackbarsQueue = [];
 
   /// Shows the [snackbar] on screen.
-  static void showSnackbar(NFSnackbarEntry snackbar, { OverlayState? overlay }) async {
+  static void showSnackbar(NFSnackbarEntry snackbar, {OverlayState? overlay}) async {
     if (snackbar.important && snackbarsQueue.length > 1) {
       snackbarsQueue.insert(1, snackbar);
     } else {
@@ -145,10 +142,7 @@ abstract class NFSnackbarController {
 }
 
 class _NFSnackbarEntryWidget extends StatefulWidget {
-  _NFSnackbarEntryWidget({
-    Key? key,
-    required this.entry,
-  }) : super(key: key);
+  const _NFSnackbarEntryWidget({super.key, required this.entry});
 
   final NFSnackbarEntry entry;
 
@@ -193,8 +187,7 @@ class NFSnackbarEntryState extends State<_NFSnackbarEntryWidget> with TickerProv
 
   /// Closes snackbar with animation.
   Future<void> close() async {
-    if (_closing)
-      return;
+    if (_closing) return;
     _closing = true;
     _fadeController.reverse();
     await controller.fling(velocity: 1);
@@ -222,64 +215,60 @@ class NFSnackbarEntryState extends State<_NFSnackbarEntryWidget> with TickerProv
 
   @override
   Widget build(BuildContext context) {
-    final fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-      curve: Interval(0.2, 1.0, curve: Curves.easeOutCubic),
-      reverseCurve: Interval(0.2, 1.0, curve: Curves.easeInCubic),
-      parent: _fadeController
-    ));
+    final fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        curve: Interval(0.2, 1.0, curve: Curves.easeOutCubic),
+        reverseCurve: Interval(0.2, 1.0, curve: Curves.easeInCubic),
+        parent: _fadeController,
+      ),
+    );
     return Padding(
-      padding: widget.entry.resizeToAvoidBottomInset
-        ? EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)
-        : EdgeInsets.zero,
+      padding:
+          widget.entry.resizeToAvoidBottomInset
+              ? EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)
+              : EdgeInsets.zero,
       child: FadeTransition(
         opacity: fadeAnimation,
         child: StatefulBuilder(
-          builder: (BuildContext context, setState) => Slidable(
-            controller: controller,
-            direction: SlideDirection.down,
-            start: 0.0,
-            end: 1.0,
-            onDragStart: (_) => stopTimer(),
-            onDragEnd: (_, __) => resumeTimer(),
-            key: dismissibleKey,
-            child: widget.entry.child,
-            childBuilder: (animation, child) => AnimatedBuilder(
-              animation: animation,
-              builder: (context, child) => child!,
-              child: IgnorePointer(
-                ignoring: controller.status == AnimationStatus.reverse,
-                child: child,
+          builder:
+              (BuildContext context, setState) => Slidable(
+                controller: controller,
+                direction: SlideDirection.down,
+                start: 0.0,
+                end: 1.0,
+                onDragStart: (_) => stopTimer(),
+                onDragEnd: (_, __) => resumeTimer(),
+                key: dismissibleKey,
+                child: widget.entry.child,
+                childBuilder:
+                    (animation, child) => AnimatedBuilder(
+                      animation: animation,
+                      builder: (context, child) => child!,
+                      child: IgnorePointer(ignoring: controller.status == AnimationStatus.reverse, child: child),
+                    ),
               ),
-            ),
-          ),
         ),
       ),
     );
   }
 }
 
-
 /// Colored snackbar widget.
-/// 
+///
 /// See also:
 /// * [NFSnackbarController], which allows to display snackbars
 /// * [NFSnackbarEntry], which describes a snackbar entry and some settings for it
 class NFSnackbar extends StatelessWidget {
   const NFSnackbar({
-    Key? key,
+    super.key,
     this.title,
     this.leading,
     this.trailing,
     this.color,
-    this.padding = const EdgeInsets.only(
-      left: 16.0,
-      right: 16.0,
-      top: 10.0,
-      bottom: 10.0,
-    ),
+    this.padding = const EdgeInsets.only(left: 16.0, right: 16.0, top: 10.0, bottom: 10.0),
     this.titlePadding = EdgeInsets.zero,
-  }) : super(key: key);
-  
+  });
+
   /// The primary content of the snakcbar.
   final Widget? title;
 
@@ -288,7 +277,7 @@ class NFSnackbar extends StatelessWidget {
 
   /// A widget to display after the [title].
   final Widget? trailing;
-  
+
   /// Snackbar color. By default [ColorScheme.primary] is used.
   final Color? color;
 
@@ -314,24 +303,9 @@ class NFSnackbar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              if (leading != null)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: leading,
-                ),
-              Expanded(
-                child: title == null
-                  ? const SizedBox()
-                  : Padding(
-                    padding: titlePadding,
-                    child: title!,
-                ),
-              ),
-              if (trailing != null)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: trailing,
-                )
+              if (leading != null) Padding(padding: const EdgeInsets.only(right: 8.0), child: leading),
+              Expanded(child: title == null ? const SizedBox() : Padding(padding: titlePadding, child: title!)),
+              if (trailing != null) Padding(padding: const EdgeInsets.only(left: 8.0), child: trailing),
             ],
           ),
         ),

@@ -12,15 +12,15 @@ import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// Core widget of the library.
-/// 
+///
 /// At the app start you should call [init] method. That is required for some of the
 /// widgets and functions in library to work properly.
-/// 
+///
 /// See also:
 /// * [NFTheme] in which you should wrap your widget tree
 class NFWidgets {
   /// A key of the root navigator.
-  /// 
+  ///
   /// Used in [NFSnackbarController] to obtain the root overlay to display snackbars.
   /// Can be omitted, if snackbars aren't used.
   static GlobalKey<NavigatorState>? navigatorKey;
@@ -29,32 +29,22 @@ class NFWidgets {
   static List<RouteObserver>? routeObservers;
 
   /// Initializes some parameters for the package to work correctly.
-  static void init({
-    required List<RouteObserver> routeObservers,
-    GlobalKey<NavigatorState>? navigatorKey,
-  }) {
+  static void init({required List<RouteObserver> routeObservers, GlobalKey<NavigatorState>? navigatorKey}) {
     NFWidgets.routeObservers = routeObservers;
     NFWidgets.navigatorKey = navigatorKey;
   }
 }
 
 /// Provides access to [NFThemeData].
-/// 
+///
 /// This is required for some of the widgets and functions in library, so you should
 /// wrap your app into this widget.
-class NFTheme extends InheritedWidget  {
+class NFTheme extends InheritedWidget {
   /// Creates inherited defaults widget.
-  const NFTheme({
-    Key? key,
-    required this.data,
-    required this.child,
-  }) : super(child: child, key: key);
+  const NFTheme({super.key, required this.data, required super.child});
 
   /// Default library-wide values.
   final NFThemeData data;
-
-  /// The widget below this widget in the tree.
-  final Widget child;
 
   static NFThemeData of(BuildContext context) {
     final widget = context.getElementForInheritedWidgetOfExactType<NFTheme>()?.widget as NFTheme;
@@ -96,7 +86,7 @@ class NFThemeData {
   final SystemUiOverlayStyle? _bottomSheetSystemUiStyle;
 
   /// If [RouteTransition.uiStyle] is not specified, by default UI transition just won't happen.
-  /// 
+  ///
   /// If this is set to true, it forces the route transition to use [systemUiStyle] as a default values and thus
   /// route transitions will always apply some UI style.
   final bool alwaysApplyUiStyle;

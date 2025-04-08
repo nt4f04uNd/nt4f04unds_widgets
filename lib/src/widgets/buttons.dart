@@ -9,12 +9,12 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// Button to go back from page.
 class NFBackButton extends StatelessWidget {
   const NFBackButton({
-    Key? key,
+    super.key,
     this.icon,
     this.size = NFConstants.iconButtonSize,
     this.iconSize = NFConstants.iconSize,
     this.onPressed,
-  }) : super(key: key);
+  });
 
   /// A custom icon for back button
   final IconData? icon;
@@ -33,9 +33,7 @@ class NFBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final nftheme = NFTheme.of(context);
     return NFIconButton(
-      icon: Icon(
-        icon ?? Icons.arrow_back_rounded,
-      ),
+      icon: Icon(icon ?? Icons.arrow_back_rounded),
       size: size ?? nftheme.iconButtonSize,
       iconSize: iconSize ?? nftheme.iconSize,
       onPressed: onPressed ?? () => Navigator.of(context).pop(),
@@ -45,11 +43,11 @@ class NFBackButton extends StatelessWidget {
 
 /// An icon button, that can be toggled visually on and off with [enabled],
 /// for example to repesent some logical state, like `on / off`.
-/// 
+///
 /// On and off toggle will have a color animation.
 class AnimatedIconButton extends StatefulWidget {
-  AnimatedIconButton({
-    Key? key,
+  const AnimatedIconButton({
+    super.key,
     required this.onPressed,
     required this.icon,
     this.duration = const Duration(milliseconds: 500),
@@ -60,7 +58,7 @@ class AnimatedIconButton extends StatefulWidget {
     this.inactiveColor,
     this.disabledColor,
     this.tooltip,
-  }) : super(key: key);
+  });
 
   /// An icon to use.
   final Widget icon;
@@ -71,13 +69,13 @@ class AnimatedIconButton extends StatefulWidget {
   final VoidCallback? onPressed;
 
   /// The toogle animation duration used.
-  /// 
+  ///
   /// By default 500 milliseconds.
   final Duration duration;
 
   /// Button size. Defaults to [NFThemeData.iconButtonSize].
   final double? size;
-  
+
   /// Icon size. Defaults to [NFThemeData.iconSize].
   final double? iconSize;
 
@@ -86,20 +84,20 @@ class AnimatedIconButton extends StatefulWidget {
   final bool active;
 
   /// Default icon color.
-  /// 
+  ///
   /// If none specified, theme icon color is used.
   final Color? color;
 
   /// Inactive icon color which is applied with [active] set to `false`.
-  /// 
+  ///
   /// If none specified, [ThemeData.unselectedWidgetColor] color is used.
   final Color? inactiveColor;
 
   /// Color to use when [onPressed] is `null`.
-  /// 
+  ///
   /// If none specified, [ThemeData.disabledColor] color is used.
   final Color? disabledColor;
-  
+
   /// Text that describes the action that will occur when the button is pressed.
   final String? tooltip;
 
@@ -113,10 +111,7 @@ class AnimatedIconButtonState extends State<AnimatedIconButton> with SingleTicke
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    );
+    controller = AnimationController(vsync: this, duration: widget.duration);
     if (widget.active && widget.onPressed != null) {
       controller.value = 1.0;
     }
@@ -145,26 +140,24 @@ class AnimatedIconButtonState extends State<AnimatedIconButton> with SingleTicke
     final theme = Theme.of(context);
     final nftheme = NFTheme.of(context);
     final colorAnimation = ColorTween(
-      begin: widget.onPressed != null
-        ? widget.inactiveColor ?? theme.unselectedWidgetColor
-        : widget.disabledColor ?? theme.disabledColor,
+      begin:
+          widget.onPressed != null
+              ? widget.inactiveColor ?? theme.unselectedWidgetColor
+              : widget.disabledColor ?? theme.disabledColor,
       end: widget.color ?? theme.iconTheme.color,
-    ).animate(CurvedAnimation(
-      parent: controller,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
-    ));
+    ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic));
     return AnimatedBuilder(
       animation: controller,
-      builder: (BuildContext context, Widget? child) => NFIconButton(
-        icon: widget.icon,
-        onPressed: widget.onPressed,
-        iconSize: widget.iconSize ?? nftheme.iconSize,
-        size: widget.size ?? nftheme.iconButtonSize,
-        color: colorAnimation.value,
-        disabledColor: colorAnimation.value,
-        tooltip: widget.tooltip,
-      ),
+      builder:
+          (BuildContext context, Widget? child) => NFIconButton(
+            icon: widget.icon,
+            onPressed: widget.onPressed,
+            iconSize: widget.iconSize ?? nftheme.iconSize,
+            size: widget.size ?? nftheme.iconButtonSize,
+            color: colorAnimation.value,
+            disabledColor: colorAnimation.value,
+            tooltip: widget.tooltip,
+          ),
     );
   }
 }

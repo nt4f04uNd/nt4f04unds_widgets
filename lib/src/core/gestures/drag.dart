@@ -10,6 +10,7 @@
 /// Copied this on flutter master d2b42d8c13f2dba6ba12c84a0e66fadf7eb94c16
 /// TODO: migrate this back to null safety (copied this on flutter master d2b42d8c13f2dba6ba12c84a0e66fadf7eb94c16)
 /// ###########################################################################################
+library;
 
 import 'dart:math';
 
@@ -17,11 +18,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/scheduler.dart';
 
-enum _DragState {
-  ready,
-  possible,
-  accepted,
-}
+enum _DragState { ready, possible, accepted }
 
 /// Signature called on each pointer move event (even before the drag was accepted).
 ///
@@ -366,11 +363,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
   @override
   bool isPointerAllowed(PointerEvent event) {
     if (_initialButtons == null) {
-      if (onDown == null &&
-          onStart == null &&
-          onUpdate == null &&
-          onEnd == null &&
-          onCancel == null) {
+      if (onDown == null && onStart == null && onUpdate == null && onEnd == null && onCancel == null) {
         return false;
       }
     } else {
@@ -453,11 +446,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
     }
   }
 
-  double _getSumDelta({
-    required int pointer,
-    required bool positive,
-    required _DragDirection axis,
-  }) {
+  double _getSumDelta({required int pointer, required bool positive, required _DragDirection axis}) {
     double sum = 0.0;
 
     if (!_moveDeltaBeforeFrame.containsKey(pointer)) {
@@ -482,10 +471,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
     return sum;
   }
 
-  int? _getMaxSumDeltaPointer({
-    required bool positive,
-    required _DragDirection axis,
-  }) {
+  int? _getMaxSumDeltaPointer({required bool positive, required _DragDirection axis}) {
     if (_moveDeltaBeforeFrame.isEmpty) {
       return null;
     }
@@ -541,7 +527,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
       return localDelta;
     }
 
-    final double dx,dy;
+    final double dx, dy;
     if (axis == _DragDirection.horizontal) {
       dx = _resolveDelta(pointer: pointer, axis: _DragDirection.horizontal, localDelta: localDelta);
       assert(dx.abs() <= localDelta.dx.abs());
@@ -562,11 +548,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
     return Offset(dx, dy);
   }
 
-  double _resolveDelta({
-    required int pointer,
-    required _DragDirection axis,
-    required Offset localDelta,
-  }) {
+  double _resolveDelta({required int pointer, required _DragDirection axis, required Offset localDelta}) {
     final bool positive = axis == _DragDirection.horizontal ? localDelta.dx > 0 : localDelta.dy > 0;
     final double delta = axis == _DragDirection.horizontal ? localDelta.dx : localDelta.dy;
     final int? maxSumDeltaPointer = _getMaxSumDeltaPointer(positive: positive, axis: axis);
@@ -593,10 +575,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
     }
   }
 
-  double _resolveDeltaForPanGesture({
-    required _DragDirection axis,
-    required Offset localDelta,
-  }) {
+  double _resolveDeltaForPanGesture({required _DragDirection axis, required Offset localDelta}) {
     final double delta = axis == _DragDirection.horizontal ? localDelta.dx : localDelta.dy;
     final int pointerCount = _acceptedActivePointers.length;
     assert(pointerCount >= 1);
@@ -628,17 +607,20 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
       _velocityTrackers[event.pointer]!.addPosition(event.timeStamp, position);
     }
     if (event is PointerMoveEvent &&
-        ((shouldGiveUp != null && shouldGiveUp!(event)) ||
-            (event.buttons != _initialButtons))) {
+        ((shouldGiveUp != null && shouldGiveUp!(event)) || (event.buttons != _initialButtons))) {
       _giveUpPointer(event.pointer);
       return;
     }
-    if ((event is PointerMoveEvent || event is PointerPanZoomUpdateEvent)
-        && _shouldTrackMoveEvent(event.pointer)) {
+    if ((event is PointerMoveEvent || event is PointerPanZoomUpdateEvent) && _shouldTrackMoveEvent(event.pointer)) {
       final Offset delta = (event is PointerMoveEvent) ? event.delta : (event as PointerPanZoomUpdateEvent).panDelta;
-      final Offset localDelta = (event is PointerMoveEvent) ? event.localDelta : (event as PointerPanZoomUpdateEvent).localPanDelta;
-      final Offset position = (event is PointerMoveEvent) ? event.position : (event.position + (event as PointerPanZoomUpdateEvent).pan);
-      final Offset localPosition = (event is PointerMoveEvent) ? event.localPosition : (event.localPosition + (event as PointerPanZoomUpdateEvent).localPan);
+      final Offset localDelta =
+          (event is PointerMoveEvent) ? event.localDelta : (event as PointerPanZoomUpdateEvent).localPanDelta;
+      final Offset position =
+          (event is PointerMoveEvent) ? event.position : (event.position + (event as PointerPanZoomUpdateEvent).pan);
+      final Offset localPosition =
+          (event is PointerMoveEvent)
+              ? event.localPosition
+              : (event.localPosition + (event as PointerPanZoomUpdateEvent).localPan);
       _finalPosition = OffsetPair(local: localPosition, global: position);
       final Offset resolvedDelta = _resolveLocalDeltaForMultitouch(event.pointer, localDelta);
       switch (_state) {
@@ -651,11 +633,13 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
           _lastTransform = event.transform;
           final Offset movedLocally = _getDeltaForDetails(localDelta);
           final Matrix4? localToGlobalTransform = event.transform == null ? null : Matrix4.tryInvert(event.transform!);
-          _globalDistanceMoved += PointerEvent.transformDeltaViaPositions(
-              transform: localToGlobalTransform,
-              untransformedDelta: movedLocally,
-              untransformedEndPosition: localPosition
-          ).distance * (_getPrimaryValueFromOffset(movedLocally) ?? 1).sign;
+          _globalDistanceMoved +=
+              PointerEvent.transformDeltaViaPositions(
+                transform: localToGlobalTransform,
+                untransformedDelta: movedLocally,
+                untransformedEndPosition: localPosition,
+              ).distance *
+              (_getPrimaryValueFromOffset(movedLocally) ?? 1).sign;
           if (_hasSufficientGlobalDistanceToAccept(event.kind, gestureSettings?.touchSlop)) {
             _hasDragThresholdBeenMet = true;
             if (_acceptedActivePointers.contains(event.pointer)) {
@@ -733,8 +717,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
 
     _moveDeltaBeforeFrame.remove(pointer);
     if (_activePointer == pointer) {
-      _activePointer =
-      _acceptedActivePointers.isNotEmpty ? _acceptedActivePointers.first : null;
+      _activePointer = _acceptedActivePointers.isNotEmpty ? _acceptedActivePointers.first : null;
     }
   }
 
@@ -837,9 +820,10 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
       debugReport = () => 'Could not estimate velocity.';
     } else {
       details = _considerFling(estimate, tracker.kind);
-      debugReport = (details != null)
-          ? () => '$estimate; fling at ${details!.velocity}.'
-          : () => '$estimate; judged to not be a fling.';
+      debugReport =
+          (details != null)
+              ? () => '$estimate; fling at ${details!.velocity}.'
+              : () => '$estimate; judged to not be a fling.';
     }
     details ??= DragEndDetails(
       primaryVelocity: 0.0,
@@ -861,6 +845,7 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
     _velocityTrackers.clear();
     super.dispose();
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
@@ -884,11 +869,7 @@ class NFVerticalDragGestureRecognizer extends NFDragGestureRecognizer {
   /// Create a gesture recognizer for interactions in the vertical axis.
   ///
   /// {@macro flutter.gestures.GestureRecognizer.supportedDevices}
-  NFVerticalDragGestureRecognizer({
-    super.debugOwner,
-    super.supportedDevices,
-    super.allowedButtonsFilter,
-  });
+  NFVerticalDragGestureRecognizer({super.debugOwner, super.supportedDevices, super.allowedButtonsFilter});
 
   @override
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
@@ -946,11 +927,7 @@ class NFHorizontalDragGestureRecognizer extends NFDragGestureRecognizer {
   /// Create a gesture recognizer for interactions in the horizontal axis.
   ///
   /// {@macro flutter.gestures.GestureRecognizer.supportedDevices}
-  NFHorizontalDragGestureRecognizer({
-    super.debugOwner,
-    super.supportedDevices,
-    super.allowedButtonsFilter,
-  });
+  NFHorizontalDragGestureRecognizer({super.debugOwner, super.supportedDevices, super.allowedButtonsFilter});
 
   @override
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
@@ -1005,18 +982,14 @@ class NFHorizontalDragGestureRecognizer extends NFDragGestureRecognizer {
 ///    some time has passed.
 class NFPanGestureRecognizer extends NFDragGestureRecognizer {
   /// Create a gesture recognizer for tracking movement on a plane.
-  NFPanGestureRecognizer({
-    super.debugOwner,
-    super.supportedDevices,
-    super.allowedButtonsFilter,
-  });
+  NFPanGestureRecognizer({super.debugOwner, super.supportedDevices, super.allowedButtonsFilter});
 
   @override
   bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
     final double minVelocity = minFlingVelocity ?? kMinFlingVelocity;
     final double minDistance = minFlingDistance ?? computeHitSlop(kind, gestureSettings);
-    return estimate.pixelsPerSecond.distanceSquared > minVelocity * minVelocity
-        && estimate.offset.distanceSquared > minDistance * minDistance;
+    return estimate.pixelsPerSecond.distanceSquared > minVelocity * minVelocity &&
+        estimate.offset.distanceSquared > minDistance * minDistance;
   }
 
   @override
@@ -1024,8 +997,9 @@ class NFPanGestureRecognizer extends NFDragGestureRecognizer {
     if (!isFlingGesture(estimate, kind)) {
       return null;
     }
-    final Velocity velocity = Velocity(pixelsPerSecond: estimate.pixelsPerSecond)
-        .clampMagnitude(minFlingVelocity ?? kMinFlingVelocity, maxFlingVelocity ?? kMaxFlingVelocity);
+    final Velocity velocity = Velocity(
+      pixelsPerSecond: estimate.pixelsPerSecond,
+    ).clampMagnitude(minFlingVelocity ?? kMinFlingVelocity, maxFlingVelocity ?? kMaxFlingVelocity);
     return DragEndDetails(
       velocity: velocity,
       globalPosition: _finalPosition.global,
@@ -1048,7 +1022,4 @@ class NFPanGestureRecognizer extends NFDragGestureRecognizer {
   String get debugDescription => 'pan';
 }
 
-enum _DragDirection {
-  horizontal,
-  vertical,
-}
+enum _DragDirection { horizontal, vertical }

@@ -13,7 +13,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'dart:math' as math;
 
 /// Build the bar and label using the current configuration.
-typedef Widget BarBuilder(Color barColor, Animation<double> animation, double height, double width);
+typedef BarBuilder = Widget Function(Color barColor, Animation<double> animation, double height, double width);
 
 /// Signature used to build a label widget.
 ///
@@ -24,12 +24,12 @@ typedef Widget BarBuilder(Color barColor, Animation<double> animation, double he
 /// bar offset also repects the margins and the bar height.
 ///
 /// Used by [NFDraggableScrollbar.labelBuilder].
-typedef Widget LabelBuilder(BuildContext context, double progress, double barPadHeight);
+typedef LabelBuilder = Widget Function(BuildContext context, double progress, double barPadHeight);
 
 /// Signature used to build a label animation.
 ///
 /// Used by [NFDraggableScrollbar.labelTransitionBuilder].
-typedef Widget LabelTransitionBuilder(BuildContext context, Animation<double> animation, Widget child);
+typedef LabelTransitionBuilder = Widget Function(BuildContext context, Animation<double> animation, Widget child);
 
 /// Signature for drag callbacks.
 ///
@@ -44,7 +44,7 @@ typedef Widget LabelTransitionBuilder(BuildContext context, Animation<double> an
 ///  * [NFDraggableScrollbar.onDragUpdate]
 ///  * [NFDraggableScrollbar.onDragEnd]
 ///  * [NFDraggableScrollbar.onScrollNotification]
-typedef void DraggableScrollBarCallback(double progress, double barPadHeight);
+typedef DraggableScrollBarCallback = void Function(double progress, double barPadHeight);
 
 /// A widget that will display a child with a ScrollBar that can be dragged.
 ///
@@ -152,8 +152,8 @@ class NFDraggableScrollbar extends StatefulWidget {
   /// Defaults to `true`.
   final bool shouldAppear;
 
-  NFDraggableScrollbar({
-    Key? key,
+  const NFDraggableScrollbar({
+    super.key,
     required this.barHeight,
     required this.barWidth,
     required this.barColor,
@@ -173,10 +173,10 @@ class NFDraggableScrollbar extends StatefulWidget {
     this.onScrollNotification,
     this.appearOnlyOnScroll = false,
     this.shouldAppear = true,
-  })  : super(key: key);
+  });
 
   NFDraggableScrollbar.rrect({
-    Key? key,
+    super.key,
     Key? barKey,
     required this.child,
     this.barPad,
@@ -197,11 +197,10 @@ class NFDraggableScrollbar extends StatefulWidget {
     this.appearOnlyOnScroll = false,
     this.shouldAppear = true,
     BorderRadiusGeometry borderRadius = const BorderRadius.all(Radius.circular(0.0)),
-  })  : barBuilder = _barRRectBuilder(barKey, appearOnlyOnScroll, borderRadius),
-        super(key: key);
+  }) : barBuilder = _barRRectBuilder(barKey, appearOnlyOnScroll, borderRadius);
 
   NFDraggableScrollbar.arrows({
-    Key? key,
+    super.key,
     Key? barKey,
     required this.child,
     this.barPad,
@@ -221,11 +220,10 @@ class NFDraggableScrollbar extends StatefulWidget {
     this.onScrollNotification,
     this.appearOnlyOnScroll = false,
     this.shouldAppear = true,
-  })  : barBuilder = _barArrowBuilder(barKey, appearOnlyOnScroll),
-        super(key: key);
+  }) : barBuilder = _barArrowBuilder(barKey, appearOnlyOnScroll);
 
   NFDraggableScrollbar.semicircle({
-    Key? key,
+    super.key,
     Key? barKey,
     required this.child,
     this.barPad,
@@ -245,8 +243,7 @@ class NFDraggableScrollbar extends StatefulWidget {
     this.onScrollNotification,
     this.appearOnlyOnScroll = false,
     this.shouldAppear = true,
-  })  : barBuilder = _barSemicircleBuilder(barKey, appearOnlyOnScroll),
-        super(key: key);
+  }) : barBuilder = _barSemicircleBuilder(barKey, appearOnlyOnScroll);
 
   @override
   NFDraggableScrollbarState createState() => NFDraggableScrollbarState();
@@ -257,21 +254,14 @@ class NFDraggableScrollbar extends StatefulWidget {
     required bool appearOnlyOnScroll,
   }) {
     if (appearOnlyOnScroll) {
-      return FadeTransition(
-        opacity: barAnimation,
-        child: bar,
-      );
+      return FadeTransition(opacity: barAnimation, child: bar);
     }
     return bar;
   }
 
   static Widget defaultLabelTransitionBuilder(BuildContext context, Animation<double> animation, Widget child) {
     return FadeTransition(
-      opacity: CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic,
-      ),
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic),
       child: child,
     );
   }
@@ -283,9 +273,6 @@ class NFDraggableScrollbar extends StatefulWidget {
         foregroundPainter: ArrowCustomPainter(Colors.grey),
         child: Material(
           elevation: 4.0,
-          child: Container(
-            constraints: BoxConstraints.tight(Size(width, height * 0.6)),
-          ),
           color: barColor,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(height),
@@ -293,36 +280,24 @@ class NFDraggableScrollbar extends StatefulWidget {
             topRight: Radius.circular(4.0),
             bottomRight: Radius.circular(4.0),
           ),
+          child: Container(constraints: BoxConstraints.tight(Size(width, height * 0.6))),
         ),
       );
-      return buildScrollBarAnimation(
-        bar: bar,
-        barAnimation: barAnimation,
-        appearOnlyOnScroll: appearOnlyOnScroll,
-      );
+      return buildScrollBarAnimation(bar: bar, barAnimation: barAnimation, appearOnlyOnScroll: appearOnlyOnScroll);
     };
   }
 
   static BarBuilder _barArrowBuilder(Key? barKey, bool appearOnlyOnScroll) {
     return (Color barColor, Animation<double> animation, double height, double width) {
       final bar = ClipPath(
+        clipper: ArrowClipper(),
         child: Container(
           height: height,
           width: width,
-          decoration: BoxDecoration(
-            color: barColor,
-            borderRadius: BorderRadius.all(
-              Radius.circular(12.0),
-            ),
-          ),
+          decoration: BoxDecoration(color: barColor, borderRadius: BorderRadius.all(Radius.circular(12.0))),
         ),
-        clipper: ArrowClipper(),
       );
-      return buildScrollBarAnimation(
-        bar: bar,
-        barAnimation: animation,
-        appearOnlyOnScroll: appearOnlyOnScroll,
-      );
+      return buildScrollBarAnimation(bar: bar, barAnimation: animation, appearOnlyOnScroll: appearOnlyOnScroll);
     };
   }
 
@@ -331,17 +306,11 @@ class NFDraggableScrollbar extends StatefulWidget {
       final bar = Material(
         key: barKey,
         elevation: 4.0,
-        child: Container(
-          constraints: BoxConstraints.tight(Size(width, height)),
-        ),
         color: barColor,
         borderRadius: borderRadius,
+        child: Container(constraints: BoxConstraints.tight(Size(width, height))),
       );
-      return buildScrollBarAnimation(
-        bar: bar,
-        barAnimation: animation,
-        appearOnlyOnScroll: appearOnlyOnScroll,
-      );
+      return buildScrollBarAnimation(bar: bar, barAnimation: animation, appearOnlyOnScroll: appearOnlyOnScroll);
     };
   }
 }
@@ -372,14 +341,8 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
   @override
   void initState() {
     super.initState();
-    barController = AnimationController(
-      vsync: this,
-      duration: widget.barAnimationDuration,
-    );
-    labelController = AnimationController(
-      vsync: this,
-      duration: widget.barAnimationDuration,
-    );
+    barController = AnimationController(vsync: this, duration: widget.barAnimationDuration);
+    labelController = AnimationController(vsync: this, duration: widget.barAnimationDuration);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       /// Call setState to make shouldAppear getter available, as
@@ -402,12 +365,9 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // Update the max offset after each build.
       _barPadHeight = context.size!.height;
-      _barMaxOffset = _barPadHeight -
-          widget.barHeight -
-          widget.barTopMargin -
-          widget.barBottomMargin;
+      _barMaxOffset = _barPadHeight - widget.barHeight - widget.barTopMargin - widget.barBottomMargin;
     });
-    
+
     final Widget? label = widget.labelBuilder?.call(context, barProgress, _barPadHeight);
     final barAnimation = CurvedAnimation(
       parent: barController,
@@ -418,7 +378,7 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
     return !widget.shouldAppear
         ? widget.child
         : LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
+          builder: (BuildContext context, BoxConstraints constraints) {
             return NotificationListener<ScrollNotification>(
               onNotification: _handleScrollNotification,
               child: Stack(
@@ -428,12 +388,7 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
                     child: Stack(
                       children: [
                         // Label
-                        if (label != null)
-                          widget.labelTransitionBuilder(
-                            context,
-                            labelController,
-                            label,
-                          ),
+                        if (label != null) widget.labelTransitionBuilder(context, labelController, label),
                         // Bar pad
                         Positioned(
                           right: 0.0,
@@ -444,7 +399,8 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
                             onVerticalDragStart: _onBarPadVerticalDragStart,
                             onVerticalDragUpdate: _onVerticalDragUpdate,
                             onVerticalDragEnd: (_) => _onEnd(),
-                            child: widget.barPad ??
+                            child:
+                                widget.barPad ??
                                 Container(
                                   color: Colors.transparent,
                                   width: widget.barWidth,
@@ -467,6 +423,7 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
                             child: widget.barBuilder(
                               widget.barColor,
                               barAnimation,
+
                               /// Force sending proper height to the builder function.
                               ///
                               /// This will take place in case of bouncing scroll physics.
@@ -487,7 +444,8 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
                 ],
               ),
             );
-          });
+          },
+        );
   }
 
   void _showBar() {
@@ -519,11 +477,9 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
         _barOffset = _viewOffset / _viewMaxOffset * _barMaxOffset;
       }
 
-      if (notification is ScrollUpdateNotification ||
-          notification is OverscrollNotification) {
+      if (notification is ScrollUpdateNotification || notification is OverscrollNotification) {
         if (widget.shouldAppear) {
-          if (widget.appearOnlyOnScroll &&
-              barController.status != AnimationStatus.forward) {
+          if (widget.appearOnlyOnScroll && barController.status != AnimationStatus.forward) {
             barController.forward();
             _fadeoutBarTimer?.cancel();
             _fadeoutBarTimer = Timer(dilate(widget.barDuration), () {
@@ -624,14 +580,8 @@ class ArrowCustomPainter extends CustomPainter {
     final baseX = size.width / 2;
     final baseY = size.height / 2;
 
-    canvas.drawPath(
-      _trianglePath(Offset(baseX, baseY - 2.0), width, height, true),
-      paint,
-    );
-    canvas.drawPath(
-      _trianglePath(Offset(baseX, baseY + 2.0), width, height, false),
-      paint,
-    );
+    canvas.drawPath(_trianglePath(Offset(baseX, baseY - 2.0), width, height, true), paint);
+    canvas.drawPath(_trianglePath(Offset(baseX, baseY + 2.0), width, height, false), paint);
   }
 
   static Path _trianglePath(Offset o, double width, double height, bool isUp) {
@@ -682,13 +632,7 @@ class ArrowClipper extends CustomClipper<Path> {
 }
 
 class NFScrollLabel extends StatelessWidget {
-  const NFScrollLabel({
-    Key? key,
-    required this.text,
-    this.size = 70.0,
-    this.color,
-    this.fontColor,
-  }) : super(key: key);
+  const NFScrollLabel({super.key, required this.text, this.size = 70.0, this.color, this.fontColor});
 
   final String text;
 
@@ -711,18 +655,13 @@ class NFScrollLabel extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 100.0),
         decoration: BoxDecoration(
           color: color ?? theme.colorScheme.primary,
-          borderRadius: BorderRadius.all(
-            Radius.circular(size),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(size)),
         ),
         child: Center(
           child: Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: fontColor ?? theme.colorScheme.onPrimary,
-              fontSize: fontSize,
-            ),
+            style: TextStyle(color: fontColor ?? theme.colorScheme.onPrimary, fontSize: fontSize),
           ),
         ),
       ),

@@ -8,11 +8,10 @@
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-
 /// A list tile with applied splash factory
 class NFListTile extends StatelessWidget {
   const NFListTile({
-    Key? key,
+    super.key,
     this.leading,
     this.title,
     this.subtitle,
@@ -25,7 +24,7 @@ class NFListTile extends StatelessWidget {
     this.onLongPress,
     this.selected = false,
     this.splashColor,
-  }) : super(key: key);
+  });
   final Widget? leading;
   final Widget? title;
   final Widget? subtitle;
