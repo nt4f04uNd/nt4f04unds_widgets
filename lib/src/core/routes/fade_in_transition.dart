@@ -9,13 +9,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// A page that uses [FadeInRouteTransition].
 class FadeInPage<T> extends Page<T> {
-   const FadeInPage({
-    required this.child,
-    this.transitionSettings,
-    LocalKey? key,
-    String? name,
-    Object? arguments,
-  }) :  super(key: key, name: name, arguments: arguments);
+  const FadeInPage({required this.child, this.transitionSettings, super.key, super.name, super.arguments});
 
   final Widget child;
 
@@ -23,22 +17,14 @@ class FadeInPage<T> extends Page<T> {
 
   @override
   RouteTransition<T> createRoute(BuildContext context) {
-    return FadeInRouteTransition<T>(
-      settings: this,
-      child: child,
-      transitionSettings: transitionSettings,
-    );
+    return FadeInRouteTransition<T>(settings: this, child: child, transitionSettings: transitionSettings);
   }
 }
 
 /// Route transition that uses [FadeUpwardsPageTransitionsBuilder] from the flutter.
 class FadeInRouteTransition<T> extends RouteTransition<T> {
   /// Creates route transition.
-  FadeInRouteTransition({
-    RouteSettings? settings,
-    required this.child,
-    RouteTransitionSettings? transitionSettings,
-  }) : super(settings: settings, transitionSettings: transitionSettings);
+  FadeInRouteTransition({super.settings, required this.child, super.transitionSettings});
 
   final Widget child;
 
@@ -48,11 +34,22 @@ class FadeInRouteTransition<T> extends RouteTransition<T> {
   }
 
   @override
-  Widget buildAnimation(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    return const FadeUpwardsPageTransitionsBuilder().buildTransitions(this, context, CurvedAnimation(
-      parent: animation,
-      curve: transitionSettings.curve,
-      reverseCurve: transitionSettings.reverseCurve,
-    ), secondaryAnimation, child);
+  Widget buildAnimation(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return const FadeUpwardsPageTransitionsBuilder().buildTransitions(
+      this,
+      context,
+      CurvedAnimation(
+        parent: animation,
+        curve: transitionSettings.curve,
+        reverseCurve: transitionSettings.reverseCurve,
+      ),
+      secondaryAnimation,
+      child,
+    );
   }
 }

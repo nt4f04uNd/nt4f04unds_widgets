@@ -6,16 +6,9 @@
 import 'route_transitions.dart';
 import 'package:flutter/material.dart';
 
-
 /// A page that uses [ZoomRouteTransition].
 class ZoomPage<T> extends Page<T> {
-   const ZoomPage({
-    required this.child,
-    this.transitionSettings,
-    LocalKey? key,
-    String? name,
-    Object? arguments,
-  }) :  super(key: key, name: name, arguments: arguments);
+  const ZoomPage({required this.child, this.transitionSettings, super.key, super.name, super.arguments});
 
   final Widget child;
 
@@ -23,22 +16,14 @@ class ZoomPage<T> extends Page<T> {
 
   @override
   RouteTransition<T> createRoute(BuildContext context) {
-    return ZoomRouteTransition<T>(
-      settings: this,
-      child: child,
-      transitionSettings: transitionSettings,
-    );
+    return ZoomRouteTransition<T>(settings: this, child: child, transitionSettings: transitionSettings);
   }
 }
 
 /// Route transition that uses [ZoomPageTransitionsBuilder] from the flutter.
 class ZoomRouteTransition<T> extends RouteTransition<T> {
   /// Creates route transition.
-  ZoomRouteTransition({
-    RouteSettings? settings,
-    required this.child,
-    RouteTransitionSettings? transitionSettings,
-  }) : super(settings: settings, transitionSettings: transitionSettings);
+  ZoomRouteTransition({super.settings, required this.child, super.transitionSettings});
 
   final Widget child;
 
@@ -48,15 +33,26 @@ class ZoomRouteTransition<T> extends RouteTransition<T> {
   }
 
   @override
-  Widget buildAnimation(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    return const ZoomPageTransitionsBuilder().buildTransitions(this, context, CurvedAnimation(
-      parent: animation,
-      curve: transitionSettings.curve,
-      reverseCurve: transitionSettings.reverseCurve,
-    ), CurvedAnimation(
-      parent: secondaryAnimation,
-      curve: transitionSettings.secondaryCurve,
-      reverseCurve: transitionSettings.secondaryReverseCurve,
-    ), child);
+  Widget buildAnimation(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return const ZoomPageTransitionsBuilder().buildTransitions(
+      this,
+      context,
+      CurvedAnimation(
+        parent: animation,
+        curve: transitionSettings.curve,
+        reverseCurve: transitionSettings.reverseCurve,
+      ),
+      CurvedAnimation(
+        parent: secondaryAnimation,
+        curve: transitionSettings.secondaryCurve,
+        reverseCurve: transitionSettings.secondaryReverseCurve,
+      ),
+      child,
+    );
   }
 }

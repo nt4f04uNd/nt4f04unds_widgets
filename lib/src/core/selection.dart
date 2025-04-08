@@ -17,10 +17,7 @@ import 'package:flutter/material.dart';
 ///
 /// Listeners will notify about add/remove selection events.
 class SelectionController<T> extends Listenable
-    with AnimationLocalListenersMixin,
-        AnimationEagerListenerMixin,
-        AnimationLocalStatusListenersMixin {
-  
+    with AnimationLocalListenersMixin, AnimationEagerListenerMixin, AnimationLocalStatusListenersMixin {
   /// Creates a [SelectionController].
   SelectionController({
     required AnimationController animationController,
@@ -49,6 +46,7 @@ class SelectionController<T> extends Listenable
     }
     return _animationController!;
   }
+
   AnimationController? _animationController;
   set animationController(AnimationController value) {
     if (kDebugMode) {
@@ -97,20 +95,20 @@ class SelectionController<T> extends Listenable
 
   /// Returns true if controller was never in the in selection state.
   bool get wasEverSelected => _wasEverSelected;
-  bool _wasEverSelected = false;
+  final bool _wasEverSelected = false;
 
   /// True when controller goes into selection or already in it.
-  /// 
+  ///
   /// For UI this means that any selection controls should be available for touches.
   bool get inSelection => status == AnimationStatus.forward || status == AnimationStatus.completed;
 
   /// True when controller goes out of selection or already in it.
-  /// 
+  ///
   /// For UI this means that any selection controls should be ignored for touches.
   bool get notInSelection => status == AnimationStatus.reverse || status == AnimationStatus.dismissed;
 
   /// Returns true when current selection set length is greater or equal than the previous.
-  /// 
+  ///
   /// Convenient for tab bar count animation updates, for example.
   bool get lengthIncreased => data.length >= _prevLength;
 
@@ -123,13 +121,11 @@ class SelectionController<T> extends Listenable
   ///
   /// Returns a [TickerFuture] from the [AnimationController.forward].
   TickerFuture? selectItem(T item) {
-    if (notInSelection)
-      data.clear();
+    if (notInSelection) data.clear();
     _prevLength = data.length;
     data.add(item);
     notifyListeners();
-    if (!alwaysInSelection)
-      return _animationController!.forward();
+    if (!alwaysInSelection) return _animationController!.forward();
     return null;
   }
 
@@ -141,15 +137,15 @@ class SelectionController<T> extends Listenable
     _prevLength = data.length;
     data.remove(item);
     notifyListeners();
-    if (!alwaysInSelection && closeSelectionWhenEmpty && inSelection && data.length == 0)
+    if (!alwaysInSelection && closeSelectionWhenEmpty && inSelection && data.isEmpty) {
       return _animationController!.reverse();
+    }
     return null;
   }
 
   /// Adds item in selection, if item is already selected, unselects it.
   TickerFuture? toggleItem(T item) {
-    if (data.contains(item))
-      return unselectItem(item);
+    if (data.contains(item)) return unselectItem(item);
     return selectItem(item);
   }
 
@@ -158,8 +154,7 @@ class SelectionController<T> extends Listenable
   /// Returns a [TickerFuture] from the [AnimationController.reverse].
   TickerFuture? close() {
     clear();
-    if (!alwaysInSelection)
-      return _animationController!.reverse();
+    if (!alwaysInSelection) return _animationController!.reverse();
     return null;
   }
 

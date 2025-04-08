@@ -19,18 +19,17 @@ void main() {
 class App extends StatefulWidget {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
+  const App({super.key});
+
   @override
-  _AppState createState() => _AppState();
+  State createState() => _AppState();
 }
 
 class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    NFWidgets.init(
-      navigatorKey: App.navigatorKey,
-      routeObservers: [routerObserver],
-    );
+    NFWidgets.init(navigatorKey: App.navigatorKey, routeObservers: [routerObserver]);
     SystemUiStyleController.instance.setSystemUiOverlay(SystemUiOverlayStyle.dark);
   }
 
@@ -51,10 +50,10 @@ class _AppState extends State<App> {
 }
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
-  _HomeState createState() => _HomeState();
+  State createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
@@ -71,58 +70,37 @@ class _HomeState extends State<Home> {
     return Screen(
       name: 'Examples',
       children: [
-        Tile(
-          name: 'slidable',
-          onTap: () => _handleTap(_route(SlidableExamples())),
-        ),
+        Tile(name: 'slidable', onTap: () => _handleTap(_route(SlidableExamples()))),
         Tile(
           name: 'route_transitions',
-          onTap: () => _handleTap(
-              FadeInRouteTransition(child: RouteTransitionExamples())),
+          onTap: () => _handleTap(FadeInRouteTransition(child: RouteTransitionExamples())),
         ),
-        Tile(
-          name: 'snackbar',
-          onTap: () => _handleTap(_route(SnackbarExamples())),
-        ),
+        Tile(name: 'snackbar', onTap: () => _handleTap(_route(SnackbarExamples()))),
       ],
     );
   }
 }
 
 class Screen extends StatelessWidget {
-  const Screen({
-    Key? key,
-    required this.name,
-    this.children,
-  }) : super(key: key);
+  const Screen({super.key, required this.name, this.children});
 
   final String name;
   final List<Widget>? children;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(name)),
-      body: children == null ? null : ListView(children: children!),
-    );
+    return Scaffold(appBar: AppBar(title: Text(name)), body: children == null ? null : ListView(children: children!));
   }
 }
 
 class Tile extends StatelessWidget {
-  const Tile({
-    Key? key,
-    this.name = '',
-    this.onTap,
-  }) : super(key: key);
+  const Tile({super.key, this.name = '', this.onTap});
 
   final String name;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(name),
-      onTap: onTap,
-    );
+    return ListTile(title: Text(name), onTap: onTap);
   }
 }

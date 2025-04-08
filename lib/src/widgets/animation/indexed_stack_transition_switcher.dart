@@ -13,13 +13,13 @@ import 'package:flutter/material.dart';
 class IndexedTransitionSwitcher extends StatefulWidget {
   /// Creates an [IndexedTransitionSwitcher].
   const IndexedTransitionSwitcher({
-    Key? key,
+    super.key,
     required this.index,
     required this.children,
     required this.transitionBuilder,
     this.reverse = false,
     this.duration = const Duration(milliseconds: 300),
-  }) : super(key: key);
+  });
 
   /// The index of the child to show.
   final int index;
@@ -32,7 +32,8 @@ class IndexedTransitionSwitcher extends StatefulWidget {
   /// When the index changes, the new child will animate in with the primary
   /// animation, and the old widget will animate out with the secondary
   /// animation.
-  final Widget Function(Widget child, Animation<double> primaryAnimation, Animation<double> secondaryAnimation) transitionBuilder;
+  final Widget Function(Widget child, Animation<double> primaryAnimation, Animation<double> secondaryAnimation)
+  transitionBuilder;
 
   /// The duration of the transition.
   final Duration duration;
@@ -45,8 +46,7 @@ class IndexedTransitionSwitcher extends StatefulWidget {
   final bool reverse;
 
   @override
-  _IndexedTransitionSwitcherState createState() =>
-      _IndexedTransitionSwitcherState();
+  State createState() => _IndexedTransitionSwitcherState();
 }
 
 class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher> with TickerProviderStateMixin {
@@ -56,11 +56,7 @@ class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher> w
   void initState() {
     super.initState();
     // Create the page entries
-    this._childEntries = widget.children
-        .asMap()
-        .entries
-        .map((entry) => _createPageEntry(entry.key, entry.value))
-        .toList();
+    _childEntries = widget.children.asMap().entries.map((entry) => _createPageEntry(entry.key, entry.value)).toList();
   }
 
   @override
@@ -79,22 +75,26 @@ class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher> w
         oldChild.secondaryController.value = 0;
         oldChild.primaryController
             .reverse(from: 1)
-            .then((value) => setState(() {
-                  oldChild.onStage = false;
-                  oldChild.primaryController.reset();
-                  oldChild.secondaryController.reset();
-                }));
+            .then(
+              (value) => setState(() {
+                oldChild.onStage = false;
+                oldChild.primaryController.reset();
+                oldChild.secondaryController.reset();
+              }),
+            );
       } else {
         // Animate in the new child
         newChild.secondaryController.value = 0;
         newChild.primaryController.forward(from: 0);
         // Animate out the old child and unstage it when the animation is complete
         oldChild.primaryController.value = 1;
-        oldChild.secondaryController.forward().then((value) => setState(() {
-              oldChild.onStage = false;
-              oldChild.primaryController.reset();
-              oldChild.secondaryController.reset();
-            }));
+        oldChild.secondaryController.forward().then(
+          (value) => setState(() {
+            oldChild.onStage = false;
+            oldChild.primaryController.reset();
+            oldChild.secondaryController.reset();
+          }),
+        );
       }
       // Reorder the stack and set onStage to true for the new child
       _childEntries.remove(newChild);
@@ -111,18 +111,16 @@ class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher> w
       duration: widget.duration,
       vsync: this,
     );
-    final AnimationController secondaryController = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    );
+    final AnimationController secondaryController = AnimationController(duration: widget.duration, vsync: this);
     // Create the page entry
     return _ChildEntry(
-        key: UniqueKey(),
-        index: index,
-        primaryController: primaryController,
-        secondaryController: secondaryController,
-        transitionChild: widget.transitionBuilder(child, primaryController, secondaryController),
-        onStage: widget.index == index);
+      key: UniqueKey(),
+      index: index,
+      primaryController: primaryController,
+      secondaryController: secondaryController,
+      transitionChild: widget.transitionBuilder(child, primaryController, secondaryController),
+      onStage: widget.index == index,
+    );
   }
 
   @override
@@ -136,16 +134,13 @@ class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher> w
 
   @override
   Widget build(BuildContext context) => Stack(
-        alignment: Alignment.center,
-        fit: StackFit.expand,
-        children: _childEntries
-            .map<Widget>((entry) => Offstage(
-                  key: entry.key,
-                  offstage: !entry.onStage,
-                  child: entry.transitionChild,
-                ))
+    alignment: Alignment.center,
+    fit: StackFit.expand,
+    children:
+        _childEntries
+            .map<Widget>((entry) => Offstage(key: entry.key, offstage: !entry.onStage, child: entry.transitionChild))
             .toList(),
-      );
+  );
 }
 
 /// Internal representation of a child.

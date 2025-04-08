@@ -12,12 +12,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// * [AnimationStrategyBuilder] which rebuilds every time evaluated animation strategy
 ///   value changes
 class AnimationStatusBuilder extends StatusTransitionWidget {
-  AnimationStatusBuilder({
-    Key? key,
-    required Animation<double> animation,
-    required this.builder,
-    this.child,
-  }) : super(key: key, animation: animation);
+  const AnimationStatusBuilder({super.key, required super.animation, required this.builder, this.child});
 
   final Widget? child;
   final TransitionBuilder builder;
@@ -35,12 +30,12 @@ class AnimationStatusBuilder extends StatusTransitionWidget {
 /// * [AnimationStatusBuilder] which rebuilds every time animation status changes
 class AnimationStrategyBuilder<T> extends StatefulWidget {
   const AnimationStrategyBuilder({
-    Key? key,
+    super.key,
     required this.animation,
     required this.strategy,
     required this.builder,
     this.child,
-  }) : super(key: key);
+  });
 
   /// Animation this widget listens to end uses to evaluate the [strategy].
   final Animation<double> animation;
@@ -56,7 +51,7 @@ class AnimationStrategyBuilder<T> extends StatefulWidget {
   final ValueWidgetBuilder<T> builder;
 
   @override
-  _AnimationStrategyBuilderState<T> createState() => _AnimationStrategyBuilderState<T>();
+  State createState() => _AnimationStrategyBuilderState<T>();
 }
 
 class _AnimationStrategyBuilderState<T> extends State<AnimationStrategyBuilder<T>> {
@@ -85,21 +80,16 @@ class _AnimationStrategyBuilderState<T> extends State<AnimationStrategyBuilder<T
 
   void _animationStatusChanged(AnimationStatus status) {
     T? prevValue;
-    if (_prevStatus != null)
-      prevValue = widget.strategy.decide(_prevStatus!);
+    if (_prevStatus != null) prevValue = widget.strategy.decide(_prevStatus!);
     final value = widget.strategy.decide(status);
     if (prevValue != value) {
       _prevStatus = status;
-      setState(() { });
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(
-      context,
-      widget.strategy.ask(widget.animation),
-      widget.child,
-    );
+    return widget.builder(context, widget.strategy.ask(widget.animation), widget.child);
   }
 }

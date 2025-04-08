@@ -4,6 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 
 /// Module for essential (visible) to user widgets.
+library;
 
 export 'animation/animation.dart';
 export 'scrollbar/scrollbar.dart';

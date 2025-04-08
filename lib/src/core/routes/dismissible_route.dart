@@ -9,20 +9,15 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// Makes the [route] dismissible.
 class DismissibleRoute extends StatefulWidget {
   DismissibleRoute({
-    Key? key,
+    super.key,
     required this.route,
     required this.child,
     required this.animatedChild,
     Widget? dismissBarrier,
     this.dismissDirection = SlideDirection.right,
-  }) : dismissBarrier = dismissBarrier ?? Container(color: Colors.black26),
-       super(key: key);
+  }) : dismissBarrier = dismissBarrier ?? Container(color: Colors.black26);
 
-  static late final springDescription = SpringDescription.withDampingRatio(
-    mass: 0.01,
-    stiffness: 200.0,
-    ratio: 3.0,
-  );
+  static final springDescription = SpringDescription.withDampingRatio(mass: 0.01, stiffness: 200.0, ratio: 3.0);
 
   /// Returns controller of the nearest dismissible route.
   static SlidableController? controllerOf(BuildContext context) {
@@ -31,7 +26,7 @@ class DismissibleRoute extends StatefulWidget {
 
   /// Route that will be dismissible.
   final TransitionRoute route;
-  
+
   /// Bare child provided by the [route].
   final Widget child;
 
@@ -39,7 +34,7 @@ class DismissibleRoute extends StatefulWidget {
   final Widget animatedChild;
 
   /// The widget to show as barrier when route is being dragged.
-  /// 
+  ///
   /// If none specified, [Container] with color [Colors.black26] is used.
   final Widget? dismissBarrier;
 
@@ -65,6 +60,7 @@ class DismissibleRouteState extends State<DismissibleRoute> with TickerProviderS
       _dragged && widget.route.animation!.status == AnimationStatus.forward;
 
   late SlidableController _controller;
+
   /// Controller to manipulate the route shadow.
   late AnimationController _boxDecorationController;
   late Animation<Decoration> _boxDecorationAnimation;
@@ -75,33 +71,12 @@ class DismissibleRouteState extends State<DismissibleRoute> with TickerProviderS
   @override
   void initState() {
     super.initState();
-    _controller = SlidableController(
-      vsync: this,
-      springDescription: DismissibleRoute.springDescription,
-    );
-    _boxDecorationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
+    _controller = SlidableController(vsync: this, springDescription: DismissibleRoute.springDescription);
+    _boxDecorationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     _boxDecorationAnimation = DecorationTween(
-      begin: const BoxDecoration(
-        boxShadow: [
-          BoxShadow(color: Colors.transparent),
-        ],
-      ),
-      end: const BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            spreadRadius: 2.0,
-            blurRadius: 2.0,
-          ),
-        ],
-      ),
-    ).animate(CurvedAnimation(
-      curve: Curves.easeOutCubic,
-      parent: _boxDecorationController
-    ));
+      begin: const BoxDecoration(boxShadow: [BoxShadow(color: Colors.transparent)]),
+      end: const BoxDecoration(boxShadow: [BoxShadow(color: Colors.black12, spreadRadius: 2.0, blurRadius: 2.0)]),
+    ).animate(CurvedAnimation(curve: Curves.easeOutCubic, parent: _boxDecorationController));
     _routeAnimationController.addStatusListener(_handleAnimationStatus);
   }
 
@@ -159,10 +134,7 @@ class DismissibleRouteState extends State<DismissibleRoute> with TickerProviderS
         catchIgnoringStrategy: const MovingIgnoringStrategy(forward: true, reverse: true),
         barrier: _showBarrier ? widget.dismissBarrier : null,
         barrierBuilder: (animation, child) {
-          return FadeTransition(
-            opacity: animation.drive(Tween(begin: 1.0, end: 0.0)), 
-            child: child,
-          );
+          return FadeTransition(opacity: animation.drive(Tween(begin: 1.0, end: 0.0)), child: child);
         },
         onSlideChange: _handleSlideChange,
         onDragUpdate: (details) {
@@ -178,12 +150,11 @@ class DismissibleRouteState extends State<DismissibleRoute> with TickerProviderS
         },
         child: AnimatedBuilder(
           animation: _boxDecorationController,
-          builder: (context, child) => Container(
-            child: !_beenDismissed
-              ? widget.animatedChild
-              : widget.child,
-            decoration: _boxDecorationAnimation.value,
-          ),
+          builder:
+              (context, child) => Container(
+                decoration: _boxDecorationAnimation.value,
+                child: !_beenDismissed ? widget.animatedChild : widget.child,
+              ),
         ),
       ),
     );

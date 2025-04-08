@@ -22,7 +22,6 @@ const double _kFlingVelocityScale = 1.0 / 300.0;
 /// for example when user releases the finger in some intermediate state
 const double _kBackToStateVelocity = 1.0;
 
-
 /// The direction in which a [Slidable] can be slid.
 enum SlideDirection {
   /// The [Slidable] can be slid by dragging left only.
@@ -43,25 +42,25 @@ enum SlideDirection {
 
 /// todo: might be split up to framework.dart as new builder signature?
 /// todo: change name and docs
-typedef _Builder = Widget Function(Animation<double> animation, Widget child);
+typedef AnimatedWidgetBuilder = Widget Function(Animation<double> animation, Widget child);
 
 /// Used by [DragEventListenersMixin.addDragEventListener].
-typedef void SlidableDragEventListener(SlidableDragEvent status);
+typedef SlidableDragEventListener = void Function(SlidableDragEvent status);
 
 /// Signature for a function used to notify about controller value changes.
 ///
 /// Used by [Slidable.onSlideChange].
-typedef void SlideChangeCallback(double value);
+typedef SlideChangeCallback = void Function(double value);
 
 /// Signature for a function used to notify about slidable drag begins.
 ///
 /// Used by [Slidable.onDragStart].
-typedef void SlideStartCallback(DragStartDetails dragDetails);
+typedef SlideStartCallback = void Function(DragStartDetails dragDetails);
 
 /// Signature for a function used to notify about slidable drag updates.
 ///
 /// Used by [Slidable.onDragUpdate].
-typedef void SlideUpdateCallback(DragUpdateDetails details);
+typedef SlideUpdateCallback = void Function(DragUpdateDetails details);
 
 /// Signature for a function used to notify about slidable drag ends.
 ///
@@ -78,13 +77,13 @@ abstract class SlidableDragEvent {
 
 /// Emitted when user starts dragging slidable.
 class SlidableDragStart extends SlidableDragEvent {
-  const SlidableDragStart({ required this.details });
+  const SlidableDragStart({required this.details});
   final DragStartDetails details;
 }
 
 /// Emitted on updates of drag on slidable.
 class SlidableDragUpdate extends SlidableDragEvent {
-  const SlidableDragUpdate({ required this.details });
+  const SlidableDragUpdate({required this.details});
   final DragUpdateDetails details;
 }
 
@@ -93,7 +92,7 @@ class SlidableDragUpdate extends SlidableDragEvent {
 /// The [closing] indicates whether the slidable will return to start offset (if its `false`)
 /// or will be slid out to the end offset (if its `true`).
 class SlidableDragEnd extends SlidableDragEvent {
-  const SlidableDragEnd({ required this.details, required this.closing });
+  const SlidableDragEnd({required this.details, required this.closing});
   final DragEndDetails details;
   final bool closing;
 }
@@ -109,7 +108,7 @@ class SlidableDragEnd extends SlidableDragEvent {
 ///  * [SlidableControllerProvider], inherited widget to provide a [SlidableController]
 class Slidable extends StatefulWidget {
   const Slidable({
-    Key? key,
+    super.key,
     required this.child,
     this.direction = SlideDirection.up,
     this.start = 1.0,
@@ -133,17 +132,15 @@ class Slidable extends StatefulWidget {
     this.threshold = 0.4,
     this.dragStartBehavior = DragStartBehavior.start,
   }) : assert(springDescription == null || controller == null),
-       assert(direction == SlideDirection.none ||
-              start <= end && (direction == SlideDirection.right || direction == SlideDirection.down) ||
-              start >= end && (direction == SlideDirection.left || direction == SlideDirection.up), 
-              'start and end must correspond with direction'),
-       super(key: key);
+       assert(
+         direction == SlideDirection.none ||
+             start <= end && (direction == SlideDirection.right || direction == SlideDirection.down) ||
+             start >= end && (direction == SlideDirection.left || direction == SlideDirection.up),
+         'start and end must correspond with direction',
+       );
 
   static Widget _defaultBarrierBuilder(Animation<double> animation, Widget child) {
-    return FadeTransition(
-      opacity: animation,
-      child: child,
-    );
+    return FadeTransition(opacity: animation, child: child);
   }
 
   /// The widget below this widget in the tree.
@@ -152,9 +149,9 @@ class Slidable extends StatefulWidget {
   final Widget child;
 
   /// The direction in which the slide will be performed.
-  /// 
+  ///
   /// This sets the used slide axis and positive drag direction.
-  /// 
+  ///
   /// The negative drag direction is set automatically to the opposite.
   /// For example for [SlideDirection.up], the opposite is [SlideDirection.down].
   final SlideDirection direction;
@@ -166,20 +163,20 @@ class Slidable extends StatefulWidget {
   final double end;
 
   /// A controller to use with this slidable.
-  /// 
+  ///
   /// When passing a controller, [springDescription] must be null.
   /// If none given, instead the default one will be used.
   final SlidableController? controller;
 
   //todo: docs
-  final _Builder? childBuilder;
+  final AnimatedWidgetBuilder? childBuilder;
 
   /// The widget to show on `Offset.zero`, can be used for barriers.
   /// todo: better doc regarding barrier, onBarrierTap and ignoring strategy
   final Widget? barrier;
-  
+
   //todo: docs
-  final _Builder barrierBuilder;
+  final AnimatedWidgetBuilder barrierBuilder;
 
   /// A spring to use with default slidable controller.
   /// If this was specified, [controller] must be null.
@@ -249,7 +246,7 @@ class Slidable extends StatefulWidget {
   final double threshold;
 
   /// todo: macro
-  /// 
+  ///
   /// Determines the way that drag start behavior is handled.
   ///
   /// If set to [DragStartBehavior.start], the drag gesture used to dismiss a
@@ -273,7 +270,7 @@ class Slidable extends StatefulWidget {
 
 /// Describes the fling gesture type.
 enum _FlingGestureKind {
-  /// Pointer removed with no fling. 
+  /// Pointer removed with no fling.
   none,
 
   /// Flinged with positive velocity.
@@ -306,10 +303,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
   void _initController() {
     if (widget.controller == null) {
       // todo: try to do it with SingleTickerProviderStateMixin (now it doesn allow to creat another ticker after disposing previous one)
-      _controller = SlidableController(
-        vsync: this,
-        springDescription: widget.springDescription,
-      );
+      _controller = SlidableController(vsync: this, springDescription: widget.springDescription);
     } else {
       _controller?.dispose();
       _controller = null;
@@ -324,15 +318,15 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
   }
 
   @override
-  void didUpdateWidget (covariant Slidable oldWidget) {
+  void didUpdateWidget(covariant Slidable oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if(oldWidget.controller != widget.controller) {
+    if (oldWidget.controller != widget.controller) {
       // todo: should we support attaching/unattaching controller? or it should be handled in some other way?
       oldWidget.controller?.removeListener(_handleChange);
       oldWidget.controller?.removeStatusListener(_handleStatusChange);
       _initController();
     }
-    if (oldWidget.start != widget.start ||  oldWidget.end != widget.end) {
+    if (oldWidget.start != widget.start || oldWidget.end != widget.end) {
       _updateAnimation();
     }
     // We don't care about comparing the strategies to check wether they chagned,
@@ -373,8 +367,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
   void _handleDragStart(DragStartDetails details) {
     controller._dragged = true;
     _dragExtent = controller.value * _overallDragAxisExtent;
-    if (widget.direction == SlideDirection.up ||
-        widget.direction == SlideDirection.left) {
+    if (widget.direction == SlideDirection.up || widget.direction == SlideDirection.left) {
       _dragExtent *= -1.0;
     }
     if (controller.status == AnimationStatus.forward && !widget.catchIgnoringStrategy.forward ||
@@ -386,8 +379,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    if (!controller.isActive || controller.isAnimating)
-      return;
+    if (!controller.isActive || controller.isAnimating) return;
 
     widget.onDragUpdate?.call(details);
     controller.notifyDragEventListeners(SlidableDragUpdate(details: details));
@@ -395,20 +387,16 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
     final double delta = details.primaryDelta!;
     switch (widget.direction) {
       case SlideDirection.left:
-        if (_dragExtent + delta < 0)
-          _dragExtent += delta;
+        if (_dragExtent + delta < 0) _dragExtent += delta;
         break;
       case SlideDirection.right:
-        if (_dragExtent + delta > 0)
-          _dragExtent += delta;
+        if (_dragExtent + delta > 0) _dragExtent += delta;
         break;
       case SlideDirection.up:
-        if (_dragExtent + delta < 0)
-          _dragExtent += delta;
+        if (_dragExtent + delta < 0) _dragExtent += delta;
         break;
       case SlideDirection.down:
-        if (_dragExtent + delta > 0)
-          _dragExtent += delta;
+        if (_dragExtent + delta > 0) _dragExtent += delta;
         break;
       default:
         assert(false);
@@ -430,10 +418,7 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
       begin = Offset(0.0, widget.start);
       end = Offset(0.0, widget.end);
     }
-    _animation = controller.drive(Tween<Offset>(
-      begin: begin,
-      end: end,
-    ));
+    _animation = controller.drive(Tween<Offset>(begin: begin, end: end));
   }
 
   _FlingGestureKind _describeFlingGesture(Velocity velocity) {
@@ -449,12 +434,10 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
     final double vy = velocity.pixelsPerSecond.dy;
     // Verify that the fling is in the generally right direction and fast enough.
     if (_horizontal) {
-      if (vx.abs() - vy.abs() < _kMinFlingVelocityDelta || vx.abs() < _kMinFlingVelocity)
-        return _FlingGestureKind.none;
+      if (vx.abs() - vy.abs() < _kMinFlingVelocityDelta || vx.abs() < _kMinFlingVelocity) return _FlingGestureKind.none;
       assert(vx != 0.0);
     } else {
-      if (vy.abs() - vx.abs() < _kMinFlingVelocityDelta || vy.abs() < _kMinFlingVelocity)
-        return _FlingGestureKind.none;
+      if (vy.abs() - vx.abs() < _kMinFlingVelocityDelta || vy.abs() < _kMinFlingVelocity) return _FlingGestureKind.none;
       assert(vy != 0.0);
     }
     final double v = _horizontal ? vx : vy;
@@ -467,15 +450,13 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
   }
 
   Future<void> _handleDragEnd(DragEndDetails details) async {
-    if (!controller.isActive || controller.isAnimating)
-      return;
+    if (!controller.isActive || controller.isAnimating) return;
 
     controller._dragged = false;
-    final double flingVelocity = _horizontal
-        ? details.velocity.pixelsPerSecond.dx
-        : details.velocity.pixelsPerSecond.dy;
+    final double flingVelocity =
+        _horizontal ? details.velocity.pixelsPerSecond.dx : details.velocity.pixelsPerSecond.dy;
     late final bool closing;
-    
+
     switch (_describeFlingGesture(details.velocity)) {
       case _FlingGestureKind.forward:
         assert(_dragExtent != 0.0);
@@ -512,24 +493,18 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
         break;
     }
     widget.onDragEnd?.call(details, closing);
-    controller.notifyDragEventListeners(
-      SlidableDragEnd(details: details, closing: closing)
-    );
+    controller.notifyDragEventListeners(SlidableDragEnd(details: details, closing: closing));
   }
 
   @override
   Widget build(BuildContext context) {
     assert(!_horizontal || debugCheckHasDirectionality(context));
 
-    final Widget? barrier = widget.barrier != null
-      ? widget.barrierBuilder(controller, RepaintBoundary(child: widget.barrier!))
-      : null;
-    final Widget child = widget.childBuilder == null
-      ? widget.child
-      : widget.childBuilder!(controller, widget.child);
-    final Widget wrappedChild = widget.disableSlideTransition
-      ? child
-      : SlideTransition(position: _animation, child: child);
+    final Widget? barrier =
+        widget.barrier != null ? widget.barrierBuilder(controller, RepaintBoundary(child: widget.barrier!)) : null;
+    final Widget child = widget.childBuilder == null ? widget.child : widget.childBuilder!(controller, widget.child);
+    final Widget wrappedChild =
+        widget.disableSlideTransition ? child : SlideTransition(position: _animation, child: child);
 
     return RawGestureDetector(
       behavior: _hitTestBehavior,
@@ -537,48 +512,50 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
         if (_draggable && _horizontal)
           NFHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFHorizontalDragGestureRecognizer>(
             () => NFHorizontalDragGestureRecognizer(),
-            (NFHorizontalDragGestureRecognizer instance) => instance
-              ..onStart = _handleDragStart
-              ..onUpdate = _handleDragUpdate
-              ..onEnd = _handleDragEnd
-              ..dragStartBehavior = widget.dragStartBehavior
-              ..shouldGiveUp = widget.shouldGiveUpGesture
-              ..shouldEagerlyWin = widget.shouldEagerlyWin,
+            (NFHorizontalDragGestureRecognizer instance) =>
+                instance
+                  ..onStart = _handleDragStart
+                  ..onUpdate = _handleDragUpdate
+                  ..onEnd = _handleDragEnd
+                  ..dragStartBehavior = widget.dragStartBehavior
+                  ..shouldGiveUp = widget.shouldGiveUpGesture
+                  ..shouldEagerlyWin = widget.shouldEagerlyWin,
           ),
         if (_draggable && !_horizontal)
           NFVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<NFVerticalDragGestureRecognizer>(
             () => NFVerticalDragGestureRecognizer(),
-            (NFVerticalDragGestureRecognizer instance) => instance
-              ..onStart = _handleDragStart
-              ..onUpdate = _handleDragUpdate
-              ..onEnd = _handleDragEnd
-              ..dragStartBehavior = widget.dragStartBehavior
-              ..shouldEagerlyWin = widget.shouldEagerlyWin,
+            (NFVerticalDragGestureRecognizer instance) =>
+                instance
+                  ..onStart = _handleDragStart
+                  ..onUpdate = _handleDragUpdate
+                  ..onEnd = _handleDragEnd
+                  ..dragStartBehavior = widget.dragStartBehavior
+                  ..shouldEagerlyWin = widget.shouldEagerlyWin,
           ),
       },
-      child: barrier == null
-        ? wrappedChild
-        : () {
-            final List<Widget> children = [
-              IgnorePointer(
-                ignoring: _ignoringBarrier,
-                child: widget.onBarrierTap == null
-                  ? barrier
-                  : GestureDetector(
-                      onTap: widget.onBarrierTap,
-                      behavior: HitTestBehavior.opaque,
-                      child: barrier,
-                    ),
-              ),
-              RepaintBoundary(
-                child: wrappedChild,
-              ),
-            ];
-            return _hitTestBehavior == HitTestBehavior.translucent
-                // todo: remove/update this when https://github.com/flutter/flutter/issues/75099 is resolved
-                ? StackWithAllChildrenReceiveEvents(children: children)
-                : Stack(children: children);
-          }(),
+      child:
+          barrier == null
+              ? wrappedChild
+              : () {
+                final List<Widget> children = [
+                  IgnorePointer(
+                    ignoring: _ignoringBarrier,
+                    child:
+                        widget.onBarrierTap == null
+                            ? barrier
+                            : GestureDetector(
+                              onTap: widget.onBarrierTap,
+                              behavior: HitTestBehavior.opaque,
+                              child: barrier,
+                            ),
+                  ),
+                  RepaintBoundary(child: wrappedChild),
+                ];
+                return _hitTestBehavior == HitTestBehavior.translucent
+                    // todo: remove/update this when https://github.com/flutter/flutter/issues/75099 is resolved
+                    ? StackWithAllChildrenReceiveEvents(children: children)
+                    : Stack(children: children);
+              }(),
     );
   }
 }
@@ -592,26 +569,16 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
 ///  * [SlidableControllerProvider], inherited widget that provides access to the controller
 class SlidableController extends AnimationController with _DragEventListenersMixin {
   SlidableController({
-    double value = 0.0,
-    Duration? duration,
-    Duration? reverseDuration,
-    String? debugLabel,
-    double lowerBound = 0.0,
-    double upperBound = 1.0,
-    SpringDescription? springDescription,
-    AnimationBehavior animationBehavior = AnimationBehavior.normal,
-    required TickerProvider vsync,
-  }) : springDescription = springDescription, 
-       super(
-         value: value,
-         duration: duration,
-         reverseDuration: reverseDuration,
-         debugLabel: debugLabel,
-         lowerBound: lowerBound,
-         upperBound: upperBound,
-         animationBehavior: animationBehavior,
-         vsync: vsync,
-       );
+    double super.value = 0.0,
+    super.duration,
+    super.reverseDuration,
+    super.debugLabel,
+    super.lowerBound,
+    super.upperBound,
+    this.springDescription,
+    super.animationBehavior,
+    required super.vsync,
+  });
 
   bool _dragged = false;
 
@@ -633,45 +600,54 @@ class SlidableController extends AnimationController with _DragEventListenersMix
 
   static SlidableController of<T>(BuildContext context) {
     return (context.getElementForInheritedWidgetOfExactType<SlidableControllerProvider<T>>()?.widget
-      as SlidableControllerProvider<T>).controller;
+            as SlidableControllerProvider<T>)
+        .controller;
   }
 
   static SlidableController? maybeOf<T>(BuildContext context) {
     return (context.getElementForInheritedWidgetOfExactType<SlidableControllerProvider<T>>()?.widget
-      as SlidableControllerProvider<T>?)?.controller;
+            as SlidableControllerProvider<T>?)
+        ?.controller;
   }
 
   @override
-  TickerFuture fling({ double velocity = 1.0, SpringDescription? springDescription, AnimationBehavior? animationBehavior }) {
-    return super.fling(velocity: velocity, springDescription: springDescription ?? this.springDescription, animationBehavior: animationBehavior);
+  TickerFuture fling({
+    double velocity = 1.0,
+    SpringDescription? springDescription,
+    AnimationBehavior? animationBehavior,
+  }) {
+    return super.fling(
+      velocity: velocity,
+      springDescription: springDescription ?? this.springDescription,
+      animationBehavior: animationBehavior,
+    );
   }
 
   /// Calls [fling] with default velocity to end in the [opened] state.
-  TickerFuture open({ SpringDescription? springDescription, AnimationBehavior? animationBehavior }) {
+  TickerFuture open({SpringDescription? springDescription, AnimationBehavior? animationBehavior}) {
     return fling(springDescription: springDescription ?? this.springDescription, animationBehavior: animationBehavior);
   }
 
   /// Calls [fling] with default velocity to end in the [closed] state.
-  TickerFuture close({ SpringDescription? springDescription, AnimationBehavior? animationBehavior }) {
-    return fling(velocity: -1.0, springDescription: springDescription ?? this.springDescription, animationBehavior: animationBehavior);
+  TickerFuture close({SpringDescription? springDescription, AnimationBehavior? animationBehavior}) {
+    return fling(
+      velocity: -1.0,
+      springDescription: springDescription ?? this.springDescription,
+      animationBehavior: animationBehavior,
+    );
   }
 }
 
 /// Provides access to the [SlidableController].
-/// 
+///
 /// Type parameter [T] is used to distunguish different types of controllers.
 ///
 /// See also:
 /// * [SlidableController.of]
 /// * [SlidableController.maybeOf]
 class SlidableControllerProvider<T> extends InheritedWidget {
-  const SlidableControllerProvider({
-    Key? key,
-    required this.child,
-    required this.controller,
-  }) : super(key: key, child: child);
+  const SlidableControllerProvider({super.key, required super.child, required this.controller});
 
-  final Widget child;
   final SlidableController controller;
 
   @override

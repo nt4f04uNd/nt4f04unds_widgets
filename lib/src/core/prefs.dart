@@ -47,7 +47,7 @@ abstract class NFPrefs {
   /// Call this method to activate prefs in your app.
   /// This is needed to make operations over prefs synchronous.
   static Future<void> initialize() async {
-    prefs ??= await SharedPreferences.getInstance(); 
+    prefs ??= await SharedPreferences.getInstance();
   }
 
   /// Clears shared preferences.
@@ -90,17 +90,17 @@ abstract class PrefBase<G, S extends G> {
 /// static final devModeBool = Pref.bool(key: 'dev_mode', defaultValue: false);
 /// ```
 abstract class Pref<T> extends PrefBase<T, T> {
-  const Pref(String key, this.defaultValue) : super(key);
-    // TODO: enable this assert when const functions are in place
-    // : assert(
-    //     !isNullable<T>(),
-    //     () {
-    //       final type = T.toString();
-    //       final nonNulalbleType = type.substring(0, type.length - 1);
-    //       return 'Generics on Prefs always must be non-nullable.\n'
-    //       'Instead of $type provide $nonNulalbleType';
-    //     }(),
-    //   );
+  const Pref(super.key, this.defaultValue);
+  // TODO: enable this assert when const functions are in place
+  // : assert(
+  //     !isNullable<T>(),
+  //     () {
+  //       final type = T.toString();
+  //       final nonNulalbleType = type.substring(0, type.length - 1);
+  //       return 'Generics on Prefs always must be non-nullable.\n'
+  //       'Instead of $type provide $nonNulalbleType';
+  //     }(),
+  //   );
 
   /// Fallback value, returned from get, when there's no
   /// actual value stored.
@@ -117,8 +117,7 @@ abstract class Pref<T> extends PrefBase<T, T> {
   ///
   /// Should be called inside the [get] method.
   T _checkForNull(T? value) {
-    if (value == null)
-      return defaultValue!;
+    if (value == null) return defaultValue!;
     return value;
   }
 }
@@ -131,13 +130,13 @@ abstract class Pref<T> extends PrefBase<T, T> {
 /// static final count = NullablePref.int(key: 'count');
 /// ```
 abstract class NullablePref<T> extends PrefBase<T?, T> {
-  const NullablePref(String key) : super(key);
+  const NullablePref(super.key);
 }
 
 //*************** Primitives ******************
 
 class BoolPref extends Pref<bool> {
-  const BoolPref(String key, bool defaultValue) : super(key, defaultValue);
+  const BoolPref(super.key, super.defaultValue);
 
   @override
   bool get() {
@@ -151,7 +150,7 @@ class BoolPref extends Pref<bool> {
 }
 
 class NullableBoolPref extends NullablePref<bool> {
-  const NullableBoolPref(String key) : super(key);
+  const NullableBoolPref(super.key);
 
   @override
   bool? get() {
@@ -165,10 +164,10 @@ class NullableBoolPref extends NullablePref<bool> {
 }
 
 class IntPref extends Pref<int> {
-  const IntPref(String key, int defaultValue) : super(key, defaultValue);
+  const IntPref(super.key, super.defaultValue);
 
   @override
-  int get()  {
+  int get() {
     return _checkForNull(_prefs.getInt(key));
   }
 
@@ -179,7 +178,7 @@ class IntPref extends Pref<int> {
 }
 
 class NullableIntPref extends NullablePref<int> {
-  const NullableIntPref(String key) : super(key);
+  const NullableIntPref(super.key);
 
   @override
   int? get() {
@@ -193,7 +192,7 @@ class NullableIntPref extends NullablePref<int> {
 }
 
 class DoublePref extends Pref<double> {
-  const DoublePref(String key, double defaultValue) : super(key, defaultValue);
+  const DoublePref(super.key, super.defaultValue);
 
   @override
   double get() {
@@ -207,7 +206,7 @@ class DoublePref extends Pref<double> {
 }
 
 class NullableDoublePref extends NullablePref<double> {
-  const NullableDoublePref(String key) : super(key);
+  const NullableDoublePref(super.key);
 
   @override
   double? get() {
@@ -221,10 +220,10 @@ class NullableDoublePref extends NullablePref<double> {
 }
 
 class StringPref extends Pref<String> {
-  const StringPref(String key, String defaultValue) : super(key, defaultValue);
+  const StringPref(super.key, super.defaultValue);
 
   @override
-  String get()  {
+  String get() {
     return _checkForNull(_prefs.getString(key));
   }
 
@@ -235,7 +234,7 @@ class StringPref extends Pref<String> {
 }
 
 class NullableStringPref extends NullablePref<String> {
-  const NullableStringPref(String key) : super(key);
+  const NullableStringPref(super.key);
 
   @override
   String? get() {
@@ -249,11 +248,11 @@ class NullableStringPref extends NullablePref<String> {
 }
 
 class StringListPref extends Pref<List<String>> {
-  const StringListPref(String key, List<String> defaultValue) : super(key, defaultValue);
+  const StringListPref(super.key, super.defaultValue);
 
   @override
   List<String> get() {
-    return _checkForNull( _prefs.getStringList(key));
+    return _checkForNull(_prefs.getStringList(key));
   }
 
   @override
@@ -263,7 +262,7 @@ class StringListPref extends Pref<List<String>> {
 }
 
 class NullableStringListPref extends NullablePref<List<String>> {
-  const NullableStringListPref(String key) : super(key);
+  const NullableStringListPref(super.key);
 
   @override
   List<String>? get() {
@@ -278,21 +277,16 @@ class NullableStringListPref extends NullablePref<List<String>> {
 
 //*************** Json ******************
 
-typedef ToJsonCallback<T> = Object Function(T); 
+typedef ToJsonCallback<T> = Object Function(T);
 typedef FromJsonCallback<T> = T Function(Object);
 
-typedef NullableToJsonCallback<T> = Object? Function(T?); 
-typedef NullableFromJsonCallback<T> = T? Function(Object?); 
+typedef NullableToJsonCallback<T> = Object? Function(T?);
+typedef NullableFromJsonCallback<T> = T? Function(Object?);
 
 class JsonPref<T> extends Pref<T> {
-  JsonPref(
-    String key,
-    T defaultValue, {
-    this.fromJson,
-    this.toJson,
-  }) : _stringPref = StringPref(key, _encode<T>(defaultValue, toJson)),
-       super(key, defaultValue);
-  
+  JsonPref(super.key, super.defaultValue, {this.fromJson, this.toJson})
+    : _stringPref = StringPref(key, _encode<T>(defaultValue, toJson));
+
   final FromJsonCallback<T>? fromJson;
   final ToJsonCallback<T>? toJson;
   final StringPref _stringPref;
@@ -318,12 +312,7 @@ class JsonPref<T> extends Pref<T> {
 }
 
 class NullableJsonPref<T> extends NullablePref<T> {
-  NullableJsonPref(
-    String key, {
-    this.fromJson,
-    this.toJson,
-  }) : _stringPref = NullableStringPref(key),
-       super(key);
+  NullableJsonPref(super.key, {this.fromJson, this.toJson}) : _stringPref = NullableStringPref(key);
 
   final NullableFromJsonCallback<T>? fromJson;
   final NullableToJsonCallback<T>? toJson;
@@ -371,9 +360,7 @@ class EnumPref<T> extends Pref<T> {
 }
 
 class NullableEnumPref<T> extends NullablePref<T> {
-  NullableEnumPref(String key, this.values)
-    : _stringPref = NullableStringPref(key),
-      super(key);
+  NullableEnumPref(super.key, this.values) : _stringPref = NullableStringPref(key);
 
   final List<T> values;
   final NullableStringPref _stringPref;
@@ -400,8 +387,7 @@ abstract class PrefNotifierBase<G, S extends G> with ChangeNotifier implements P
   G get value => _value ??= _pref.get();
   G? _value;
   void _setValue(G newValue) {
-    if (_value == newValue)
-      return;
+    if (_value == newValue) return;
     _value = newValue;
     notifyListeners();
   }
@@ -418,7 +404,7 @@ abstract class PrefNotifierBase<G, S extends G> with ChangeNotifier implements P
     _setValue(newValue);
     return res;
   }
-    
+
   @override
   Future<bool> delete() {
     final res = _pref.delete();
@@ -428,9 +414,9 @@ abstract class PrefNotifierBase<G, S extends G> with ChangeNotifier implements P
 }
 
 class PrefNotifier<T> extends PrefNotifierBase<T, T> {
-  PrefNotifier(Pref<T> pref) : super(pref);
+  PrefNotifier(Pref<T> super.pref);
 }
 
 class NullablePrefNotifier<T> extends PrefNotifierBase<T?, T> {
-  NullablePrefNotifier(NullablePref<T> pref) : super(pref);
+  NullablePrefNotifier(NullablePref<T> super.pref);
 }

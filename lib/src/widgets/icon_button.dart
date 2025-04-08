@@ -130,7 +130,7 @@ class NFIconButton extends StatelessWidget {
   /// The [icon] argument must be specified, and is typically either an [Icon]
   /// or an [ImageIcon].
   const NFIconButton({
-    Key? key,
+    super.key,
     required this.icon,
     this.size = NFConstants.iconButtonSize,
     this.iconSize = NFConstants.iconSize,
@@ -145,7 +145,7 @@ class NFIconButton extends StatelessWidget {
     this.autofocus = false,
     this.tooltip,
     this.enableFeedback = true,
-  })  : super(key: key);
+  });
 
   /// The size of the icon inside the button.
   ///
@@ -257,32 +257,24 @@ class NFIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterial(context));
     Color currentColor;
-    if (onPressed != null)
+    if (onPressed != null) {
       currentColor = color ?? Theme.of(context).iconTheme.color!;
-    else
+    } else {
       currentColor = disabledColor ?? Theme.of(context).disabledColor;
+    }
 
     Widget result = Align(
       // NOTE that align needed for container constraints get to work
       alignment: Alignment.center,
-      child: Container(
+      child: SizedBox(
         height: iconSize,
         width: iconSize,
-        child: IconTheme.merge(
-          data: IconThemeData(
-            size: iconSize,
-            color: currentColor,
-          ),
-          child: icon,
-        ),
+        child: IconTheme.merge(data: IconThemeData(size: iconSize, color: currentColor), child: icon),
       ),
     );
 
     if (tooltip != null) {
-      result = Tooltip(
-        message: tooltip!,
-        child: result,
-      );
+      result = Tooltip(message: tooltip!, child: result);
     }
 
     /// Max size of [size] and [iconSize]
@@ -294,7 +286,7 @@ class NFIconButton extends StatelessWidget {
       child: Align(
         // NOTE that align needed for container constraints get to work
         alignment: Alignment.center,
-        child: Container(
+        child: SizedBox(
           width: maxSize,
           height: maxSize,
           child: InkWell(
@@ -304,13 +296,13 @@ class NFIconButton extends StatelessWidget {
             canRequestFocus: onPressed != null,
             onTap: onPressed,
             enableFeedback: enableFeedback,
-            child: result,
             focusColor: focusColor ?? Theme.of(context).focusColor,
             hoverColor: hoverColor ?? Theme.of(context).hoverColor,
             highlightColor: highlightColor ?? Colors.transparent,
             splashColor: splashColor ?? Theme.of(context).splashColor,
             // radius: maxSize / 2,
             customBorder: CircleBorder(side: BorderSide(width: 0)),
+            child: result,
           ),
         ),
       ),
@@ -321,20 +313,14 @@ class NFIconButton extends StatelessWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<Widget>('icon', icon, showName: false));
-    properties.add(
-        StringProperty('tooltip', tooltip, defaultValue: null, quoted: false));
-    properties.add(ObjectFlagProperty<VoidCallback>('onPressed', onPressed,
-        ifNull: 'disabled'));
+    properties.add(StringProperty('tooltip', tooltip, defaultValue: null, quoted: false));
+    properties.add(ObjectFlagProperty<VoidCallback>('onPressed', onPressed, ifNull: 'disabled'));
     properties.add(ColorProperty('color', color, defaultValue: null));
-    properties
-        .add(ColorProperty('disabledColor', disabledColor, defaultValue: null));
+    properties.add(ColorProperty('disabledColor', disabledColor, defaultValue: null));
     properties.add(ColorProperty('focusColor', focusColor, defaultValue: null));
     properties.add(ColorProperty('hoverColor', hoverColor, defaultValue: null));
-    properties.add(
-        ColorProperty('highlightColor', highlightColor, defaultValue: null));
-    properties
-        .add(ColorProperty('splashColor', splashColor, defaultValue: null));
-    properties.add(DiagnosticsProperty<FocusNode>('focusNode', focusNode,
-        defaultValue: null));
+    properties.add(ColorProperty('highlightColor', highlightColor, defaultValue: null));
+    properties.add(ColorProperty('splashColor', splashColor, defaultValue: null));
+    properties.add(DiagnosticsProperty<FocusNode>('focusNode', focusNode, defaultValue: null));
   }
 }
