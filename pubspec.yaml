@@ -1,12 +1,12 @@
 name: nt4f04unds_widgets
-description: A new Flutter package project.
+description: "A collection of widgets used in nt4f04unds projects"
 version: 5.0.0
 homepage: https://github.com/nt4f04uNd/nt4f04unds_widgets
 repository: https://github.com/nt4f04uNd/nt4f04unds_widgets
 issue_tracker: https://github.com/nt4f04uNd/nt4f04unds_widgets/issues
 
 environment:
-  sdk: '>=3.4.1 <4.0.0'
+  sdk: ^3.7.2
   flutter: '>=3.3.0'
 
 dependencies:
@@ -19,3 +19,9 @@ dependencies:
   multiple_localization: ^0.5.0
   flutter:
     sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
