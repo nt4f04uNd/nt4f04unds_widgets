@@ -248,7 +248,7 @@ class NFDraggableScrollbar extends StatefulWidget {
   @override
   NFDraggableScrollbarState createState() => NFDraggableScrollbarState();
 
-  static buildScrollBarAnimation({
+  static Widget buildScrollBarAnimation({
     required Widget bar,
     required Animation<double> barAnimation,
     required bool appearOnlyOnScroll,
