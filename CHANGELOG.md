@@ -1,6 +1,7 @@
 ## 6.0.0
 
 * Removed `SelectionController.wasEverSelected`, it always returned `false`.
+* Support Flutter 3.32.
 
 ## 5.0.0
 * Support Flutter 3.29
