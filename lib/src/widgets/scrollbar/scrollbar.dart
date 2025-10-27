@@ -6,7 +6,7 @@
 *  See ThirdPartyNotices.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-// todo: propose changes to the scrollbar in the framework and delete this. 
+// todo: propose changes to the scrollbar in the framework and delete this.
 
 export 'draggable_scrollbar.dart';
 
@@ -79,14 +79,8 @@ class _NFScrollbarState extends State<NFScrollbar> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    _fadeoutAnimationController = AnimationController(
-      vsync: this,
-      duration: kScrollbarFadeDuration,
-    );
-    _fadeoutOpacityAnimation = CurvedAnimation(
-      parent: _fadeoutAnimationController,
-      curve: Curves.fastOutSlowIn,
-    );
+    _fadeoutAnimationController = AnimationController(vsync: this, duration: kScrollbarFadeDuration);
+    _fadeoutOpacityAnimation = CurvedAnimation(parent: _fadeoutAnimationController, curve: Curves.fastOutSlowIn);
   }
 
   @override
@@ -130,8 +124,7 @@ class _NFScrollbarState extends State<NFScrollbar> with SingleTickerProviderStat
 
     // iOS sub-delegates to the CupertinoScrollbar instead and doesn't handle
     // scroll notifications here.
-    if ((notification is ScrollUpdateNotification ||
-        notification is OverscrollNotification)) {
+    if ((notification is ScrollUpdateNotification || notification is OverscrollNotification)) {
       if (_fadeoutAnimationController.status != AnimationStatus.forward) {
         _fadeoutAnimationController.forward();
       }
@@ -159,12 +152,7 @@ class _NFScrollbarState extends State<NFScrollbar> with SingleTickerProviderStat
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
       child: RepaintBoundary(
-        child: CustomPaint(
-          foregroundPainter: _scrollbarPainter,
-          child: RepaintBoundary(
-            child: widget.child,
-          ),
-        ),
+        child: CustomPaint(foregroundPainter: _scrollbarPainter, child: RepaintBoundary(child: widget.child)),
       ),
     );
   }

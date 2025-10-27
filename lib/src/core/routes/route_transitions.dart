@@ -16,12 +16,12 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 const Duration kRouteTransitionDuration = const Duration(milliseconds: 300);
 
 /// Configures the look of the route transition.
-/// 
+///
 /// This class is immutable because router v2 is now in place, which allow to manager
 /// routes declaratevly.
-/// 
+///
 /// Properties are not final to be able to update settings without recreateing the route.
-/// 
+///
 /// todo: add seprarate settings with parameters for sustem ui, or come up with a way of wiring it up into router v2, or something else
 class RouteTransitionSettings {
   RouteTransitionSettings({
@@ -80,10 +80,10 @@ class RouteTransitionSettings {
   /// Function to get system UI to be set when navigating to route.
   ///
   /// If none specified, UI will not be changed on animation.
-  /// 
+  ///
   /// However if [NFThemeData.alwaysApplyUiStyle] is `true`, it will animate even if it's `null`,
   /// but [NFThemeData.systemUiStyle] will be used as a fallback.
-  /// 
+  ///
   /// The is UI animated only when:
   /// * new screen is opening - bound to animation
   /// * screen goes away and old one is revealed - bound to secondary animation
@@ -100,10 +100,7 @@ class RouteTransitionBuilder<T> extends RouteTransition<T> {
     this.barrierDismissible = false,
     this.barrierColor,
     this.barrierLabel,
-  }) : super(
-        settings: settings,
-        transitionSettings: transitionSettings,
-       );
+  }) : super(settings: settings, transitionSettings: transitionSettings);
 
   @override
   final bool barrierDismissible;
@@ -119,32 +116,35 @@ class RouteTransitionBuilder<T> extends RouteTransition<T> {
 
   /// Builds route animation.
   final RouteTransitionsBuilder animationBuilder;
-  
+
   @override
   Widget buildContent(BuildContext context) {
     return builder(context);
   }
 
   @override
-  Widget buildAnimation(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+  Widget buildAnimation(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return animationBuilder(context, animation, secondaryAnimation, child);
   }
 }
 
 /// Represents a route transition with various [transitionSettings] to its parameters.
 abstract class RouteTransition<T> extends PageRoute<T> {
-  RouteTransition({
-    RouteSettings? settings,
-    RouteTransitionSettings? transitionSettings,
-  }) : transitionSettings = transitionSettings ?? RouteTransitionSettings(),
-       super(settings: settings);
+  RouteTransition({RouteSettings? settings, RouteTransitionSettings? transitionSettings})
+    : transitionSettings = transitionSettings ?? RouteTransitionSettings(),
+      super(settings: settings);
 
   /// Settings that define how the transition will look like
   final RouteTransitionSettings transitionSettings;
 
   @override
   bool get opaque => transitionSettings.opaque;
-  
+
   @override
   final bool barrierDismissible = false;
 
@@ -169,9 +169,9 @@ abstract class RouteTransition<T> extends PageRoute<T> {
 
   SystemUiOverlayStyle? _getUi(context) {
     final nftheme = NFTheme.of(context);
-    return nftheme.alwaysApplyUiStyle 
-          ? transitionSettings.uiStyle ?? nftheme.systemUiStyle
-          : transitionSettings.uiStyle;
+    return nftheme.alwaysApplyUiStyle
+        ? transitionSettings.uiStyle ?? nftheme.systemUiStyle
+        : transitionSettings.uiStyle;
   }
 
   /// Builds route contents.
@@ -179,11 +179,16 @@ abstract class RouteTransition<T> extends PageRoute<T> {
   Widget buildContent(BuildContext context);
 
   /// Builds route animation.
-  /// 
+  ///
   /// Called within [buildTransitions]. Introduced because [buildTransitions] contains addtional logic for handling
   /// [RouteTransitionSettings.animationEnabled] and [RouteTransitionSettings.secondaryAnimationEnabled].
   @protected
-  Widget buildAnimation(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child);
+  Widget buildAnimation(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  );
 
   @override
   Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
@@ -192,8 +197,7 @@ abstract class RouteTransition<T> extends PageRoute<T> {
       onPopNext: () async {
         if (!uiAnimating) {
           final ui = _getUi(context);
-          if (ui == null)
-            return;
+          if (ui == null) return;
           uiAnimating = true;
           await SystemUiStyleController.instance.animateSystemUiOverlay(
             to: ui,
@@ -208,7 +212,12 @@ abstract class RouteTransition<T> extends PageRoute<T> {
   }
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     if (!transitionSettings.animationEnabled) {
       animation = kAlwaysCompleteAnimation;
     }
@@ -221,15 +230,14 @@ abstract class RouteTransition<T> extends PageRoute<T> {
   /// Animates UI when:
   /// * new screen is opening
   /// * screen goes away and old one is revealed
-  /// 
+  ///
   /// Called within [buildPage].
   @protected
   void handleSystemUi(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     Future<void> animate() async {
       if (!uiAnimating && animation.status == AnimationStatus.forward) {
         final ui = _getUi(context);
-        if (ui == null)
-          return;
+        if (ui == null) return;
         uiAnimating = true;
         await SystemUiStyleController.instance.animateSystemUiOverlay(
           to: ui,
@@ -246,13 +254,11 @@ abstract class RouteTransition<T> extends PageRoute<T> {
       animate();
     });
 
-
     //* the code below was meant to interpolate UI style values based on animation values, but it didn't work for some reason
-
 
     // final nftheme = NFTheme.of(context);
     // SystemUiOverlayStyle? getUi() {
-    //   return nftheme.alwaysApplyUiStyle 
+    //   return nftheme.alwaysApplyUiStyle
     //       ? transitionSettings.uiStyle ?? nftheme.systemUiStyle
     //       : transitionSettings.uiStyle;
     // }

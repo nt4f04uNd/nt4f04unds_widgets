@@ -12,36 +12,32 @@ class SnackbarExamples extends StatelessWidget {
       children: [
         Tile(
           name: 'snackbar',
-          onTap: () => NFSnackbarController.showSnackbar(
-            NFSnackbarEntry(
-              child: NFSnackbar(
-                title: Text('test'),
-                trailing: ElevatedButton(
-                  child: Text('action'),
-                  onPressed: () {},
+          onTap:
+              () => NFSnackbarController.showSnackbar(
+                NFSnackbarEntry(
+                  child: NFSnackbar(
+                    title: Text('test'),
+                    trailing: ElevatedButton(child: Text('action'), onPressed: () {}),
+                    color: Colors.blue,
+                    leading: Icon(Icons.animation),
+                  ),
                 ),
-                color: Colors.blue,
-                leading: Icon(Icons.animation),
               ),
-            ),
-          ),
         ),
         Tile(
           name: 'important snackbar',
-          onTap: () => NFSnackbarController.showSnackbar(
-            NFSnackbarEntry(
-              important: true,
-              child: NFSnackbar(
-                title: Text('test'),
-                trailing: ElevatedButton(
-                  child: Text('action'),
-                  onPressed: () {},
+          onTap:
+              () => NFSnackbarController.showSnackbar(
+                NFSnackbarEntry(
+                  important: true,
+                  child: NFSnackbar(
+                    title: Text('test'),
+                    trailing: ElevatedButton(child: Text('action'), onPressed: () {}),
+                    color: Colors.red,
+                    leading: Icon(Icons.copy),
+                  ),
                 ),
-                color: Colors.red,
-                leading: Icon(Icons.copy),
               ),
-            ),
-          ),
         ),
       ],
     );

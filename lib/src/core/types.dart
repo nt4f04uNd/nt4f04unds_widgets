@@ -15,7 +15,7 @@ bool isNullable<T>() => null is T;
 typedef BoolCallback = bool Function();
 
 /// A [BoolCallback] that returns true.
-/// 
+///
 /// Can be used for contant values.
 bool trueCallback() => true;
 

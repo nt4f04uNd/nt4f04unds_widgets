@@ -145,7 +145,7 @@ class NFIconButton extends StatelessWidget {
     this.autofocus = false,
     this.tooltip,
     this.enableFeedback = true,
-  })  : super(key: key);
+  }) : super(key: key);
 
   /// The size of the icon inside the button.
   ///
@@ -268,21 +268,12 @@ class NFIconButton extends StatelessWidget {
       child: Container(
         height: iconSize,
         width: iconSize,
-        child: IconTheme.merge(
-          data: IconThemeData(
-            size: iconSize,
-            color: currentColor,
-          ),
-          child: icon,
-        ),
+        child: IconTheme.merge(data: IconThemeData(size: iconSize, color: currentColor), child: icon),
       ),
     );
 
     if (tooltip != null) {
-      result = Tooltip(
-        message: tooltip!,
-        child: result,
-      );
+      result = Tooltip(message: tooltip!, child: result);
     }
 
     /// Max size of [size] and [iconSize]
@@ -321,20 +312,14 @@ class NFIconButton extends StatelessWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<Widget>('icon', icon, showName: false));
-    properties.add(
-        StringProperty('tooltip', tooltip, defaultValue: null, quoted: false));
-    properties.add(ObjectFlagProperty<VoidCallback>('onPressed', onPressed,
-        ifNull: 'disabled'));
+    properties.add(StringProperty('tooltip', tooltip, defaultValue: null, quoted: false));
+    properties.add(ObjectFlagProperty<VoidCallback>('onPressed', onPressed, ifNull: 'disabled'));
     properties.add(ColorProperty('color', color, defaultValue: null));
-    properties
-        .add(ColorProperty('disabledColor', disabledColor, defaultValue: null));
+    properties.add(ColorProperty('disabledColor', disabledColor, defaultValue: null));
     properties.add(ColorProperty('focusColor', focusColor, defaultValue: null));
     properties.add(ColorProperty('hoverColor', hoverColor, defaultValue: null));
-    properties.add(
-        ColorProperty('highlightColor', highlightColor, defaultValue: null));
-    properties
-        .add(ColorProperty('splashColor', splashColor, defaultValue: null));
-    properties.add(DiagnosticsProperty<FocusNode>('focusNode', focusNode,
-        defaultValue: null));
+    properties.add(ColorProperty('highlightColor', highlightColor, defaultValue: null));
+    properties.add(ColorProperty('splashColor', splashColor, defaultValue: null));
+    properties.add(DiagnosticsProperty<FocusNode>('focusNode', focusNode, defaultValue: null));
   }
 }

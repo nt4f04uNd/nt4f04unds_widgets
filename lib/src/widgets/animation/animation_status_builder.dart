@@ -12,12 +12,8 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 /// * [AnimationStrategyBuilder] which rebuilds every time evaluated animation strategy
 ///   value changes
 class AnimationStatusBuilder extends StatusTransitionWidget {
-  AnimationStatusBuilder({
-    Key? key,
-    required Animation<double> animation,
-    required this.builder,
-    this.child,
-  }) : super(key: key, animation: animation);
+  AnimationStatusBuilder({Key? key, required Animation<double> animation, required this.builder, this.child})
+    : super(key: key, animation: animation);
 
   final Widget? child;
   final TransitionBuilder builder;
@@ -85,21 +81,16 @@ class _AnimationStrategyBuilderState<T> extends State<AnimationStrategyBuilder<T
 
   void _animationStatusChanged(AnimationStatus status) {
     T? prevValue;
-    if (_prevStatus != null)
-      prevValue = widget.strategy.decide(_prevStatus!);
+    if (_prevStatus != null) prevValue = widget.strategy.decide(_prevStatus!);
     final value = widget.strategy.decide(status);
     if (prevValue != value) {
       _prevStatus = status;
-      setState(() { });
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(
-      context,
-      widget.strategy.ask(widget.animation),
-      widget.child,
-    );
+    return widget.builder(context, widget.strategy.ask(widget.animation), widget.child);
   }
 }

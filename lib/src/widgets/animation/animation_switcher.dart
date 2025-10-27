@@ -16,7 +16,7 @@ class AnimationSwitcher extends StatelessWidget {
     this.alignment = AlignmentDirectional.topStart,
     this.builder1 = defaultBuilder,
     this.builder2 = defaultBuilder,
-  })  : super(key: key);
+  }) : super(key: key);
 
   final Animation<double> animation;
   final AlignmentGeometry alignment;
@@ -26,10 +26,7 @@ class AnimationSwitcher extends StatelessWidget {
   final AnimatedSwitcherTransitionBuilder builder2;
 
   static Widget defaultBuilder(Widget child, Animation<double> animation) {
-    return FadeTransition(
-      opacity: animation,
-      child: child,
-    );
+    return FadeTransition(opacity: animation, child: child);
   }
 
   @override
@@ -37,19 +34,20 @@ class AnimationSwitcher extends StatelessWidget {
     final reverseTween = Tween(begin: 1.0, end: 0.0);
     return AnimatedBuilder(
       animation: animation,
-      builder: (context, child) => Stack(
-        alignment: alignment,
-        children: [
-          IgnorePointer(
-            ignoring: const IgnoringStrategy(forward: true, completed: true).ask(animation),
-            child: builder1(child1, reverseTween.animate(animation)),
+      builder:
+          (context, child) => Stack(
+            alignment: alignment,
+            children: [
+              IgnorePointer(
+                ignoring: const IgnoringStrategy(forward: true, completed: true).ask(animation),
+                child: builder1(child1, reverseTween.animate(animation)),
+              ),
+              IgnorePointer(
+                ignoring: const IgnoringStrategy(reverse: true, dismissed: true).ask(animation),
+                child: builder2(child2, animation),
+              ),
+            ],
           ),
-          IgnorePointer(
-            ignoring: const IgnoringStrategy(reverse: true, dismissed: true).ask(animation),
-            child: builder2(child2, animation),
-          ),
-        ],
-      ),
     );
   }
 }

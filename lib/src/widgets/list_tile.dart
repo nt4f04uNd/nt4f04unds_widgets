@@ -8,7 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-
 /// A list tile with applied splash factory
 class NFListTile extends StatelessWidget {
   const NFListTile({
