@@ -34,7 +34,7 @@ class NFIconButton extends IconButton {
     super.focusNode,
     super.autofocus = false,
     super.tooltip,
-    super.enableFeedback,
+    super.enableFeedback = true,
     super.constraints = const BoxConstraints(
       minWidth: NFConstants.iconButtonSize,
       minHeight: NFConstants.iconButtonSize,
