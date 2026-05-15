@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 class SnackbarExamples extends StatelessWidget {
-  const SnackbarExamples({Key? key}) : super(key: key);
+  const SnackbarExamples({super.key});
 
   @override
   Widget build(BuildContext context) {

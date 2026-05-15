@@ -10,6 +10,7 @@
 /// Copied this on flutter master d2b42d8c13f2dba6ba12c84a0e66fadf7eb94c16
 /// TODO: migrate this back to null safety (copied this on flutter master d2b42d8c13f2dba6ba12c84a0e66fadf7eb94c16)
 /// ###########################################################################################
+library;
 
 import 'dart:math';
 

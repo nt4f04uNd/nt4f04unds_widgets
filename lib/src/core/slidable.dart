@@ -42,25 +42,25 @@ enum SlideDirection {
 
 /// todo: might be split up to framework.dart as new builder signature?
 /// todo: change name and docs
-typedef _Builder = Widget Function(Animation<double> animation, Widget child);
+typedef AnimatedWidgetBuilder = Widget Function(Animation<double> animation, Widget child);
 
 /// Used by [DragEventListenersMixin.addDragEventListener].
-typedef void SlidableDragEventListener(SlidableDragEvent status);
+typedef SlidableDragEventListener = void Function(SlidableDragEvent status);
 
 /// Signature for a function used to notify about controller value changes.
 ///
 /// Used by [Slidable.onSlideChange].
-typedef void SlideChangeCallback(double value);
+typedef SlideChangeCallback = void Function(double value);
 
 /// Signature for a function used to notify about slidable drag begins.
 ///
 /// Used by [Slidable.onDragStart].
-typedef void SlideStartCallback(DragStartDetails dragDetails);
+typedef SlideStartCallback = void Function(DragStartDetails dragDetails);
 
 /// Signature for a function used to notify about slidable drag updates.
 ///
 /// Used by [Slidable.onDragUpdate].
-typedef void SlideUpdateCallback(DragUpdateDetails details);
+typedef SlideUpdateCallback = void Function(DragUpdateDetails details);
 
 /// Signature for a function used to notify about slidable drag ends.
 ///
@@ -108,7 +108,7 @@ class SlidableDragEnd extends SlidableDragEvent {
 ///  * [SlidableControllerProvider], inherited widget to provide a [SlidableController]
 class Slidable extends StatefulWidget {
   const Slidable({
-    Key? key,
+    super.key,
     required this.child,
     this.direction = SlideDirection.up,
     this.start = 1.0,
@@ -137,8 +137,7 @@ class Slidable extends StatefulWidget {
              start <= end && (direction == SlideDirection.right || direction == SlideDirection.down) ||
              start >= end && (direction == SlideDirection.left || direction == SlideDirection.up),
          'start and end must correspond with direction',
-       ),
-       super(key: key);
+       );
 
   static Widget _defaultBarrierBuilder(Animation<double> animation, Widget child) {
     return FadeTransition(opacity: animation, child: child);
@@ -170,14 +169,14 @@ class Slidable extends StatefulWidget {
   final SlidableController? controller;
 
   //todo: docs
-  final _Builder? childBuilder;
+  final AnimatedWidgetBuilder? childBuilder;
 
   /// The widget to show on `Offset.zero`, can be used for barriers.
   /// todo: better doc regarding barrier, onBarrierTap and ignoring strategy
   final Widget? barrier;
 
   //todo: docs
-  final _Builder barrierBuilder;
+  final AnimatedWidgetBuilder barrierBuilder;
 
   /// A spring to use with default slidable controller.
   /// If this was specified, [controller] must be null.
@@ -570,26 +569,16 @@ class SlidableState extends State<Slidable> with TickerProviderStateMixin {
 ///  * [SlidableControllerProvider], inherited widget that provides access to the controller
 class SlidableController extends AnimationController with _DragEventListenersMixin {
   SlidableController({
-    double value = 0.0,
-    Duration? duration,
-    Duration? reverseDuration,
-    String? debugLabel,
-    double lowerBound = 0.0,
-    double upperBound = 1.0,
-    SpringDescription? springDescription,
-    AnimationBehavior animationBehavior = AnimationBehavior.normal,
-    required TickerProvider vsync,
-  }) : springDescription = springDescription,
-       super(
-         value: value,
-         duration: duration,
-         reverseDuration: reverseDuration,
-         debugLabel: debugLabel,
-         lowerBound: lowerBound,
-         upperBound: upperBound,
-         animationBehavior: animationBehavior,
-         vsync: vsync,
-       );
+    double super.value = 0.0,
+    super.duration,
+    super.reverseDuration,
+    super.debugLabel,
+    super.lowerBound,
+    super.upperBound,
+    this.springDescription,
+    super.animationBehavior,
+    required super.vsync,
+  });
 
   bool _dragged = false;
 
@@ -657,10 +646,8 @@ class SlidableController extends AnimationController with _DragEventListenersMix
 /// * [SlidableController.of]
 /// * [SlidableController.maybeOf]
 class SlidableControllerProvider<T> extends InheritedWidget {
-  const SlidableControllerProvider({Key? key, required this.child, required this.controller})
-    : super(key: key, child: child);
+  const SlidableControllerProvider({super.key, required super.child, required this.controller});
 
-  final Widget child;
   final SlidableController controller;
 
   @override

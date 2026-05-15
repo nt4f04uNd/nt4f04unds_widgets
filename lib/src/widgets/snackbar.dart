@@ -53,12 +53,11 @@ class NFSnackbarEntry {
     assert(!onScreen);
     _overlayEntry = OverlayEntry(
       builder:
-          (context) => Container(
-            child: Align(alignment: Alignment.bottomCenter, child: _NFSnackbarEntryWidget(entry: this, key: globalKey)),
-          ),
+          (context) =>
+              Align(alignment: Alignment.bottomCenter, child: _NFSnackbarEntryWidget(entry: this, key: globalKey)),
     );
-    late final OverlayState _overlay;
-    if (overlay == null) {
+    late final OverlayState overlay;
+    if (this.overlay == null) {
       final overlayFromKey = NFWidgets.navigatorKey?.currentState?.overlay;
       assert(() {
         if (overlayFromKey == null) {
@@ -69,11 +68,11 @@ class NFSnackbarEntry {
         }
         return true;
       }());
-      _overlay = overlayFromKey!;
+      overlay = overlayFromKey!;
     } else {
-      _overlay = overlay!;
+      overlay = this.overlay!;
     }
-    _overlay.insert(_overlayEntry!);
+    overlay.insert(_overlayEntry!);
   }
 
   /// Removes [overlayEntry].
@@ -143,7 +142,7 @@ abstract class NFSnackbarController {
 }
 
 class _NFSnackbarEntryWidget extends StatefulWidget {
-  _NFSnackbarEntryWidget({Key? key, required this.entry}) : super(key: key);
+  const _NFSnackbarEntryWidget({super.key, required this.entry});
 
   final NFSnackbarEntry entry;
 
@@ -261,14 +260,14 @@ class NFSnackbarEntryState extends State<_NFSnackbarEntryWidget> with TickerProv
 /// * [NFSnackbarEntry], which describes a snackbar entry and some settings for it
 class NFSnackbar extends StatelessWidget {
   const NFSnackbar({
-    Key? key,
+    super.key,
     this.title,
     this.leading,
     this.trailing,
     this.color,
     this.padding = const EdgeInsets.only(left: 16.0, right: 16.0, top: 10.0, bottom: 10.0),
     this.titlePadding = EdgeInsets.zero,
-  }) : super(key: key);
+  });
 
   /// The primary content of the snakcbar.
   final Widget? title;

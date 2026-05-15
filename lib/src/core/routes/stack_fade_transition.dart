@@ -4,10 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
-const Duration _kStackFadeTransitionDuration = const Duration(milliseconds: 240);
+const Duration _kStackFadeTransitionDuration = Duration(milliseconds: 240);
 
 /// Settings for the [StackFadeRouteTransition].
 class StackFadeRouteTransitionSettings extends RouteTransitionSettings {
@@ -20,64 +19,38 @@ class StackFadeRouteTransitionSettings extends RouteTransitionSettings {
     this.dismissible = false,
     this.dismissBarrier,
     this.dismissDirection = SlideDirection.right,
-    bool opaque = true,
-    bool maintainState = true,
-    Duration transitionDuration = _kStackFadeTransitionDuration,
-    Duration reverseTransitionDuration = _kStackFadeTransitionDuration,
-    bool animationEnabled = true,
-    bool secondaryAnimationEnabled = true,
-    Curve curve = Curves.easeOutCubic,
-    Curve reverseCurve = Curves.easeInCubic,
-    Curve secondaryCurve = Curves.linearToEaseOut,
-    Curve secondaryReverseCurve = Curves.easeInToLinear,
-    SystemUiOverlayStyle? uiStyle,
-  }) : assert(!dismissible || !opaque, _dismissibleAssertError),
-       super(
-         opaque: opaque,
-         maintainState: maintainState,
-         transitionDuration: transitionDuration,
-         reverseTransitionDuration: reverseTransitionDuration,
-         animationEnabled: animationEnabled,
-         secondaryAnimationEnabled: secondaryAnimationEnabled,
-         curve: curve,
-         reverseCurve: reverseCurve,
-         secondaryCurve: secondaryCurve,
-         secondaryReverseCurve: secondaryReverseCurve,
-         uiStyle: uiStyle,
-       );
+    super.opaque,
+    super.maintainState,
+    super.transitionDuration = _kStackFadeTransitionDuration,
+    super.reverseTransitionDuration = _kStackFadeTransitionDuration,
+    super.animationEnabled,
+    super.secondaryAnimationEnabled,
+    super.curve = Curves.easeOutCubic,
+    super.reverseCurve = Curves.easeInCubic,
+    super.secondaryCurve,
+    super.secondaryReverseCurve,
+    super.uiStyle,
+  }) : assert(!dismissible || !opaque, _dismissibleAssertError);
 
   /// Creates transition that comes from bottom to top.
   StackFadeRouteTransitionSettings.fromBottom({
     this.dismissible = false,
     this.dismissBarrier,
     this.dismissDirection = SlideDirection.right,
-    bool opaque = true,
-    bool maintainState = true,
-    Duration transitionDuration = _kStackFadeTransitionDuration,
-    Duration reverseTransitionDuration = _kStackFadeTransitionDuration,
-    bool animationEnabled = true,
-    bool secondaryAnimationEnabled = true,
-    Curve curve = Curves.easeOutCubic,
-    Curve reverseCurve = Curves.easeInCubic,
-    Curve secondaryCurve = Curves.linearToEaseOut,
-    Curve secondaryReverseCurve = Curves.easeInToLinear,
-    SystemUiOverlayStyle? uiStyle,
+    super.opaque,
+    super.maintainState,
+    super.transitionDuration = _kStackFadeTransitionDuration,
+    super.reverseTransitionDuration = _kStackFadeTransitionDuration,
+    super.animationEnabled,
+    super.secondaryAnimationEnabled,
+    super.curve = Curves.easeOutCubic,
+    super.reverseCurve = Curves.easeInCubic,
+    super.secondaryCurve,
+    super.secondaryReverseCurve,
+    super.uiStyle,
   }) : assert(!dismissible || !opaque, _dismissibleAssertError),
        enterOffset = const Offset(0.0, 0.16),
-       exitOffset = const Offset(0.0, 0.2),
-       super(
-         opaque: opaque,
-         maintainState: maintainState,
-         transitionDuration: transitionDuration,
-         reverseTransitionDuration: reverseTransitionDuration,
-         animationEnabled: animationEnabled,
-         secondaryAnimationEnabled: secondaryAnimationEnabled,
-         curve: curve,
-         reverseCurve: reverseCurve,
-         secondaryCurve: secondaryCurve,
-         secondaryReverseCurve: secondaryReverseCurve,
-         uiStyle: uiStyle,
-       );
+       exitOffset = const Offset(0.0, 0.2);
 
   /// Offset enter animation starts from.
   Offset enterOffset;
@@ -101,8 +74,7 @@ class StackFadeRouteTransitionSettings extends RouteTransitionSettings {
 
 /// A page that uses [StackFadeRouteTransition].
 class StackFadePage<T> extends Page<T> {
-  const StackFadePage({required this.child, this.transitionSettings, LocalKey? key, String? name, Object? arguments})
-    : super(key: key, name: name, arguments: arguments);
+  const StackFadePage({required this.child, this.transitionSettings, super.key, super.name, super.arguments});
 
   final Widget child;
 
@@ -118,16 +90,16 @@ class StackFadePage<T> extends Page<T> {
 class StackFadeRouteTransition<T> extends RouteTransition<T> {
   /// Creates route transition.
   StackFadeRouteTransition({
-    RouteSettings? settings,
+    super.settings,
     required this.child,
-    StackFadeRouteTransitionSettings? transitionSettings,
-  }) : transitionSettings = transitionSettings ?? StackFadeRouteTransitionSettings(),
-       super(settings: settings, transitionSettings: transitionSettings);
+    StackFadeRouteTransitionSettings? super.transitionSettings,
+  }) : _transitionSettings = transitionSettings ?? StackFadeRouteTransitionSettings();
 
   final Widget child;
+  final StackFadeRouteTransitionSettings _transitionSettings;
 
   @override
-  final StackFadeRouteTransitionSettings transitionSettings;
+  StackFadeRouteTransitionSettings get transitionSettings => _transitionSettings;
 
   @override
   Widget buildContent(BuildContext context) {
@@ -180,10 +152,10 @@ class StackFadeRouteTransition<T> extends RouteTransition<T> {
     return transitionSettings.dismissible
         ? DismissibleRoute(
           route: this,
-          child: child,
           animatedChild: animatedChild,
           dismissBarrier: transitionSettings.dismissBarrier,
           dismissDirection: transitionSettings.dismissDirection,
+          child: child,
         )
         : animatedChild;
   }

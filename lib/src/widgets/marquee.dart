@@ -11,7 +11,7 @@ import 'package:marquee/marquee.dart';
 
 class NFMarquee extends StatelessWidget {
   const NFMarquee({
-    Key? key,
+    super.key,
     required this.text,
     required this.fontSize,
     this.textStyle,
@@ -20,7 +20,7 @@ class NFMarquee extends StatelessWidget {
     this.blankSpace = 65.0,
     this.startAfter = const Duration(milliseconds: 2000),
     this.pauseAfterRound = const Duration(milliseconds: 2000),
-  }) : super(key: key);
+  });
 
   final String text;
   final double fontSize;

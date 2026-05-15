@@ -4,7 +4,7 @@ import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 import 'main.dart';
 
 class SlidableExamples extends StatelessWidget {
-  const SlidableExamples({Key? key}) : super(key: key);
+  const SlidableExamples({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class SlidableExamples extends StatelessWidget {
 }
 
 class _Slidable1 extends StatefulWidget {
-  _Slidable1({Key? key}) : super(key: key);
+  const _Slidable1();
 
   @override
   _Slidable1State createState() => _Slidable1State();
@@ -66,7 +66,6 @@ class _Slidable1State extends State<_Slidable1> with SingleTickerProviderStateMi
               end: 0.0,
               controller: controller,
               disableSlideTransition: true,
-              child: Container(constraints: BoxConstraints(maxWidth: screenWidth), child: Image.asset('assets/yt.png')),
               barrier: Container(color: Colors.black54),
               childBuilder: (animation, child) {
                 return AnimatedBuilder(
@@ -91,8 +90,8 @@ class _Slidable1State extends State<_Slidable1> with SingleTickerProviderStateMi
                                     Container(
                                       width: screenWidth / 4 + screenWidth / 4 * 3 * intervalAnimation.value,
                                       height: double.infinity,
-                                      child: child,
                                       color: Colors.black,
+                                      child: child,
                                     ),
                                     Flexible(child: Container(width: screenWidth, color: Colors.red)),
                                   ],
@@ -111,6 +110,7 @@ class _Slidable1State extends State<_Slidable1> with SingleTickerProviderStateMi
                   },
                 );
               },
+              child: Container(constraints: BoxConstraints(maxWidth: screenWidth), child: Image.asset('assets/yt.png')),
             ),
           ],
         ),
@@ -120,7 +120,7 @@ class _Slidable1State extends State<_Slidable1> with SingleTickerProviderStateMi
 }
 
 class _Slidable2 extends StatefulWidget {
-  _Slidable2({Key? key}) : super(key: key);
+  const _Slidable2();
 
   @override
   _Slidable2State createState() => _Slidable2State();
@@ -155,8 +155,8 @@ class _Slidable2State extends State<_Slidable2> with SingleTickerProviderStateMi
               start: 1.0 - 64.0 / screenHeight,
               end: 0.0,
               controller: controller,
-              child: Container(color: Colors.red),
               barrier: Container(color: Colors.black54),
+              child: Container(color: Colors.red),
             ),
           ],
         ),
@@ -166,7 +166,7 @@ class _Slidable2State extends State<_Slidable2> with SingleTickerProviderStateMi
 }
 
 class _Slidable3 extends StatefulWidget {
-  _Slidable3({Key? key}) : super(key: key);
+  const _Slidable3();
 
   @override
   _Slidable3State createState() => _Slidable3State();
@@ -211,13 +211,13 @@ class _Slidable3State extends State<_Slidable3> with SingleTickerProviderStateMi
                 onBarrierTap: controller.close,
                 barrierIgnoringStrategy: const IgnoringStrategy(dismissed: true),
                 hitTestBehaviorStrategy: const HitTestBehaviorStrategy.opaque(dismissed: HitTestBehavior.translucent),
-                child: Container(
+                childBuilder: (animation, child) => controller.isDismissed ? const SizedBox.shrink() : child,
+                barrier: Container(color: Colors.black54),
+                child: SizedBox(
                   height: mediaQuery.size.height,
                   width: mediaQuery.size.width,
                   child: Container(width: 304.0, alignment: Alignment.centerLeft, child: Drawer()),
                 ),
-                childBuilder: (animation, child) => controller.isDismissed ? const SizedBox.shrink() : child,
-                barrier: Container(color: Colors.black54),
               ),
             ),
           ],

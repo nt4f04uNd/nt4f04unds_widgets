@@ -1,3 +1,7 @@
+## 6.0.0
+
+* Removed `SelectionController.wasEverSelected`, it always returned `false`.
+
 ## 5.0.0
 * Support Flutter 3.29
   - The `additionalActions` in `NFShowFunctions.showDialog` now expand horizontally by default to half the dialog width.

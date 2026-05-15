@@ -19,8 +19,10 @@ void main() {
 class App extends StatefulWidget {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
+  const App({super.key});
+
   @override
-  _AppState createState() => _AppState();
+  State createState() => _AppState();
 }
 
 class _AppState extends State<App> {
@@ -48,10 +50,10 @@ class _AppState extends State<App> {
 }
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
-  _HomeState createState() => _HomeState();
+  State createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
@@ -80,7 +82,7 @@ class _HomeState extends State<Home> {
 }
 
 class Screen extends StatelessWidget {
-  const Screen({Key? key, required this.name, this.children}) : super(key: key);
+  const Screen({super.key, required this.name, this.children});
 
   final String name;
   final List<Widget>? children;
@@ -92,7 +94,7 @@ class Screen extends StatelessWidget {
 }
 
 class Tile extends StatelessWidget {
-  const Tile({Key? key, this.name = '', this.onTap}) : super(key: key);
+  const Tile({super.key, this.name = '', this.onTap});
 
   final String name;
   final VoidCallback? onTap;
