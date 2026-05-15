@@ -93,10 +93,6 @@ class SelectionController<T> extends Listenable
   /// Selection status.
   AnimationStatus get status => _animationController?.status ?? AnimationStatus.completed;
 
-  /// Returns true if controller was never in the in selection state.
-  bool get wasEverSelected => _wasEverSelected;
-  final bool _wasEverSelected = false;
-
   /// True when controller goes into selection or already in it.
   ///
   /// For UI this means that any selection controls should be available for touches.
