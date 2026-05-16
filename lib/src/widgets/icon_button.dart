@@ -42,7 +42,6 @@ class NFIconButton extends IconButton {
     super.style,
     super.isSelected,
     super.selectedIcon,
-    super.statesController,
     required super.icon,
   });
 
@@ -79,7 +78,6 @@ class NFIconButton extends IconButton {
         style: style,
         isSelected: isSelected,
         selectedIcon: selectedIcon,
-        statesController: statesController,
         icon: icon,
       ),
     );
