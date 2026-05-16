@@ -237,7 +237,7 @@ class NFSnackbarEntryState extends State<_NFSnackbarEntryWidget> with TickerProv
                 start: 0.0,
                 end: 1.0,
                 onDragStart: (_) => stopTimer(),
-                onDragEnd: (_, __) => resumeTimer(),
+                onDragEnd: (_, _) => resumeTimer(),
                 key: dismissibleKey,
                 child: widget.entry.child,
                 childBuilder:

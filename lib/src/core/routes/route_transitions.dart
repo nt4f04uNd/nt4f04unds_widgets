@@ -159,7 +159,7 @@ abstract class RouteTransition<T> extends PageRoute<T> {
   /// Needed to correctly switch when popping the route, because secondaryAnimation status listener is called multiple times.
   bool uiAnimating = false;
 
-  SystemUiOverlayStyle? _getUi(context) {
+  SystemUiOverlayStyle? _getUi(BuildContext context) {
     final nftheme = NFTheme.of(context);
     return nftheme.alwaysApplyUiStyle
         ? transitionSettings.uiStyle ?? nftheme.systemUiStyle
