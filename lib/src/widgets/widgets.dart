@@ -20,5 +20,4 @@ export 'selection.dart';
 export 'settings_widgets.dart';
 export 'slider.dart';
 export 'snackbar.dart';
-export 'tabs.dart';
 export 'text.dart';

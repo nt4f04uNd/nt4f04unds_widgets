@@ -1,6 +1,9 @@
 ## 6.0.0
 
 * Removed `SelectionController.wasEverSelected`, it always returned `false`.
+* Support Flutter 3.32.
+- Update dependencies
+* Removed `NFTab` and `NFTabBar` widgets, the native `Tab` and `TabBar` widgets now have the same functionality.
 
 ## 5.0.0
 * Support Flutter 3.29
