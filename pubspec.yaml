@@ -1,6 +1,6 @@
 name: nt4f04unds_widgets
 description: "A collection of widgets used in nt4f04unds projects"
-version: 6.0.0
+version: 7.0.0
 homepage: https://github.com/nt4f04uNd/nt4f04unds_widgets
 repository: https://github.com/nt4f04uNd/nt4f04unds_widgets
 issue_tracker: https://github.com/nt4f04uNd/nt4f04unds_widgets/issues
@@ -23,4 +23,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-

@@ -1,9 +1,13 @@
+## 7.0.0
+
+* Support Flutter 3.35.
+* Removed the unused `multiple_localization` dependency.
+* Updated dependencies.
+* Removed `NFTab` and `NFTabBar` widgets; use Flutter's `Tab` and `TabBar` widgets instead.
+
 ## 6.0.0
 
 * Removed `SelectionController.wasEverSelected`, it always returned `false`.
-* Support Flutter 3.32.
-- Update dependencies
-* Removed `NFTab` and `NFTabBar` widgets, the native `Tab` and `TabBar` widgets now have the same functionality.
 
 ## 5.0.0
 * Support Flutter 3.29
