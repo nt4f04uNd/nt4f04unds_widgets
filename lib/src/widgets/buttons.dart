@@ -34,7 +34,7 @@ class NFBackButton extends StatelessWidget {
     final nftheme = NFTheme.of(context);
     return NFIconButton(
       icon: Icon(icon ?? Icons.arrow_back_rounded),
-      size: size ?? nftheme.iconButtonSize,
+      constraints: BoxConstraints(minWidth: size ?? nftheme.iconButtonSize, minHeight: size ?? nftheme.iconButtonSize),
       iconSize: iconSize ?? nftheme.iconSize,
       onPressed: onPressed ?? () => Navigator.of(context).pop(),
     );
@@ -153,7 +153,10 @@ class AnimatedIconButtonState extends State<AnimatedIconButton> with SingleTicke
             icon: widget.icon,
             onPressed: widget.onPressed,
             iconSize: widget.iconSize ?? nftheme.iconSize,
-            size: widget.size ?? nftheme.iconButtonSize,
+            constraints: BoxConstraints(
+              minWidth: widget.size ?? nftheme.iconButtonSize,
+              minHeight: widget.size ?? nftheme.iconButtonSize,
+            ),
             color: colorAnimation.value,
             disabledColor: colorAnimation.value,
             tooltip: widget.tooltip,

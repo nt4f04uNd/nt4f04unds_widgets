@@ -1,4 +1,5 @@
 ## Unreleased
+* Add new arguments to `NFIconButton` and replace `size` argument with `constraints`.
 
 ## 7.0.0
 

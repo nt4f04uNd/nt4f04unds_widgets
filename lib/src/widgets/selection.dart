@@ -222,7 +222,10 @@ class _AnimatedMenuCloseButtonState extends State<AnimatedMenuCloseButton> with 
       animation: controller,
       builder:
           (BuildContext context, Widget? child) => NFIconButton(
-            size: widget.size ?? NFConstants.iconButtonSize,
+            constraints: BoxConstraints(
+              minWidth: widget.size ?? NFConstants.iconButtonSize,
+              minHeight: widget.size ?? NFConstants.iconButtonSize,
+            ),
             iconSize: widget.iconSize ?? NFConstants.iconSize,
             color: theme.colorScheme.onSurface,
             onPressed: showClose ? widget.onClosePressed : widget.onMenuPressed,
