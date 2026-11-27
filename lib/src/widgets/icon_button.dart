@@ -11,7 +11,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// A material design icon button.
@@ -269,7 +269,10 @@ class NFIconButton extends StatelessWidget {
       child: SizedBox(
         height: iconSize,
         width: iconSize,
-        child: IconTheme.merge(data: IconThemeData(size: iconSize, color: currentColor), child: icon),
+        child: IconTheme.merge(
+          data: IconThemeData(size: iconSize, color: currentColor),
+          child: icon,
+        ),
       ),
     );
 

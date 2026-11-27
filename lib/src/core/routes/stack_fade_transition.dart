@@ -3,7 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const Duration _kStackFadeTransitionDuration = Duration(milliseconds: 240);
@@ -120,22 +120,25 @@ class StackFadeRouteTransition<T> extends RouteTransition<T> {
     if (status == AnimationStatus.forward || status == AnimationStatus.reverse) {
       final bool forward = status == AnimationStatus.forward;
 
-      slideAnimation = Tween<Offset>(
-        begin: forward ? transitionSettings.enterOffset : transitionSettings.exitOffset,
-        end: Offset.zero,
-      ).animate(
-        CurvedAnimation(
-          parent: animation,
-          curve: transitionSettings.curve,
-          reverseCurve: transitionSettings.reverseCurve,
-        ),
-      );
+      slideAnimation =
+          Tween<Offset>(
+            begin: forward ? transitionSettings.enterOffset : transitionSettings.exitOffset,
+            end: Offset.zero,
+          ).animate(
+            CurvedAnimation(
+              parent: animation,
+              curve: transitionSettings.curve,
+              reverseCurve: transitionSettings.reverseCurve,
+            ),
+          );
 
       if (forward) {
-        fadeAnimation = Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(CurvedAnimation(curve: Interval(0.0, 0.7, curve: Curves.ease), parent: animation));
+        fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(
+            curve: Interval(0.0, 0.7, curve: Curves.ease),
+            parent: animation,
+          ),
+        );
       } else {
         fadeAnimation = Tween<double>(begin: -0.5, end: 1.0).animate(animation);
       }
@@ -151,12 +154,12 @@ class StackFadeRouteTransition<T> extends RouteTransition<T> {
 
     return transitionSettings.dismissible
         ? DismissibleRoute(
-          route: this,
-          animatedChild: animatedChild,
-          dismissBarrier: transitionSettings.dismissBarrier,
-          dismissDirection: transitionSettings.dismissDirection,
-          child: child,
-        )
+            route: this,
+            animatedChild: animatedChild,
+            dismissBarrier: transitionSettings.dismissBarrier,
+            dismissDirection: transitionSettings.dismissDirection,
+            child: child,
+          )
         : animatedChild;
   }
 }

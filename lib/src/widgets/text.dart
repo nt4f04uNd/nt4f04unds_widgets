@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Will return a [TextSpan] that on tap will open a [url].
@@ -14,10 +14,9 @@ TextSpan textLink({required BuildContext context, required String text, required
   return TextSpan(
     text: text,
     style: style ?? TextStyle(color: Theme.of(context).primaryColor),
-    recognizer:
-        TapGestureRecognizer()
-          ..onTap = () {
-            launchUrl(url);
-          },
+    recognizer: TapGestureRecognizer()
+      ..onTap = () {
+        launchUrl(url);
+      },
   );
 }

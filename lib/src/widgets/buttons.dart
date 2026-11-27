@@ -3,7 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// Button to go back from page.
@@ -140,24 +140,22 @@ class AnimatedIconButtonState extends State<AnimatedIconButton> with SingleTicke
     final theme = Theme.of(context);
     final nftheme = NFTheme.of(context);
     final colorAnimation = ColorTween(
-      begin:
-          widget.onPressed != null
-              ? widget.inactiveColor ?? theme.unselectedWidgetColor
-              : widget.disabledColor ?? theme.disabledColor,
+      begin: widget.onPressed != null
+          ? widget.inactiveColor ?? theme.unselectedWidgetColor
+          : widget.disabledColor ?? theme.disabledColor,
       end: widget.color ?? theme.iconTheme.color,
     ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic));
     return AnimatedBuilder(
       animation: controller,
-      builder:
-          (BuildContext context, Widget? child) => NFIconButton(
-            icon: widget.icon,
-            onPressed: widget.onPressed,
-            iconSize: widget.iconSize ?? nftheme.iconSize,
-            size: widget.size ?? nftheme.iconButtonSize,
-            color: colorAnimation.value,
-            disabledColor: colorAnimation.value,
-            tooltip: widget.tooltip,
-          ),
+      builder: (BuildContext context, Widget? child) => NFIconButton(
+        icon: widget.icon,
+        onPressed: widget.onPressed,
+        iconSize: widget.iconSize ?? nftheme.iconSize,
+        size: widget.size ?? nftheme.iconButtonSize,
+        color: colorAnimation.value,
+        disabledColor: colorAnimation.value,
+        tooltip: widget.tooltip,
+      ),
     );
   }
 }

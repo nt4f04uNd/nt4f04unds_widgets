@@ -1,13 +1,14 @@
 name: example
-description: "Demonstrates how to use the sweyer plugin."
+description: "Demonstrates how to use the nt4f04unds_widgets plugin."
 publish_to: 'none'
 
 environment:
-  sdk: ^3.7.2
+  sdk: ^3.14.0
 
 dependencies:
   flutter:
     sdk: flutter
+  material_ui: ^1.0.0
   nt4f04unds_widgets:
     path: ../
 

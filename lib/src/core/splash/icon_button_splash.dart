@@ -7,7 +7,8 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'dart:math' as math;
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
 
 const Duration _kUnconfirmedRippleDuration = Duration(milliseconds: 275);
 const Duration _kFadeInDuration = Duration(milliseconds: 120);
@@ -114,17 +115,15 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
        _targetRadius = radius ?? _getTargetRadius(referenceBox, containedInkWell, rectCallback, position),
        super(controller: controller, color: color) {
     // Immediately begin fading-in the initial splash.
-    _fadeInController =
-        AnimationController(duration: _kFadeInDuration, vsync: controller.vsync)
-          ..addListener(controller.markNeedsPaint)
-          ..forward();
+    _fadeInController = AnimationController(duration: _kFadeInDuration, vsync: controller.vsync)
+      ..addListener(controller.markNeedsPaint)
+      ..forward();
     _fadeIn = _fadeInController.drive(Tween(begin: 0, end: color.a));
 
     // Controls the splash radius and its center. Starts upon confirm.
-    _radiusController =
-        AnimationController(duration: _kUnconfirmedRippleDuration, vsync: controller.vsync)
-          ..addListener(controller.markNeedsPaint)
-          ..forward();
+    _radiusController = AnimationController(duration: _kUnconfirmedRippleDuration, vsync: controller.vsync)
+      ..addListener(controller.markNeedsPaint)
+      ..forward();
     // Initial splash diameter is 60% of the target diameter, final
     // diameter is 10dps larger than the target diameter.
     _radius = _radiusController.drive(
@@ -133,10 +132,9 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
 
     // Controls the splash radius and its center. Starts upon confirm however its
     // Interval delays changes until the radius expansion has completed.
-    _fadeOutController =
-        AnimationController(duration: _kFadeOutDuration, vsync: controller.vsync)
-          ..addListener(controller.markNeedsPaint)
-          ..addStatusListener(_handleAlphaStatusChanged);
+    _fadeOutController = AnimationController(duration: _kFadeOutDuration, vsync: controller.vsync)
+      ..addListener(controller.markNeedsPaint)
+      ..addStatusListener(_handleAlphaStatusChanged);
 
     controller.addInkFeature(this);
   }
@@ -213,19 +211,21 @@ class NFIconButtonInkRipple extends InteractiveInkFeature {
 
   @override
   void paintFeature(Canvas canvas, Matrix4 transform) {
-    final double alpha =
-        _fadeInController.isAnimating
-            ? _fadeIn.value
-            : !isCancelled
-            ? _fadeOutController.drive(Tween<double>(begin: color.a, end: 0).chain(_fadeOutIntervalTween)).value
-            : _fadeOutController
-                .drive(Tween<double>(begin: color.a, end: 0).chain(CurveTween(curve: Curves.easeOutCubic)))
-                .value;
+    final double alpha = _fadeInController.isAnimating
+        ? _fadeIn.value
+        : !isCancelled
+        ? _fadeOutController.drive(Tween<double>(begin: color.a, end: 0).chain(_fadeOutIntervalTween)).value
+        : _fadeOutController
+              .drive(Tween<double>(begin: color.a, end: 0).chain(CurveTween(curve: Curves.easeOutCubic)))
+              .value;
     final Paint paint = Paint()..color = color.withValues(alpha: alpha);
     // final Paint paint = Paint()..color = color.withAlpha(200);
     // Splash moves to the center of the reference box.
-    final Offset center =
-        Offset.lerp(_position, referenceBox.size.center(Offset.zero), Curves.ease.transform(_radiusController.value))!;
+    final Offset center = Offset.lerp(
+      _position,
+      referenceBox.size.center(Offset.zero),
+      Curves.ease.transform(_radiusController.value),
+    )!;
     final Offset? originOffset = MatrixUtils.getAsTranslation(transform);
     canvas.save();
     if (originOffset == null) {

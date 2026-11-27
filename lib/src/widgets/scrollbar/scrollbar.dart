@@ -12,7 +12,7 @@ export 'draggable_scrollbar.dart';
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 const double _kScrollbarHeight = 40.0;
 const double _kScrollbarThickness = 6.0;
@@ -152,7 +152,10 @@ class _NFScrollbarState extends State<NFScrollbar> with SingleTickerProviderStat
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
       child: RepaintBoundary(
-        child: CustomPaint(foregroundPainter: _scrollbarPainter, child: RepaintBoundary(child: widget.child)),
+        child: CustomPaint(
+          foregroundPainter: _scrollbarPainter,
+          child: RepaintBoundary(child: widget.child),
+        ),
       ),
     );
   }

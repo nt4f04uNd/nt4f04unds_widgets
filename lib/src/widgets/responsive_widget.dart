@@ -6,7 +6,7 @@
 // todo: maybe allow custrom transition builders
 
 import 'package:async/async.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// When pressed, animates down like a button, and then animates back up,
 /// when user unpresses it.
@@ -124,9 +124,8 @@ class _ResponsiveWidgetState extends State<ResponsiveWidget> with SingleTickerPr
         child: AnimatedBuilder(
           animation: animation,
           child: widget.child,
-          builder:
-              (BuildContext context, Widget? child) =>
-                  Transform.translate(offset: Offset(0.0, widget.offset * animation.value), child: child),
+          builder: (BuildContext context, Widget? child) =>
+              Transform.translate(offset: Offset(0.0, widget.offset * animation.value), child: child),
         ),
       ),
     );

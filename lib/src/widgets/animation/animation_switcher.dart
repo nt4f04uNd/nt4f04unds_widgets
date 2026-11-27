@@ -3,7 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// An analogue of the [AnimatedSwitcher], but based on explicit [animation] property.
@@ -34,20 +34,19 @@ class AnimationSwitcher extends StatelessWidget {
     final reverseTween = Tween(begin: 1.0, end: 0.0);
     return AnimatedBuilder(
       animation: animation,
-      builder:
-          (context, child) => Stack(
-            alignment: alignment,
-            children: [
-              IgnorePointer(
-                ignoring: const IgnoringStrategy(forward: true, completed: true).ask(animation),
-                child: builder1(child1, reverseTween.animate(animation)),
-              ),
-              IgnorePointer(
-                ignoring: const IgnoringStrategy(reverse: true, dismissed: true).ask(animation),
-                child: builder2(child2, animation),
-              ),
-            ],
+      builder: (context, child) => Stack(
+        alignment: alignment,
+        children: [
+          IgnorePointer(
+            ignoring: const IgnoringStrategy(forward: true, completed: true).ask(animation),
+            child: builder1(child1, reverseTween.animate(animation)),
           ),
+          IgnorePointer(
+            ignoring: const IgnoringStrategy(reverse: true, dismissed: true).ask(animation),
+            child: builder2(child2, animation),
+          ),
+        ],
+      ),
     );
   }
 }

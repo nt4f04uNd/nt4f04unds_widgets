@@ -7,7 +7,7 @@ export 'core/core.dart';
 export 'widgets/widgets.dart';
 export 'constants.dart';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
@@ -66,13 +66,12 @@ class NFThemeData {
   /// Creates defaults values.
   const NFThemeData({
     this.systemUiStyle,
-    SystemUiOverlayStyle? modalSystemUiStyle,
-    SystemUiOverlayStyle? bottomSheetSystemUiStyle,
+    this._modalSystemUiStyle,
+    this._bottomSheetSystemUiStyle,
     this.alwaysApplyUiStyle = true,
     this.iconSize = NFConstants.iconSize,
     this.iconButtonSize = NFConstants.iconButtonSize,
-  }) : _modalSystemUiStyle = modalSystemUiStyle,
-       _bottomSheetSystemUiStyle = bottomSheetSystemUiStyle;
+  });
 
   /// Default style of the system ui.
   ///

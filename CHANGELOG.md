@@ -1,14 +1,15 @@
 ## Unreleased
 
-## 7.0.0
+## 8.0.0
+* Support Flutter 3.50.
 
+## 7.0.0
 * Support Flutter 3.35.
 * Removed the unused `multiple_localization` dependency.
 * Updated dependencies.
 * Removed `NFTab` and `NFTabBar` widgets; use Flutter's `Tab` and `TabBar` widgets instead.
 
 ## 6.0.0
-
 * Removed `SelectionController.wasEverSelected`, it always returned `false`.
 
 ## 5.0.0
@@ -32,7 +33,6 @@
   - Update dependencies
 
 ## 3.0.0
-
 * Made `SystemUiStyleController` a singleton to make it mockable (rather than an abstract class with static methods)
 * Adapt to recent Flutter theme and other deprecations
 * Remove `NFButton` and `NFCopyButton`
@@ -43,76 +43,65 @@
 * Fix `SelectionAppBar.defaultSelectionActionsBuilder` sometimes didn't animate correctly
 
 ## 2.0.0
-
-* fix for breaking changes in gestures in Flutter 2.5.0
-* removed deprecated `ScreenSize` and `NFSpinner`
+* Fix for breaking changes in gestures in Flutter 2.5.0
+* Removed deprecated `ScreenSize` and `NFSpinner`
 
 ## 1.1.5
-
-* added `AnimationStatusBuilder` and `AnimationStrategyBuilder`
-* overhauled `Pref` API
-* added explicit `environment` Flutter SDK constraint
-* deprecated `ScreenSize`
-* improved `RepaintBoundary` for `Slidable`
-* changed `SelectionController` return values to `TickerFuture`
-* added `SelectionController.alwaysInSelection`
+* Added `AnimationStatusBuilder` and `AnimationStrategyBuilder`
+* Overhauled `Pref` API
+* Added explicit `environment` Flutter SDK constraint
+* Deprecated `ScreenSize`
+* Improved `RepaintBoundary` for `Slidable`
+* Changed `SelectionController` return values to `TickerFuture`
+* Added `SelectionController.alwaysInSelection`
 * `DismissibleRoute` now exposes its controller via `SlidableControllerProvider`
-* other small stuff
+* Other small stuff
 
 ## 1.1.4
-
-* added `MeasureSize` for debug
-* now app bar theme supports [toolbarHeight](https://github.com/flutter/flutter/pull/80467), therefore removed NFRoute and NFAppBar and moved preferred app bar height constant to NFConstants
-* made `SystemUiStyleController.actualUi` non-nullable
-* other fixes
+* Added `MeasureSize` for debug
+* Now app bar theme supports [toolbarHeight](https://github.com/flutter/flutter/pull/80467), therefore removed NFRoute and NFAppBar and moved preferred app bar height constant to NFConstants
+* Made `SystemUiStyleController.actualUi` non-nullable
+* Other fixes
 
 * ## 1.1.3
-
-* fixed Slidable sometimes jumped or didn't react on drags
-* removed NFDefaultAnimation, as it didn't bring much benefit
-* other fixes and stuff
+* Fixed Slidable sometimes jumped or didn't react on drags
+* Removed NFDefaultAnimation, as it didn't bring much benefit
+* Other fixes and stuff
 
 ## 1.1.2
-
-* fixed bug with Slidable couldn't be dragged in some conditions
-* error improvements
+* Fixed bug with Slidable couldn't be dragged in some conditions
+* Error improvements
 
 ## 1.1.1
-
-* added Enum class for creating enhanced enums
+* Added Enum class for creating enhanced enums
 
 ## 1.1.0
-
-* null safety migration
-* revied and refactored all widgets and APIs
-* improved docs
-* added some examples
-* added NFSpinner
-* removed NFDissmisible, NFLabelledSlider, StackTransition
-* other stuff
+* Null safety migration
+* Reviewed and refactored all widgets and APIs
+* Improved docs
+* Added some examples
+* Added NFSpinner
+* Removed NFDissmisible, NFLabelledSlider, StackTransition
+* Other stuff
  
 ## 1.0.3
-
-* multiple route observers support
-* some fixes
-* basic text selection menu
-* deleted switcher
+* Multiple route observers support
+* Some fixes
+* Basic text selection menu
+* Deleted switcher
 
 ## 1.0.2
-
-* updated namings
-* rewritten scrollbar
-* added animation strategies
-* rewritten slidable
-* screen size api
-* some fixes
-* other stuff
+* Updated namings
+* Rewritten scrollbar
+* Added animation strategies
+* Rewritten slidable
+* Screen size api
+* Some fixes
+* Other stuff
 
 ## 1.0.1
-
-* restructured
-* generated docs
+* Restructured
+* Generated docs
  
 ## 1.0.0
-
-* initial release
+* Initial release

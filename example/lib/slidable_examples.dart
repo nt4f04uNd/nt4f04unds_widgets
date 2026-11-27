@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 import 'main.dart';
@@ -93,7 +93,9 @@ class _Slidable1State extends State<_Slidable1> with SingleTickerProviderStateMi
                                       color: Colors.black,
                                       child: child,
                                     ),
-                                    Flexible(child: Container(width: screenWidth, color: Colors.red)),
+                                    Flexible(
+                                      child: Container(width: screenWidth, color: Colors.red),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -110,7 +112,10 @@ class _Slidable1State extends State<_Slidable1> with SingleTickerProviderStateMi
                   },
                 );
               },
-              child: Container(constraints: BoxConstraints(maxWidth: screenWidth), child: Image.asset('assets/yt.png')),
+              child: Container(
+                constraints: BoxConstraints(maxWidth: screenWidth),
+                child: Image.asset('assets/yt.png'),
+              ),
             ),
           ],
         ),
@@ -201,8 +206,8 @@ class _Slidable3State extends State<_Slidable3> with SingleTickerProviderStateMi
             ),
             AnimatedBuilder(
               animation: controller,
-              builder:
-                  (_, child) => SizedBox(width: controller.isDismissed ? edgeGestureWidth / 2 : null, child: child),
+              builder: (_, child) =>
+                  SizedBox(width: controller.isDismissed ? edgeGestureWidth / 2 : null, child: child),
               child: Slidable(
                 direction: SlideDirection.right,
                 start: -304.0 / screenWidth,
