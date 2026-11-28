@@ -19,8 +19,11 @@ import 'package:material_ui/material_ui.dart';
 class SelectionController<T> extends Listenable
     with AnimationLocalListenersMixin, AnimationEagerListenerMixin, AnimationLocalStatusListenersMixin {
   /// Creates a [SelectionController].
-  SelectionController({required this._animationController, Set<T>? data, this._closeSelectionWhenEmpty = true})
-    : data = data ?? {} {
+  SelectionController({
+    required AnimationController this._animationController,
+    Set<T>? data,
+    this._closeSelectionWhenEmpty = true,
+  }) : data = data ?? {} {
     animationController.addStatusListener(notifyStatusListeners);
   }
 
