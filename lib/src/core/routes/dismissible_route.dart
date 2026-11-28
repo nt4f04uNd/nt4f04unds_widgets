@@ -3,7 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// Makes the [route] dismissible.
@@ -150,11 +150,10 @@ class DismissibleRouteState extends State<DismissibleRoute> with TickerProviderS
         },
         child: AnimatedBuilder(
           animation: _boxDecorationController,
-          builder:
-              (context, child) => Container(
-                decoration: _boxDecorationAnimation.value,
-                child: !_beenDismissed ? widget.animatedChild : widget.child,
-              ),
+          builder: (context, child) => Container(
+            decoration: _boxDecorationAnimation.value,
+            child: !_beenDismissed ? widget.animatedChild : widget.child,
+          ),
         ),
       ),
     );

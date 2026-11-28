@@ -5,7 +5,7 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// Describes the snackbar entry and some settings for it.
@@ -52,9 +52,10 @@ class NFSnackbarEntry {
   void _show() {
     assert(!onScreen);
     _overlayEntry = OverlayEntry(
-      builder:
-          (context) =>
-              Align(alignment: Alignment.bottomCenter, child: _NFSnackbarEntryWidget(entry: this, key: globalKey)),
+      builder: (context) => Align(
+        alignment: Alignment.bottomCenter,
+        child: _NFSnackbarEntryWidget(entry: this, key: globalKey),
+      ),
     );
     late final OverlayState overlay;
     if (this.overlay == null) {
@@ -223,30 +224,27 @@ class NFSnackbarEntryState extends State<_NFSnackbarEntryWidget> with TickerProv
       ),
     );
     return Padding(
-      padding:
-          widget.entry.resizeToAvoidBottomInset
-              ? EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)
-              : EdgeInsets.zero,
+      padding: widget.entry.resizeToAvoidBottomInset
+          ? EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)
+          : EdgeInsets.zero,
       child: FadeTransition(
         opacity: fadeAnimation,
         child: StatefulBuilder(
-          builder:
-              (BuildContext context, setState) => Slidable(
-                controller: controller,
-                direction: SlideDirection.down,
-                start: 0.0,
-                end: 1.0,
-                onDragStart: (_) => stopTimer(),
-                onDragEnd: (_, _) => resumeTimer(),
-                key: dismissibleKey,
-                child: widget.entry.child,
-                childBuilder:
-                    (animation, child) => AnimatedBuilder(
-                      animation: animation,
-                      builder: (context, child) => child!,
-                      child: IgnorePointer(ignoring: controller.status == AnimationStatus.reverse, child: child),
-                    ),
-              ),
+          builder: (BuildContext context, setState) => Slidable(
+            controller: controller,
+            direction: SlideDirection.down,
+            start: 0.0,
+            end: 1.0,
+            onDragStart: (_) => stopTimer(),
+            onDragEnd: (_, _) => resumeTimer(),
+            key: dismissibleKey,
+            child: widget.entry.child,
+            childBuilder: (animation, child) => AnimatedBuilder(
+              animation: animation,
+              builder: (context, child) => child!,
+              child: IgnorePointer(ignoring: controller.status == AnimationStatus.reverse, child: child),
+            ),
+          ),
         ),
       ),
     );
@@ -304,7 +302,9 @@ class NFSnackbar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               if (leading != null) Padding(padding: const EdgeInsets.only(right: 8.0), child: leading),
-              Expanded(child: title == null ? const SizedBox() : Padding(padding: titlePadding, child: title!)),
+              Expanded(
+                child: title == null ? const SizedBox() : Padding(padding: titlePadding, child: title!),
+              ),
               if (trailing != null) Padding(padding: const EdgeInsets.only(left: 8.0), child: trailing),
             ],
           ),

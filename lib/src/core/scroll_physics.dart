@@ -3,7 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 
 /// Doesn't have glow effect on overscroll.
 class GlowlessScrollBehavior extends ScrollBehavior {

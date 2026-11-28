@@ -613,14 +613,15 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
     }
     if ((event is PointerMoveEvent || event is PointerPanZoomUpdateEvent) && _shouldTrackMoveEvent(event.pointer)) {
       final Offset delta = (event is PointerMoveEvent) ? event.delta : (event as PointerPanZoomUpdateEvent).panDelta;
-      final Offset localDelta =
-          (event is PointerMoveEvent) ? event.localDelta : (event as PointerPanZoomUpdateEvent).localPanDelta;
-      final Offset position =
-          (event is PointerMoveEvent) ? event.position : (event.position + (event as PointerPanZoomUpdateEvent).pan);
-      final Offset localPosition =
-          (event is PointerMoveEvent)
-              ? event.localPosition
-              : (event.localPosition + (event as PointerPanZoomUpdateEvent).localPan);
+      final Offset localDelta = (event is PointerMoveEvent)
+          ? event.localDelta
+          : (event as PointerPanZoomUpdateEvent).localPanDelta;
+      final Offset position = (event is PointerMoveEvent)
+          ? event.position
+          : (event.position + (event as PointerPanZoomUpdateEvent).pan);
+      final Offset localPosition = (event is PointerMoveEvent)
+          ? event.localPosition
+          : (event.localPosition + (event as PointerPanZoomUpdateEvent).localPan);
       _finalPosition = OffsetPair(local: localPosition, global: position);
       final Offset resolvedDelta = _resolveLocalDeltaForMultitouch(event.pointer, localDelta);
       switch (_state) {
@@ -820,10 +821,9 @@ abstract class NFDragGestureRecognizer extends OneSequenceGestureRecognizer {
       debugReport = () => 'Could not estimate velocity.';
     } else {
       details = _considerFling(estimate, tracker.kind);
-      debugReport =
-          (details != null)
-              ? () => '$estimate; fling at ${details!.velocity}.'
-              : () => '$estimate; judged to not be a fling.';
+      debugReport = (details != null)
+          ? () => '$estimate; fling at ${details!.velocity}.'
+          : () => '$estimate; judged to not be a fling.';
     }
     details ??= DragEndDetails(
       primaryVelocity: 0.0,
@@ -997,9 +997,8 @@ class NFPanGestureRecognizer extends NFDragGestureRecognizer {
     if (!isFlingGesture(estimate, kind)) {
       return null;
     }
-    final Velocity velocity = Velocity(
-      pixelsPerSecond: estimate.pixelsPerSecond,
-    ).clampMagnitude(minFlingVelocity ?? kMinFlingVelocity, maxFlingVelocity ?? kMaxFlingVelocity);
+    final Velocity velocity = Velocity(pixelsPerSecond: estimate.pixelsPerSecond)
+        .clampMagnitude(minFlingVelocity ?? kMinFlingVelocity, maxFlingVelocity ?? kMaxFlingVelocity);
     return DragEndDetails(
       velocity: velocity,
       globalPosition: _finalPosition.global,

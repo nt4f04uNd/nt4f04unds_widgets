@@ -3,7 +3,7 @@
 *  Licensed under the BSD-style license. See LICENSE in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// Rrebuilds when the given animation changes status.

@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A controller for a selection.
 ///
@@ -20,12 +20,10 @@ class SelectionController<T> extends Listenable
     with AnimationLocalListenersMixin, AnimationEagerListenerMixin, AnimationLocalStatusListenersMixin {
   /// Creates a [SelectionController].
   SelectionController({
-    required AnimationController animationController,
+    required AnimationController this._animationController,
     Set<T>? data,
-    bool closeSelectionWhenEmpty = true,
-  }) : _animationController = animationController,
-       data = data ?? {},
-       _closeSelectionWhenEmpty = closeSelectionWhenEmpty {
+    this._closeSelectionWhenEmpty = true,
+  }) : data = data ?? {} {
     animationController.addStatusListener(notifyStatusListeners);
   }
 

@@ -5,7 +5,7 @@
 
 // todo: review
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Creates a setting item with [title], [description] and [content] sections.
 class NFSettingItem extends StatelessWidget {
@@ -38,7 +38,7 @@ class NFSettingItem extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Text(title, style: const TextStyle(fontSize: 16.0)),
               ),
-              if (trailing != null) trailing!,
+              ?trailing,
             ],
           ),
           if (description != null)
@@ -46,7 +46,7 @@ class NFSettingItem extends StatelessWidget {
               padding: const EdgeInsets.only(top: 2.0),
               child: Text(description!, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
             ),
-          if (child != null) child!,
+          ?child,
         ],
       ),
     );

@@ -5,7 +5,7 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
@@ -170,8 +170,9 @@ class SystemUiOverlayStyleTween extends Tween<SystemUiOverlayStyle> {
         b.systemNavigationBarDividerColor,
         t,
       ),
-      systemNavigationBarIconBrightness:
-          t > 0.5 ? a.systemNavigationBarIconBrightness : b.systemNavigationBarIconBrightness,
+      systemNavigationBarIconBrightness: t > 0.5
+          ? a.systemNavigationBarIconBrightness
+          : b.systemNavigationBarIconBrightness,
       statusBarColor: Color.lerp(a.statusBarColor, b.statusBarColor, t),
       statusBarBrightness: t > 0.5 ? a.statusBarBrightness : b.statusBarBrightness,
       statusBarIconBrightness: t > 0.5 ? a.statusBarIconBrightness : b.statusBarIconBrightness,

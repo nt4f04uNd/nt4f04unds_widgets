@@ -4,8 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart' hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
-import 'package:flutter/material.dart' as flutter show showGeneralDialog, showBottomSheet, showModalBottomSheet;
+import 'package:material_ui/material_ui.dart' hide showBottomSheet, showGeneralDialog, showModalBottomSheet;
+import 'package:material_ui/material_ui.dart' as flutter show showGeneralDialog, showBottomSheet, showModalBottomSheet;
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 const defaultAlertTitlePadding = EdgeInsets.fromLTRB(26.0, 24.0, 26.0, 1.0);
@@ -60,7 +60,10 @@ class NFShowFunctions {
           reverseCurve: Curves.easeInCubic,
           parent: animation,
         );
-        return ScaleTransition(scale: scaleAnimation, child: FadeTransition(opacity: fadeAnimation, child: child));
+        return ScaleTransition(
+          scale: scaleAnimation,
+          child: FadeTransition(opacity: fadeAnimation, child: child),
+        );
       },
       pageBuilder: (context, animation, secondaryAnimation) {
         return _UiHelper(
@@ -71,12 +74,10 @@ class NFShowFunctions {
               backgroundColor: Theme.of(context).colorScheme.surface,
               contentPadding: EdgeInsets.zero,
               titlePadding: EdgeInsets.zero,
-              contentTextStyle: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500, fontSize: 15.0),
-              titleTextStyle: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700, fontSize: 20.0, height: 1.5),
+              contentTextStyle: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w500, fontSize: 15.0),
+              titleTextStyle: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.w700, fontSize: 20.0, height: 1.5),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
               title: Container(
                 padding: titlePadding,
@@ -110,8 +111,9 @@ class NFShowFunctions {
                     child: Padding(
                       padding: const EdgeInsets.only(top: 4.0, left: 14.0, right: 14.0, bottom: 10.0),
                       child: Row(
-                        mainAxisAlignment:
-                            additionalActions == null ? MainAxisAlignment.end : MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: additionalActions == null
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           if (additionalActions != null)
                             Flexible(
@@ -125,9 +127,9 @@ class NFShowFunctions {
                               child: OverflowBar(
                                 overflowDirection: VerticalDirection.down,
                                 children: <Widget>[
-                                  if (cancelButton != null) cancelButton,
+                                  ?cancelButton,
                                   if (acceptButton != null && cancelButton != null) const SizedBox(width: 8.0),
-                                  if (acceptButton != null) acceptButton,
+                                  ?acceptButton,
                                 ],
                               ),
                             ),

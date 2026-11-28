@@ -4,7 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 
 import 'dart:math' as math;
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// A regular [AppBar] which to use with selection and [SelectionController].
@@ -46,18 +47,17 @@ class SelectionAppBar extends AppBar {
     super.bottomOpacity,
     super.toolbarHeight,
   }) : super(
-         leading:
-             !showMenuButton
-                 ? leading
-                 : Builder(
-                   builder: (BuildContext context) {
-                     return AnimatedMenuCloseButton(
-                       animation: selectionController.animation,
-                       onMenuPressed: onMenuPressed,
-                       onClosePressed: selectionController.close,
-                     );
-                   },
-                 ),
+         leading: !showMenuButton
+             ? leading
+             : Builder(
+                 builder: (BuildContext context) {
+                   return AnimatedMenuCloseButton(
+                     animation: selectionController.animation,
+                     onMenuPressed: onMenuPressed,
+                     onClosePressed: selectionController.close,
+                   );
+                 },
+               ),
          title: AnimationSwitcher(
            animation: CurvedAnimation(curve: curve, reverseCurve: reverseCurve, parent: selectionController.animation),
            alignment: AlignmentDirectional.centerStart,
@@ -90,12 +90,11 @@ class SelectionAppBar extends AppBar {
       child: AnimatedBuilder(
         animation: animation,
         child: child,
-        builder:
-            (context, child) => Transform(
-              transform: Matrix4.identity()..rotateX((1.0 - animation.value) * math.pi / 2),
-              origin: const Offset(0.0, 30.0),
-              child: child,
-            ),
+        builder: (context, child) => Transform(
+          transform: Matrix4.identity()..rotateX((1.0 - animation.value) * math.pi / 2),
+          origin: const Offset(0.0, 30.0),
+          child: child,
+        ),
       ),
     );
   }
@@ -220,18 +219,17 @@ class _AnimatedMenuCloseButtonState extends State<AnimatedMenuCloseButton> with 
     final theme = Theme.of(context);
     return AnimatedBuilder(
       animation: controller,
-      builder:
-          (BuildContext context, Widget? child) => NFIconButton(
-            size: widget.size ?? NFConstants.iconButtonSize,
-            iconSize: widget.iconSize ?? NFConstants.iconSize,
-            color: theme.colorScheme.onSurface,
-            onPressed: showClose ? widget.onClosePressed : widget.onMenuPressed,
-            icon: AnimatedIcon(
-              icon: showClose ? AnimatedIcons.menu_close : AnimatedIcons.close_menu,
-              color: widget.iconColor,
-              progress: animation,
-            ),
-          ),
+      builder: (BuildContext context, Widget? child) => NFIconButton(
+        size: widget.size ?? NFConstants.iconButtonSize,
+        iconSize: widget.iconSize ?? NFConstants.iconSize,
+        color: theme.colorScheme.onSurface,
+        onPressed: showClose ? widget.onClosePressed : widget.onMenuPressed,
+        icon: AnimatedIcon(
+          icon: showClose ? AnimatedIcons.menu_close : AnimatedIcons.close_menu,
+          color: widget.iconColor,
+          progress: animation,
+        ),
+      ),
     );
   }
 }

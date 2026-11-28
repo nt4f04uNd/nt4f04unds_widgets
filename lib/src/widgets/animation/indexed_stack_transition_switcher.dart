@@ -5,7 +5,7 @@
 
 // todo: remove this when this issue gets resolved https://github.com/flutter/flutter/issues/56662
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Based on the [PageTransitionSwitcher] from the `animations` package, this widget
 /// allows you to transition between an array of widgets using entry and exit
@@ -136,10 +136,9 @@ class _IndexedTransitionSwitcherState extends State<IndexedTransitionSwitcher> w
   Widget build(BuildContext context) => Stack(
     alignment: Alignment.center,
     fit: StackFit.expand,
-    children:
-        _childEntries
-            .map<Widget>((entry) => Offstage(key: entry.key, offstage: !entry.onStage, child: entry.transitionChild))
-            .toList(),
+    children: _childEntries
+        .map<Widget>((entry) => Offstage(key: entry.key, offstage: !entry.onStage, child: entry.transitionChild))
+        .toList(),
   );
 }
 

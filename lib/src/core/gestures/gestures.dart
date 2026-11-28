@@ -5,8 +5,8 @@
 
 export 'drag.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/widgets.dart';
 
 /// All content inside this widget will only take one touch event.
 class SingleTouchRecognizerWidget extends StatelessWidget {

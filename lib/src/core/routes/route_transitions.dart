@@ -8,7 +8,7 @@ export 'fade_in_transition.dart';
 export 'stack_fade_transition.dart';
 export 'zoom_transition.dart';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 

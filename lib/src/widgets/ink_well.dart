@@ -5,7 +5,7 @@
 
 // todo: delete when i delete NFListTileInkRipple (when https://github.com/flutter/flutter/issues/73163 is resolved)
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
 
 /// Will draw ink well with taking the splash color and splash factory from theme

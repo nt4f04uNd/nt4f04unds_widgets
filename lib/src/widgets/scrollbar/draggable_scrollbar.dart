@@ -8,8 +8,9 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nt4f04unds_widgets/nt4f04unds_widgets.dart';
+
 import 'dart:math' as math;
 
 /// Build the bar and label using the current configuration.
@@ -378,74 +379,76 @@ class NFDraggableScrollbarState extends State<NFDraggableScrollbar> with TickerP
     return !widget.shouldAppear
         ? widget.child
         : LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            return NotificationListener<ScrollNotification>(
-              onNotification: _handleScrollNotification,
-              child: Stack(
-                children: <Widget>[
-                  RepaintBoundary(child: widget.child),
-                  RepaintBoundary(
-                    child: Stack(
-                      children: [
-                        // Label
-                        if (label != null) widget.labelTransitionBuilder(context, labelController, label),
-                        // Bar pad
-                        Positioned(
-                          right: 0.0,
-                          top: 0.0,
-                          child: GestureDetector(
-                            onTapDown: _onBarPadTapDown,
-                            onTapUp: (_) => _onEnd(),
-                            onVerticalDragStart: _onBarPadVerticalDragStart,
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return NotificationListener<ScrollNotification>(
+                onNotification: _handleScrollNotification,
+                child: Stack(
+                  children: <Widget>[
+                    RepaintBoundary(child: widget.child),
+                    RepaintBoundary(
+                      child: Stack(
+                        children: [
+                          // Label
+                          if (label != null) widget.labelTransitionBuilder(context, labelController, label),
+                          // Bar pad
+                          Positioned(
+                            right: 0.0,
+                            top: 0.0,
+                            child: GestureDetector(
+                              onTapDown: _onBarPadTapDown,
+                              onTapUp: (_) => _onEnd(),
+                              onVerticalDragStart: _onBarPadVerticalDragStart,
+                              onVerticalDragUpdate: _onVerticalDragUpdate,
+                              onVerticalDragEnd: (_) => _onEnd(),
+                              child:
+                                  widget.barPad ??
+                                  Container(
+                                    color: Colors.transparent,
+                                    width: widget.barWidth,
+                                    height: MediaQuery.of(context).size.height,
+                                  ),
+                            ),
+                          ),
+                          // Bar itself
+                          GestureDetector(
+                            onVerticalDragStart: _onVerticalDragStart,
                             onVerticalDragUpdate: _onVerticalDragUpdate,
                             onVerticalDragEnd: (_) => _onEnd(),
-                            child:
-                                widget.barPad ??
-                                Container(
-                                  color: Colors.transparent,
-                                  width: widget.barWidth,
-                                  height: MediaQuery.of(context).size.height,
-                                ),
-                          ),
-                        ),
-                        // Bar itself
-                        GestureDetector(
-                          onVerticalDragStart: _onVerticalDragStart,
-                          onVerticalDragUpdate: _onVerticalDragUpdate,
-                          onVerticalDragEnd: (_) => _onEnd(),
-                          child: Container(
-                            alignment: Alignment.topRight,
-                            margin: EdgeInsets.only(
-                              top: math.max(0.0, widget.barTopMargin + _barOffset),
-                              bottom: widget.barBottomMargin,
-                            ),
-                            padding: widget.barPadding,
-                            child: widget.barBuilder(
-                              widget.barColor,
-                              barAnimation,
+                            child: Container(
+                              alignment: Alignment.topRight,
+                              margin: EdgeInsets.only(
+                                top: math.max(0.0, widget.barTopMargin + _barOffset),
+                                bottom: widget.barBottomMargin,
+                              ),
+                              padding: widget.barPadding,
+                              child: widget.barBuilder(
+                                widget.barColor,
+                                barAnimation,
 
-                              /// Force sending proper height to the builder function.
-                              ///
-                              /// This will take place in case of bouncing scroll physics.
-                              /// In fact the `- math.max(0.0, _barOffset - _barMaxOffset)`
-                              /// is not needed to display proper bar, because it's treated automaticlly,
-                              /// as it reaches the bottom edge of the screen.
-                              ///
-                              /// Thought I do this for sake of if someone decides to use these values
-                              /// for some computations.
-                              widget.barHeight + math.min(0.0, _barOffset) - math.max(0.0, _barOffset - _barMaxOffset),
-                              widget.barWidth,
+                                /// Force sending proper height to the builder function.
+                                ///
+                                /// This will take place in case of bouncing scroll physics.
+                                /// In fact the `- math.max(0.0, _barOffset - _barMaxOffset)`
+                                /// is not needed to display proper bar, because it's treated automaticlly,
+                                /// as it reaches the bottom edge of the screen.
+                                ///
+                                /// Thought I do this for sake of if someone decides to use these values
+                                /// for some computations.
+                                widget.barHeight +
+                                    math.min(0.0, _barOffset) -
+                                    math.max(0.0, _barOffset - _barMaxOffset),
+                                widget.barWidth,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
+                  ],
+                ),
+              );
+            },
+          );
   }
 
   void _showBar() {
